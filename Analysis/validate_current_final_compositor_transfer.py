@@ -112,6 +112,11 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def pixel_sample_cell(position: float) -> int:
+    """Return the integer cell bounded by adjacent half-integer sample centers."""
+    return math.floor(position + 0.5)
+
+
 def validate_sources(preregistration: Mapping[str, object]) -> None:
     sources = mapping(preregistration.get("sourceSHA256"), "sourceSHA256")
     for relative, expected in sources.items():
@@ -402,9 +407,9 @@ def validate_geometry_activity_control(
         and columns[2] < columns[3]
         and rows[0] > rows[1]
         and rows[2] > rows[3]
-        and abs(bits(columns[1]) - bits(columns[2])) <= 1
-        and abs(bits(rows[1]) - bits(rows[2])) <= 1,
-        f"{role} captured center-seam topology differs",
+        and pixel_sample_cell(columns[1]) == pixel_sample_cell(columns[2])
+        and pixel_sample_cell(rows[1]) == pixel_sample_cell(rows[2]),
+        f"{role} captured center-seam raster cells differ",
     )
     if role == "Iscd":
         expected = {
@@ -749,7 +754,7 @@ def validate_role(
 ) -> JSONObject:
     record = mapping(untyped, f"{role} record")
     expected_scalars = {
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "executed": True,
         "role": role,
         "pipelineLabel": PIPELINES[role],
@@ -972,7 +977,7 @@ def validate(
         preregistration.get(
             "currentFinalCompositorTransferPreregistrationSchemaVersion"
         )
-        == 6,
+        == 7,
         "preregistration schema differs",
     )
     descriptor_capture = mapping(
@@ -1126,6 +1131,41 @@ def validate(
         and superseded_v5.get("selectedProspectiveCandidate") == "g-r-b",
         "failed-v5 amendment differs",
     )
+    superseded_v6 = mapping(
+        preregistration.get("supersedesFailedV6Run"),
+        "supersedesFailedV6Run",
+    )
+    observed_v6 = mapping(
+        superseded_v6.get("observedComparisons"),
+        "v6 observed comparisons",
+    )
+    seam_v6 = mapping(
+        superseded_v6.get("observedCenterSeam"),
+        "v6 observed center seam",
+    )
+    require(
+        superseded_v6.get("captureCommit") == "eb1b061308e8aca2921e9eb57af7eeba27751abd"
+        and superseded_v6.get("timelineSHA256")
+        == "97d132f52b0b1fe36b0b9aace23ced3896c7c60dde85b5e12f809c048b162ef5"
+        and superseded_v6.get("nativeCaptureExitStatus") == 0
+        and superseded_v6.get("frozenValidatorExitStatus") == 1
+        and superseded_v6.get("promotedEvidence") is False
+        and superseded_v6.get("arithmeticCasesChanged") is False
+        and superseded_v6.get("candidateChanged") is False
+        and superseded_v6.get("outputToleranceChanged") is False
+        and superseded_v6.get("geometryControlChanged") is True
+        and observed_v6.get("activeAppleMatrixCases") == 14
+        and observed_v6.get("exactSystemSpecializationComparisons") == 14
+        and observed_v6.get("exactIndependentCandidateComparisons") == 14
+        and observed_v6.get("unequalSystemSpecializationBytes") == 0
+        and observed_v6.get("unequalIndependentCandidateBytes") == 0
+        and observed_v6.get("maximumChannelDelta") == 0
+        and observed_v6.get("sourcePathInvarianceControls") == 2
+        and seam_v6.get("columnXULPDistance") == 2
+        and seam_v6.get("rowYULPDistance") == 1
+        and seam_v6.get("bothAxesSharePixelSampleCell") is True,
+        "failed-v6 amendment differs",
+    )
     specialization = mapping(
         preregistration.get("systemSpecialization"),
         "systemSpecialization",
@@ -1175,7 +1215,12 @@ def validate(
         and geometry_activity.get("IrsdHalfExpansionPixels") == 32
         and geometry_activity.get("capturedVertexBytes") == 768
         and geometry_activity.get("capturedRoleStreamsMustBeEqual") is True
-        and geometry_activity.get("maximumCenterSeamULPs") == 1
+        and geometry_activity.get("centerSeamInvariant")
+        == (
+            "each captured x/y center-seam pair must map to one integer "
+            "pixel-sample cell under floor(binary64(binary32Position)+0.5)"
+        )
+        and geometry_activity.get("pixelOutputTolerance") == 0
         and geometry_activity.get("validatorReconstructsMutation") is True
         and geometry_activity.get("capturedApplePipelineChanged") is False
         and geometry_activity.get("liveAppleFrameChanged") is False,
@@ -1265,7 +1310,7 @@ def validate(
         "currentFinalCompositorTransfer",
     )
     expected_transfer = {
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "executed": True,
         "selectionPolicy": (
             "exactly one current Iscd and one immediately later current Irsd draw "

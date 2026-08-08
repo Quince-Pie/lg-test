@@ -15505,7 +15505,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && comparison["maximumChannelDelta"] as? Int == 0
             }
             return [
-                "schemaVersion": 6,
+                "schemaVersion": 7,
                 "executed":
                     casesExecuted
                     && sourcePathInvariant
@@ -16034,7 +16034,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && $0["candidatesExact"] as? Bool == true
             }
         return [
-            "schemaVersion": 6,
+            "schemaVersion": 7,
             "executed": executed,
             "selectionPolicy":
                 "exactly one current Iscd and one immediately later "

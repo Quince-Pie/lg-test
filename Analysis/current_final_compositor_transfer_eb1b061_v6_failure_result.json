@@ -1,0 +1,58 @@
+{
+  "currentFinalCompositorTransferFailureResultSchemaVersion": 6,
+  "status": "rejected-after-exact-arithmetic-comparisons-by-over-tight-geometry-control",
+  "captureCommit": "eb1b061308e8aca2921e9eb57af7eeba27751abd",
+  "captureDirectory": "local-current-final-compositor-transfer-eb1b061-v6",
+  "timelineSHA256": "97d132f52b0b1fe36b0b9aace23ced3896c7c60dde85b5e12f809c048b162ef5",
+  "nativeCaptureExitStatus": 0,
+  "frozenValidatorExitStatus": 1,
+  "frozenValidatorFailure": "Iscd captured center-seam topology differs",
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "observations": {
+    "capturedVertexStreamsEqual": true,
+    "capturedVertexStreamSHA256": "88067012ec25d0305a1fbc72a2a96322a35928bb04a821ccc659192449cb70aa",
+    "capturedCenterSeam": {
+      "columnXFloat32Bits": ["43f13508", "43f13506"],
+      "rowYFloat32Bits": ["4407657c", "4407657d"],
+      "columnXULPDistance": 2,
+      "rowYULPDistance": 1,
+      "columnXPixelSampleCell": 482,
+      "rowYPixelSampleCell": 542,
+      "bothAxesSharePixelSampleCell": true,
+      "interpretation": "the frozen one-ULP ceiling was not an algorithm invariant; the two-ULP x separation is approximately 0.000061 pixels and neither seam interval crosses a pixel sample center"
+    },
+    "activeApplePixels": {
+      "Iscd": 131072,
+      "Irsd": 14336
+    },
+    "positiveAppleMatrixCases": 14,
+    "sourcePathInvarianceControls": 2,
+    "capturedVsSystemSpecialization": {
+      "comparisonCount": 14,
+      "comparedBytes": 58720256,
+      "unequalBytes": 0,
+      "unequalPixels": 0,
+      "maximumChannelDelta": 0
+    },
+    "capturedVsIndependentCandidate": {
+      "comparisonCount": 14,
+      "comparedBytes": 58720256,
+      "unequalBytes": 0,
+      "unequalPixels": 0,
+      "maximumChannelDelta": 0,
+      "vibrantFMAAccumulationOrder": "g-r-b"
+    }
+  },
+  "promotedEvidence": false,
+  "remainingAppleConstructionQuestions": 1,
+  "nextCorrection": "replace the observed-invalid one-ULP seam ceiling with the preregistered categorical requirement that each seam pair occupies one pixel-sample cell; leave candidate arithmetic, selectors, matrices, sources, activity controls, byte comparisons, and zero output tolerance unchanged",
+  "arithmeticCasesChanged": false,
+  "candidateChanged": false,
+  "outputToleranceChanged": false,
+  "geometryControlChanged": true,
+  "productionParity": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

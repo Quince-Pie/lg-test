@@ -20,6 +20,7 @@ from validate_current_final_compositor_transfer import (
     expected_seed,
     expected_finite_source_mips,
     mismatch_metrics,
+    pixel_sample_cell,
     validate_geometry_activity_control,
     validate_intervention,
     validate_reported_comparison,
@@ -160,28 +161,28 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
             ]
 
         captured_column_bits = [
-            "436212e0",
-            "43f10a76",
-            "43f10a75",
-            "443885be",
+            "43626803",
+            "43f13508",
+            "43f13506",
+            "44389b06",
         ]
         captured_row_bits = [
-            "44477b48",
-            "44077ac5",
-            "44077ac6",
-            "438ef485",
+            "444765ff",
+            "4407657c",
+            "4407657d",
+            "438ec9f4",
         ]
         widened_column_bits = [
-            "436212e0",
-            "43e10a76",
-            "4400853b",
-            "443885be",
+            "43626803",
+            "43e13507",
+            "44009a84",
+            "44389b06",
         ]
         widened_row_bits = [
-            "44477b48",
-            "440f7ac6",
-            "43fef58c",
-            "438ef485",
+            "444765ff",
+            "440f657c",
+            "43fecaf8",
+            "438ec9f4",
         ]
         captured = bytearray(16 * 48)
         widened = bytearray(captured)
@@ -222,6 +223,14 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "halfExpansionPixels differs"):
             validate_geometry_activity_control(record, role="Irsd")
 
+    def test_center_seam_uses_raster_cell_not_float_ulp_distance(self) -> None:
+        seam_a = struct.unpack("<f", struct.pack("<I", 0x43F13508))[0]
+        seam_b = struct.unpack("<f", struct.pack("<I", 0x43F13506))[0]
+        self.assertEqual(abs(0x43F13508 - 0x43F13506), 2)
+        self.assertEqual(pixel_sample_cell(seam_a), 482)
+        self.assertEqual(pixel_sample_cell(seam_b), 482)
+        self.assertNotEqual(pixel_sample_cell(482.49), pixel_sample_cell(482.51))
+
     def test_swift_source_retains_independent_exact_gate(self) -> None:
         source = (REPOSITORY / "Sources/GlassIntrospect/main.swift").read_text(
             encoding="utf-8"
@@ -241,7 +250,7 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
             "let finiteSourceSalt = UInt32(0x6d2b79f5)",
             '"sourcePathSensitive": sourcePathSensitive',
             '"sourcePathInvariant": sourcePathInvariant',
-            '"schemaVersion": 6',
+            '"schemaVersion": 7',
             'name: "fixed_frag_lph_cpf"',
             '"widen-Irsd-center-seams-v1"',
             "let halfExpansion = Float(32.0)",

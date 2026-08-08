@@ -14197,3 +14197,69 @@ and
 `dc3d5f24d77518c7d5c7cbac6f3e2bf9a6d355d3bab16c0cbe61b239612d8e00`,
 respectively. The v6 probe type-checks natively against Apple's 26.5 SDK on
 the M1 Max.
+
+### Exact v6 arithmetic with a rejected geometry premise, and frozen v7
+
+The prospective v6 run at commit
+`eb1b061308e8aca2921e9eb57af7eeba27751abd` captured successfully on the
+physical 3456-by-2234 Retina display, but the all-or-nothing validator exited
+one with `Iscd captured center-seam topology differs`. This is not an
+arithmetic mismatch. The captured `Iscd` and `Irsd` vertex streams are
+byte-identical, with SHA-256
+`88067012ec25d0305a1fbc72a2a96322a35928bb04a821ccc659192449cb70aa`.
+Their x seam is `43f13508` versus `43f13506`, a two-binary32-ULP separation;
+their y seam is `4407657c` versus `4407657d`, a one-ULP separation. Both x
+coordinates occupy pixel-sample cell 482 and both y coordinates occupy cell
+542 under `floor(binary64(binary32Position)+0.5)`. The x interval is about
+0.000061 pixels and crosses no pixel sample center. The preregistered one-ULP
+ceiling was therefore an empirically false capture-geometry assumption.
+
+All answer-bearing v6 comparisons nevertheless executed before that external
+validator check. `Iscd` has 131,072 nonzero-alpha pixels and widened `Irsd`
+has 14,336. All 14 Apple matrix cases change the independently seeded
+destination. All 14 captured-versus-system-specialization comparisons and all
+14 captured-versus-independent-`g-r-b` comparisons are exact: 58,720,256
+bytes in each family, zero unequal bytes, zero unequal pixels, and maximum
+channel delta zero. Both source-path invariance controls are also exact. The
+fresh capture therefore independently repeats the recovered compositor law,
+but the failed frozen gate promotes no equality and does not reduce the formal
+construction count. Its timeline SHA-256 is
+`97d132f52b0b1fe36b0b9aace23ced3896c7c60dde85b5e12f809c048b162ef5`.
+The compact rejected result is
+`Analysis/current_final_compositor_transfer_eb1b061_v6_failure_result.json`,
+SHA-256
+`b650121bbfaeec30bc4b974889574c53b5fc1e4712dbb1f365ee794f6aaf08ed`.
+
+V7 replaces only the invalid ULP ceiling with a categorical raster invariant:
+each captured x and y center-seam pair must map to one integer pixel-sample
+cell under the formula above. This is not a pixel tolerance. Complete raw
+streams must still be role-identical, the validator still reconstructs every
+widened x/y word and its complete hash, and every output comparison still has
+zero tolerance. The `g-r-b` candidate, two QuartzCore specializations, seven
+matrices, finite six-mip source, alpha and destination activity controls, and
+all 117,440,512 answer-bearing compared bytes are unchanged.
+
+The v7 preregistration, validator, eleven tests, native runner, Swift probe,
+and unchanged candidate Metal source have SHA-256 values
+`9f5b3ce07ca37f8ad24919d3f88e6537d4635184173088c11cbb266600a82d7a`,
+`02764473a47b029a3e7e2c96592f824c0c9b056562891dbadda8e283a6863663`,
+`2d4eca9367c56a3d3a24a0b68cbc647d7173fa313796e33133249412ea2cd5d2`,
+`ee285953b00fb85999d78889d46449a676b0ab6738d2f7486ea634c39ba3fe9e`,
+`77a5ebbbbf9c2c1858c49019cb63dfcc1cfd917bf94a7646b39db16580e7ffcb`,
+and
+`dc3d5f24d77518c7d5c7cbac6f3e2bf9a6d355d3bab16c0cbe61b239612d8e00`,
+respectively.
+
+The exact ledger before v7 is:
+
+1. **Unknown Apple arithmetic hypotheses: zero.** The current compositor law
+   is observationally exact in the fresh v6 data.
+2. **Formal Apple construction gates: one.** V7 repeats that unchanged law
+   under the corrected, preregistered geometry invariant before the
+   Walle-shaped Retina proof begins.
+3. **Product proof gates: two.** A Walle-shaped physical-Retina
+   color/compositor transfer and a fresh production-Walle frame with zero
+   unequal bytes remain mandatory before production parity.
+4. **Quality and comparison tolerance: zero.** This result changes neither
+   Walle's protected production shader nor `flake.nix` and authorizes no
+   approximation or quality reduction.
