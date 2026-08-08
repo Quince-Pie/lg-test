@@ -17,7 +17,9 @@ PIXELS = WIDTH * HEIGHT
 BGRA_BYTES = PIXELS * 4
 RGBA16_BYTES = PIXELS * 8
 SAMPLE = 24
-FINITE_SOURCE = bytes((0x40, 0x80, 0xC0, 0xFF))
+SOURCE_BASE_PIXELS = 768
+SOURCE_MIP_COUNT = 6
+FINITE_SOURCE_SALT = 0x6D2B79F5
 PIPELINES = {
     "Iscd": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd",
     "Irsd": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd",
@@ -120,6 +122,8 @@ def snapshot_payload(
     byte_count: int,
     width: int = WIDTH,
     height: int = HEIGHT,
+    mipmap_level: int | None = None,
+    mipmap_level_count: int | None = None,
 ) -> bytes:
     snapshot = mapping(untyped, f"{label} snapshot")
     expected = {
@@ -131,6 +135,16 @@ def snapshot_payload(
     }
     for field, value in expected.items():
         require(snapshot.get(field) == value, f"{label} {field} differs")
+    if mipmap_level is not None:
+        require(
+            snapshot.get("mipmapLevel") == mipmap_level,
+            f"{label} mipmapLevel differs",
+        )
+    if mipmap_level_count is not None:
+        require(
+            snapshot.get("mipmapLevelCount") == mipmap_level_count,
+            f"{label} mipmapLevelCount differs",
+        )
     relative = snapshot.get("rawFile")
     require(isinstance(relative, str), f"{label} rawFile is absent")
     root = capture_directory.resolve()
@@ -235,6 +249,29 @@ def expected_seed() -> bytes:
             payload[offset + 2] = (x * 5 + y * 53 + 131) % (alpha + 1)
             payload[offset + 3] = alpha
     return bytes(payload)
+
+
+def expected_finite_source_mips() -> tuple[bytes, ...]:
+    payloads: list[bytes] = []
+    for level in range(SOURCE_MIP_COUNT):
+        width = max(1, SOURCE_BASE_PIXELS >> level)
+        height = max(1, SOURCE_BASE_PIXELS >> level)
+        payload = bytearray(width * height * 4)
+        for y in range(height):
+            for x in range(width):
+                word = (
+                    x * 0x045D9F3B
+                    ^ y * 0x0119DE1F
+                    ^ level * 0x9E3779B9
+                ) & 0xFFFF_FFFF
+                word ^= FINITE_SOURCE_SALT
+                offset = (y * width + x) * 4
+                payload[offset] = word & 0xFF
+                payload[offset + 1] = (word >> 8) & 0xFF
+                payload[offset + 2] = (word >> 16) & 0xFF
+                payload[offset + 3] = 0xFF
+        payloads.append(bytes(payload))
+    return tuple(payloads)
 
 
 def validate_intervention(untyped: object, *, label: str) -> None:
@@ -410,13 +447,19 @@ def validate_source_intervention(
         f"{role} source intervention",
     )
     expected = {
-        "schemaVersion": 1,
-        "bindingIndex": 4,
+        "schemaVersion": 2,
+        "bindingIndex": 3,
         "method": (
             "isolated replay binding override immediately before the selected draw"
         ),
-        "finiteSourceEncoding": "opaque-bgra8",
-        "finiteSourceHex": FINITE_SOURCE.hex(),
+        "finiteSourceEncoding": "opaque-bgra8-six-mip-coordinate-hash-v1",
+        "finiteSourceFormula": (
+            "word=u32(x*0x045d9f3b ^ y*0x0119de1f ^ level*0x9e3779b9) "
+            "^ 0x6d2b79f5; bgra=(word[7:0],word[15:8],word[23:16],0xff)"
+        ),
+        "finiteSourceSalt": "0x6d2b79f5",
+        "basePixels": [SOURCE_BASE_PIXELS, SOURCE_BASE_PIXELS],
+        "mipmapLevelCount": SOURCE_MIP_COUNT,
         "capturedAndFiniteSourceDiffer": True,
     }
     for field, value in expected.items():
@@ -424,27 +467,54 @@ def validate_source_intervention(
             intervention.get(field) == value,
             f"{role} source intervention {field} differs",
         )
-    captured_source = snapshot_payload(
-        capture_directory,
-        intervention.get("capturedSource"),
-        label=f"{role} captured source",
-        pixel_format=80,
-        byte_count=4,
-        width=1,
-        height=1,
+    captured_snapshots = sequence(
+        intervention.get("capturedSourceMips"),
+        f"{role} captured source mips",
     )
-    finite_source = snapshot_payload(
-        capture_directory,
-        intervention.get("finiteSource"),
-        label=f"{role} finite source",
-        pixel_format=80,
-        byte_count=4,
-        width=1,
-        height=1,
+    finite_snapshots = sequence(
+        intervention.get("finiteSourceMips"),
+        f"{role} finite source mips",
     )
-    require(finite_source == FINITE_SOURCE, f"{role} finite source bytes differ")
     require(
-        captured_source != finite_source,
+        len(captured_snapshots) == SOURCE_MIP_COUNT
+        and len(finite_snapshots) == SOURCE_MIP_COUNT,
+        f"{role} source mip count differs",
+    )
+    expected_mips = expected_finite_source_mips()
+    captured_mips: list[bytes] = []
+    finite_mips: list[bytes] = []
+    for level, expected_mip in enumerate(expected_mips):
+        width = max(1, SOURCE_BASE_PIXELS >> level)
+        height = max(1, SOURCE_BASE_PIXELS >> level)
+        captured_mips.append(snapshot_payload(
+            capture_directory,
+            captured_snapshots[level],
+            label=f"{role} captured source mip {level}",
+            pixel_format=80,
+            byte_count=width * height * 4,
+            width=width,
+            height=height,
+            mipmap_level=level,
+            mipmap_level_count=SOURCE_MIP_COUNT,
+        ))
+        finite_mip = snapshot_payload(
+            capture_directory,
+            finite_snapshots[level],
+            label=f"{role} finite source mip {level}",
+            pixel_format=80,
+            byte_count=width * height * 4,
+            width=width,
+            height=height,
+            mipmap_level=level,
+            mipmap_level_count=SOURCE_MIP_COUNT,
+        )
+        require(
+            finite_mip == expected_mip,
+            f"{role} finite source mip {level} bytes differ",
+        )
+        finite_mips.append(finite_mip)
+    require(
+        captured_mips != finite_mips,
         f"{role} captured source equals finite control",
     )
 
@@ -490,8 +560,9 @@ def validate_source_intervention(
         f"{role} sourcePathSensitive differs",
     )
     return {
-        "capturedSourceSHA256": sha256_bytes(captured_source),
-        "finiteSourceSHA256": sha256_bytes(finite_source),
+        "capturedSourceSHA256": sha256_bytes(b"".join(captured_mips)),
+        "finiteSourceSHA256": sha256_bytes(b"".join(finite_mips)),
+        "mipmapLevelCount": SOURCE_MIP_COUNT,
         "pathSensitivityUnequalBytes": comparison["mismatchedByteCount"],
         "pathSensitivityUnequalPixels": comparison["mismatchedPixelCount"],
     }
@@ -507,14 +578,13 @@ def validate_role(
 ) -> JSONObject:
     record = mapping(untyped, f"{role} record")
     expected_scalars = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "executed": True,
         "role": role,
         "pipelineLabel": PIPELINES[role],
         "capturedAppleFunctionUnmodified": True,
         "capturedAppleResourceMutated": False,
         "liveAppleFrameMutated": False,
-        "usesAuxiliaryAttachment": role == "Irsd",
         "alphaOracleHalfWords": list(ALPHA_ORACLE_WORDS),
         "matrixCaseCount": len(MATRIX_CASES),
         "casesExecuted": True,
@@ -523,6 +593,12 @@ def validate_role(
     }
     for field, value in expected_scalars.items():
         require(record.get(field) == value, f"{role} {field} differs")
+    uses_auxiliary = record.get("usesAuxiliaryAttachment")
+    require(
+        type(uses_auxiliary) is bool
+        and (role != "Irsd" or uses_auxiliary is True),
+        f"{role} auxiliary attachment topology differs",
+    )
     draw_index = record.get("drawIndex")
     require(type(draw_index) is int and draw_index >= 0, f"{role} drawIndex differs")
     validate_intervention(
@@ -695,8 +771,26 @@ def validate(
     preregistration = load_json(preregistration_path)
     require(
         preregistration.get("currentFinalCompositorTransferPreregistrationSchemaVersion")
-        == 2,
+        == 3,
         "preregistration schema differs",
+    )
+    descriptor_capture = mapping(
+        preregistration.get("v3DescriptorCapture"),
+        "v3DescriptorCapture",
+    )
+    require(
+        descriptor_capture.get("installationBoundary")
+        == "before NSApplication.shared"
+        and descriptor_capture.get("selectors")
+        == [
+            "newRenderPipelineStateWithDescriptor:error:",
+            "newRenderPipelineStateWithDescriptor:options:reflection:error:",
+            "newRenderPipelineStateWithDescriptor:completionHandler:",
+            "newRenderPipelineStateWithDescriptor:options:completionHandler:",
+            "newPrecompiledRenderPipelineStateWithDescriptor:options:"
+            "pipelineCache:completionHandler:",
+        ],
+        "descriptor-capture preregistration differs",
     )
     superseded = mapping(
         preregistration.get("supersedesFailedRun"),
@@ -714,10 +808,56 @@ def validate(
         and superseded.get("toleranceChanged") is False,
         "failed-run amendment differs",
     )
+    superseded_v2 = mapping(
+        preregistration.get("supersedesFailedV2Run"),
+        "supersedesFailedV2Run",
+    )
+    observed_v2 = mapping(
+        superseded_v2.get("observedTopology"),
+        "v2 observed topology",
+    )
+    inherited_texture = mapping(
+        observed_v2.get("inheritedTexture3"),
+        "v2 inherited texture 3",
+    )
+    require(
+        superseded_v2.get("captureCommit")
+        == "8c7dd82ebe0c0abbb3d04aa005adfd2ddc79848b"
+        and superseded_v2.get("timelineSHA256")
+        == "105832a92ff8211ffbcb55492ac2c09a4bd16964c592a8f58a66aaa333c20ef1"
+        and superseded_v2.get("nativeCaptureExitStatus") == 0
+        and superseded_v2.get("frozenValidatorExitStatus") == 1
+        and superseded_v2.get("promotedEvidence") is False
+        and superseded_v2.get("arithmeticCasesChanged") is False
+        and superseded_v2.get("candidateChanged") is False
+        and superseded_v2.get("toleranceChanged") is False
+        and observed_v2.get("IscdDescriptorAvailable") is False
+        and observed_v2.get("IrsdDescriptorAvailable") is True
+        and observed_v2.get("texture4BoundAtEitherCurrentDraw") is False
+        and inherited_texture
+        == {
+            "bindingSequence": 37,
+            "width": 768,
+            "height": 768,
+            "pixelFormat": 80,
+            "mipmapLevelCount": 6,
+            "sampleCount": 1,
+            "textureType": 2,
+        },
+        "failed-v2 amendment differs",
+    )
     nonvacuity = mapping(preregistration.get("nonvacuity"), "nonvacuity")
+    expected_source_mips = expected_finite_source_mips()
     require(
         nonvacuity.get("finiteSourceSHA256")
-        == sha256_bytes(FINITE_SOURCE)
+        == sha256_bytes(b"".join(expected_source_mips))
+        and nonvacuity.get("finiteSourceMipSHA256")
+        == [sha256_bytes(payload) for payload in expected_source_mips]
+        and nonvacuity.get("finiteSourceFormula")
+        == (
+            "word=u32(x*0x045d9f3b ^ y*0x0119de1f ^ level*0x9e3779b9) "
+            "^ 0x6d2b79f5; bgra=(word[7:0],word[15:8],word[23:16],0xff)"
+        )
         and nonvacuity.get("sourcePathSensitivityRequirement")
         == (
             "the captured-source and finite-source RGBA16Float alpha-oracle "
@@ -793,15 +933,15 @@ def validate(
         "currentFinalCompositorTransfer",
     )
     expected_transfer = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "executed": True,
         "selectionPolicy": (
             "exactly one current Iscd and one immediately later current Irsd draw "
             "in the frozen sample"
         ),
         "activityPolicy": (
-            "replace only texture 4 in each isolated replay with the frozen "
-            "opaque finite BGRA8 texel 4080c0ff"
+            "replace only inherited texture 3 in each isolated replay with "
+            "the frozen opaque six-mip 768x768 BGRA8 pattern"
         ),
         "capturedAppleFunctionsUnmodified": True,
         "capturedAppleResourcesMutated": False,
@@ -834,7 +974,7 @@ def validate(
         "current Iscd/Irsd draw order differs",
     )
     return {
-        "currentFinalCompositorTransferResultSchemaVersion": 2,
+        "currentFinalCompositorTransferResultSchemaVersion": 3,
         "accepted": True,
         "captureDirectory": capture_directory.name,
         "sampleIndex": SAMPLE,

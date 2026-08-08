@@ -1,6 +1,6 @@
 {
-  "currentFinalCompositorTransferPreregistrationSchemaVersion": 2,
-  "status": "frozen-v2-before-answer-bearing-current-family-capture",
+  "currentFinalCompositorTransferPreregistrationSchemaVersion": 3,
+  "status": "frozen-v3-before-answer-bearing-current-family-capture",
   "purpose": "Decide the sole remaining Apple construction question: whether the already recovered exact binary16 vibrant-matrix/source-over compositor transfers without arithmetic change to both current macOS 26.6.1 Iscd and Irsd functions.",
   "supersedesFailedRun": {
     "captureCommit": "b838af32b291561b362bd1dc0243ac0213359978",
@@ -12,6 +12,35 @@
       "read the existing physicalPixels preflight field instead of nonexistent displayPixelWidth/displayPixelHeight fields",
       "reproduce each selected current function's captured auxiliary-attachment topology",
       "replace only texture 4 in isolated replays with a preregistered finite one-pixel BGRA8 source and require independently verified path sensitivity"
+    ],
+    "arithmeticCasesChanged": false,
+    "candidateChanged": false,
+    "toleranceChanged": false
+  },
+  "supersedesFailedV2Run": {
+    "captureCommit": "8c7dd82ebe0c0abbb3d04aa005adfd2ddc79848b",
+    "captureDirectory": "local-current-final-compositor-transfer-8c7dd82-v2",
+    "timelineSHA256": "105832a92ff8211ffbcb55492ac2c09a4bd16964c592a8f58a66aaa333c20ef1",
+    "nativeCaptureExitStatus": 0,
+    "frozenValidatorExitStatus": 1,
+    "promotedEvidence": false,
+    "observedTopology": {
+      "IscdDescriptorAvailable": false,
+      "IrsdDescriptorAvailable": true,
+      "texture4BoundAtEitherCurrentDraw": false,
+      "inheritedTexture3": {
+        "bindingSequence": 37,
+        "width": 768,
+        "height": 768,
+        "pixelFormat": 80,
+        "mipmapLevelCount": 6,
+        "sampleCount": 1,
+        "textureType": 2
+      }
+    },
+    "corrections": [
+      "install the existing Metal interception before NSApplication.shared so any Iscd construction during AppKit initialization is retained",
+      "replace inherited texture 3 rather than nonexistent texture 4 and independently read all six source mip levels"
     ],
     "arithmeticCasesChanged": false,
     "candidateChanged": false,
@@ -30,6 +59,17 @@
     "debuggerUsed": false,
     "nativeNixStorePathPermitted": false,
     "nixScope": "validator tests and post-capture validation only"
+  },
+  "v3DescriptorCapture": {
+    "installationBoundary": "before NSApplication.shared",
+    "selectors": [
+      "newRenderPipelineStateWithDescriptor:error:",
+      "newRenderPipelineStateWithDescriptor:options:reflection:error:",
+      "newRenderPipelineStateWithDescriptor:completionHandler:",
+      "newRenderPipelineStateWithDescriptor:options:completionHandler:",
+      "newPrecompiledRenderPipelineStateWithDescriptor:options:pipelineCache:completionHandler:"
+    ],
+    "requirement": "the exact captured descriptor for each selected current pipeline must be available before any replay is constructed"
   },
   "frozenCase": {
     "material": "regular",
@@ -55,10 +95,20 @@
   },
   "nonvacuity": {
     "coverageIntervention": "positive-normal-x",
-    "sourceIntervention": "replace texture 4 immediately before only the isolated selected draw with one opaque BGRA8 texel 4080c0ff",
-    "sourceTopology": "each captured texture-4 binding must be exactly one 1x1 single-mip BGRA8Unorm 2D texture",
+    "sourceIntervention": "replace inherited texture 3 immediately before only the isolated selected draw with the frozen opaque six-mip BGRA8 coordinate pattern",
+    "sourceTopology": "each current draw must inherit the same 768x768 six-mip BGRA8Unorm 2D texture observed at render-command sequence 37 in the rejected v2 capture",
     "sourcePathSensitivityRequirement": "the captured-source and finite-source RGBA16Float alpha-oracle outputs must differ by at least one byte and one 8-byte pixel for each current function",
-    "finiteSourceSHA256": "cee78a47e0b3ac93fc7ea7b0c1129c572903be96598f1ff558a1c17601add23d",
+    "finiteSourceEncoding": "opaque-bgra8-six-mip-coordinate-hash-v1",
+    "finiteSourceFormula": "word=u32(x*0x045d9f3b ^ y*0x0119de1f ^ level*0x9e3779b9) ^ 0x6d2b79f5; bgra=(word[7:0],word[15:8],word[23:16],0xff)",
+    "finiteSourceMipSHA256": [
+      "d2d1646487ccfeff5151477b37a02eca0e1d8cb224dd4039802901ec11105941",
+      "470f17b4dd7ed0dcc3a3c2b1e77d212ecf57e5db9163dc584f573b7fa8a0aa5e",
+      "631cf8b163c181fc419f750604c3aa3aed00e22c98ec986d49307f3338582aa3",
+      "e870cf2277152e5c1fe9a39613605317ec712889c53256dd360462157d212154",
+      "1b265f2f6aca4acf5fca97a6e1d8ba484938043eb078a0bb13a9f00a39449e38",
+      "225b09fcb13d81a9c6479df1e0ec43416eaa7b38aa9e113fef3520d8a4ac4fdc"
+    ],
+    "finiteSourceSHA256": "1ac068bc5f4caf8737e7f0e6b92839346b19fe7e4d3e6739937abfc18e810e1a",
     "capturedApplePipelineChanged": false,
     "capturedAppleResourceMutated": false,
     "liveAppleFrameChanged": false,
@@ -121,9 +171,9 @@
     "arithmeticModeChangeAfterCapturePermitted": false
   },
   "sourceSHA256": {
-    "Sources/GlassIntrospect/main.swift": "0b621044025c25414b112962007059bb78ef65fed2bb4a820eb2781753efadb6",
-    "Analysis/validate_current_final_compositor_transfer.py": "355f180464c0ed0bc2121f04263a75ed50f40d86615e987a0300131c9b42a174",
-    "Analysis/test_validate_current_final_compositor_transfer.py": "f8106ee02a77aa61547cb38b52b9056b8a78584f445189ec4519012fc75b0884",
+    "Sources/GlassIntrospect/main.swift": "ed6ec1751e34a24030652afaff7b3addbf9ced313257625bfd76e6e76da21060",
+    "Analysis/validate_current_final_compositor_transfer.py": "8692667188abc29986e2774d1364829fd58e1d74df33634aa33db263972805d3",
+    "Analysis/test_validate_current_final_compositor_transfer.py": "a921b4f715b4275c99049216a740c0b8032336bdb945880b3d1a568d0829df33",
     "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
     "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
     "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",

@@ -7,11 +7,12 @@ from pathlib import Path
 
 from validate_current_final_compositor_transfer import (
     BGRA_BYTES,
-    FINITE_SOURCE,
+    FINITE_SOURCE_SALT,
     FORCED_COVERAGE_EDITS,
     HEIGHT,
     WIDTH,
     expected_seed,
+    expected_finite_source_mips,
     mismatch_metrics,
     validate_intervention,
     validate_reported_comparison,
@@ -65,10 +66,20 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
         )
 
     def test_finite_source_is_frozen_and_opaque(self) -> None:
-        self.assertEqual(FINITE_SOURCE, bytes.fromhex("4080c0ff"))
+        self.assertEqual(FINITE_SOURCE_SALT, 0x6D2B79F5)
+        mips = expected_finite_source_mips()
+        self.assertEqual([len(mip) for mip in mips], [
+            2_359_296,
+            589_824,
+            147_456,
+            36_864,
+            9_216,
+            2_304,
+        ])
+        self.assertTrue(all(mip[3::4] == b"\xff" * (len(mip) // 4) for mip in mips))
         self.assertEqual(
-            hashlib.sha256(FINITE_SOURCE).hexdigest(),
-            "cee78a47e0b3ac93fc7ea7b0c1129c572903be96598f1ff558a1c17601add23d",
+            hashlib.sha256(b"".join(mips)).hexdigest(),
+            "1ac068bc5f4caf8737e7f0e6b92839346b19fe7e4d3e6739937abfc18e810e1a",
         )
 
     def test_forced_coverage_intervention_is_frozen(self) -> None:
@@ -113,16 +124,28 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
             '"destinationDivisionMode": 0',
             '"positiveControlsPassed": positiveControlsPassed',
             '"candidatesExact": candidatesExact',
-            'fragmentTextureOverrides: [4: finiteSource]',
-            'let finiteSourceData = Data([0x40, 0x80, 0xc0, 0xff])',
+            'fragmentTextureOverrides: [3: finiteSource]',
+            'let finiteSourceSalt = UInt32(0x6d2b79f5)',
             '"sourcePathSensitive": sourcePathSensitive',
-            '"schemaVersion": 2',
+            '"schemaVersion": 3',
+            '"newRenderPipelineStateWithDescriptor:options:reflection:error:"',
+            '"newRenderPipelineStateWithDescriptor:completionHandler:"',
+            '"newRenderPipelineStateWithDescriptor:options:completionHandler:"',
+            '"newPrecompiledRenderPipelineStateWithDescriptor:options:"',
         )
         for text in required:
             with self.subTest(text=text):
                 self.assertIn(text, source)
         self.assertEqual(WIDTH, 1024)
         self.assertEqual(HEIGHT, 1024)
+
+    def test_probe_installs_before_appkit_can_cache_iscd(self) -> None:
+        source = (
+            REPOSITORY / "Sources/GlassIntrospect/main.swift"
+        ).read_text(encoding="utf-8")
+        install = source.rindex("_ = MetalUniformProbe.shared.install()")
+        application = source.rindex("let app = NSApplication.shared")
+        self.assertLess(install, application)
 
     def test_validator_reads_the_real_retina_preflight_shape(self) -> None:
         source = (

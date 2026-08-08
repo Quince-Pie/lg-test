@@ -1,0 +1,43 @@
+{
+  "currentFinalCompositorTransferFailureResultSchemaVersion": 2,
+  "status": "rejected-before-any-current-function-arithmetic-comparison",
+  "captureCommit": "8c7dd82ebe0c0abbb3d04aa005adfd2ddc79848b",
+  "captureDirectory": "local-current-final-compositor-transfer-8c7dd82-v2",
+  "timelineSHA256": "105832a92ff8211ffbcb55492ac2c09a4bd16964c592a8f58a66aaa333c20ef1",
+  "nativeCaptureExitStatus": 0,
+  "frozenValidatorExitStatus": 1,
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "transportFindings": {
+    "Iscd": {
+      "selected": true,
+      "executed": false,
+      "failure": "the pipeline descriptor was absent under the existing applicationDidFinishLaunching interceptor, which ran only after NSApplication initialization"
+    },
+    "Irsd": {
+      "selected": true,
+      "executed": false,
+      "failure": "the preregistered texture-4 binding does not exist at the current draw"
+    },
+    "currentPassTextureTopology": {
+      "texture4BoundAtEitherCurrentDraw": false,
+      "inheritedTexture3BindingSequence": 37,
+      "inheritedTexture3Width": 768,
+      "inheritedTexture3Height": 768,
+      "inheritedTexture3PixelFormat": 80,
+      "inheritedTexture3MipmapLevelCount": 6,
+      "inheritedTexture3SampleCount": 1,
+      "inheritedTexture3TextureType": 2
+    }
+  },
+  "promotedEvidence": false,
+  "remainingAppleConstructionQuestions": 1,
+  "nextCorrection": "install the existing Metal interceptor before NSApplication.shared and use the observed inherited six-mip texture-3 binding for the independently verified path-sensitivity intervention",
+  "arithmeticCasesChanged": false,
+  "candidateChanged": false,
+  "toleranceChanged": false,
+  "productionParity": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

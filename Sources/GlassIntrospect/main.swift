@@ -3481,6 +3481,41 @@ private typealias MetalNewRenderPipelineStateFunction =
         MTLRenderPipelineDescriptor,
         AutoreleasingUnsafeMutablePointer<NSError?>?
     ) -> Unmanaged<AnyObject>?
+private typealias MetalRenderPipelineCompletionHandler =
+    @convention(block) (AnyObject?, NSError?) -> Void
+private typealias MetalNewRenderPipelineStateOptionsFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLRenderPipelineDescriptor,
+        UInt,
+        AutoreleasingUnsafeMutablePointer<MTLRenderPipelineReflection?>?,
+        AutoreleasingUnsafeMutablePointer<NSError?>?
+    ) -> Unmanaged<AnyObject>?
+private typealias MetalNewRenderPipelineStateCompletionFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLRenderPipelineDescriptor,
+        @escaping MetalRenderPipelineCompletionHandler
+    ) -> Void
+private typealias MetalNewRenderPipelineStateOptionsCompletionFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLRenderPipelineDescriptor,
+        UInt,
+        @escaping MetalRenderPipelineCompletionHandler
+    ) -> Void
+private typealias MetalNewPrecompiledRenderPipelineStateFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLRenderPipelineDescriptor,
+        UInt,
+        AnyObject?,
+        @escaping MetalRenderPipelineCompletionHandler
+    ) -> Void
 private typealias MetalMakeCommandEncoderFunction =
     @convention(c) (
         AnyObject,
@@ -3661,6 +3696,78 @@ private func probeNewRenderPipelineState(
         pipelineState: result.takeUnretainedValue(),
         descriptor: descriptor)
     return result
+}
+
+private func probeNewRenderPipelineStateWithOptions(
+    _ device: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLRenderPipelineDescriptor,
+    _ options: UInt,
+    _ reflection:
+        AutoreleasingUnsafeMutablePointer<MTLRenderPipelineReflection?>?,
+    _ error: AutoreleasingUnsafeMutablePointer<NSError?>?
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardNewRenderPipelineStateWithOptions(
+            device: device,
+            selector: selector,
+            descriptor: descriptor,
+            options: options,
+            reflection: reflection,
+            error: error)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCreatedPipeline(
+        pipelineState: result.takeUnretainedValue(),
+        descriptor: descriptor)
+    return result
+}
+
+private func probeNewRenderPipelineStateWithCompletion(
+    _ device: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLRenderPipelineDescriptor,
+    _ completion: @escaping MetalRenderPipelineCompletionHandler
+) {
+    MetalUniformProbe.shared.forwardNewRenderPipelineStateWithCompletion(
+        device: device,
+        selector: selector,
+        descriptor: descriptor,
+        completion: completion)
+}
+
+private func probeNewRenderPipelineStateWithOptionsCompletion(
+    _ device: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLRenderPipelineDescriptor,
+    _ options: UInt,
+    _ completion: @escaping MetalRenderPipelineCompletionHandler
+) {
+    MetalUniformProbe.shared
+        .forwardNewRenderPipelineStateWithOptionsCompletion(
+            device: device,
+            selector: selector,
+            descriptor: descriptor,
+            options: options,
+            completion: completion)
+}
+
+private func probeNewPrecompiledRenderPipelineState(
+    _ device: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLRenderPipelineDescriptor,
+    _ options: UInt,
+    _ pipelineCache: AnyObject?,
+    _ completion: @escaping MetalRenderPipelineCompletionHandler
+) {
+    MetalUniformProbe.shared.forwardNewPrecompiledRenderPipelineState(
+        device: device,
+        selector: selector,
+        descriptor: descriptor,
+        options: options,
+        pipelineCache: pipelineCache,
+        completion: completion)
 }
 
 private func probeMakeRenderCommandEncoder(
@@ -5708,6 +5815,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var installReport: [String: Any]?
     private var originalNewRenderPipelineState:
         MetalNewRenderPipelineStateFunction?
+    private var originalNewRenderPipelineStateWithOptions:
+        MetalNewRenderPipelineStateOptionsFunction?
+    private var originalNewRenderPipelineStateWithCompletion:
+        MetalNewRenderPipelineStateCompletionFunction?
+    private var originalNewRenderPipelineStateWithOptionsCompletion:
+        MetalNewRenderPipelineStateOptionsCompletionFunction?
+    private var originalNewPrecompiledRenderPipelineState:
+        MetalNewPrecompiledRenderPipelineStateFunction?
     private var originalNewComputePipelineState:
         MetalNewComputePipelineStateFunction?
     private var originalMakeRenderCommandEncoder:
@@ -6042,6 +6157,70 @@ private final class MetalUniformProbe: @unchecked Sendable {
             originalNewRenderPipelineState = unsafeBitCast(
                 original,
                 to: MetalNewRenderPipelineStateFunction.self)
+        }
+
+        let newRenderPipelineOptionsSelector =
+            "newRenderPipelineStateWithDescriptor:options:reflection:error:"
+        if let original = installMethod(
+            on: deviceClass,
+            selectorName: newRenderPipelineOptionsSelector,
+            replacement: unsafeBitCast(
+                probeNewRenderPipelineStateWithOptions
+                    as MetalNewRenderPipelineStateOptionsFunction,
+                to: IMP.self))
+        {
+            originalNewRenderPipelineStateWithOptions = unsafeBitCast(
+                original,
+                to: MetalNewRenderPipelineStateOptionsFunction.self)
+        }
+
+        let newRenderPipelineCompletionSelector =
+            "newRenderPipelineStateWithDescriptor:completionHandler:"
+        if let original = installMethod(
+            on: deviceClass,
+            selectorName: newRenderPipelineCompletionSelector,
+            replacement: unsafeBitCast(
+                probeNewRenderPipelineStateWithCompletion
+                    as MetalNewRenderPipelineStateCompletionFunction,
+                to: IMP.self))
+        {
+            originalNewRenderPipelineStateWithCompletion = unsafeBitCast(
+                original,
+                to: MetalNewRenderPipelineStateCompletionFunction.self)
+        }
+
+        let newRenderPipelineOptionsCompletionSelector =
+            "newRenderPipelineStateWithDescriptor:options:completionHandler:"
+        if let original = installMethod(
+            on: deviceClass,
+            selectorName: newRenderPipelineOptionsCompletionSelector,
+            replacement: unsafeBitCast(
+                probeNewRenderPipelineStateWithOptionsCompletion
+                    as MetalNewRenderPipelineStateOptionsCompletionFunction,
+                to: IMP.self))
+        {
+            originalNewRenderPipelineStateWithOptionsCompletion =
+                unsafeBitCast(
+                    original,
+                    to:
+                        MetalNewRenderPipelineStateOptionsCompletionFunction
+                            .self)
+        }
+
+        let newPrecompiledRenderPipelineSelector =
+            "newPrecompiledRenderPipelineStateWithDescriptor:options:"
+            + "pipelineCache:completionHandler:"
+        if let original = installMethod(
+            on: deviceClass,
+            selectorName: newPrecompiledRenderPipelineSelector,
+            replacement: unsafeBitCast(
+                probeNewPrecompiledRenderPipelineState
+                    as MetalNewPrecompiledRenderPipelineStateFunction,
+                to: IMP.self))
+        {
+            originalNewPrecompiledRenderPipelineState = unsafeBitCast(
+                original,
+                to: MetalNewPrecompiledRenderPipelineStateFunction.self)
         }
 
         let newComputePipelineSelector =
@@ -14158,21 +14337,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
 
-            guard let capturedSource = selection.fragmentTextures[4],
+            guard let capturedSource = selection.fragmentTextures[3],
                   capturedSource.textureType == .type2D,
                   capturedSource.depth == 1,
                   capturedSource.arrayLength == 1,
-                  capturedSource.mipmapLevelCount == 1,
+                  capturedSource.mipmapLevelCount == 6,
                   capturedSource.sampleCount == 1,
                   capturedSource.pixelFormat == .bgra8Unorm,
-                  capturedSource.width == 1,
-                  capturedSource.height == 1
+                  capturedSource.width == 768,
+                  capturedSource.height == 768
             else {
                 return [
                     "executed": false,
                     "reason":
-                        "current compositor texture-4 topology differs",
-                    "texture4": selection.fragmentTextures[4].map {
+                        "current compositor texture-3 topology differs",
+                    "texture3": selection.fragmentTextures[3].map {
                         textureRecord($0)
                     } ?? [:],
                 ]
@@ -14180,9 +14359,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             let finiteSourceDescriptor = MTLTextureDescriptor
                 .texture2DDescriptor(
                     pixelFormat: .bgra8Unorm,
-                    width: 1,
-                    height: 1,
-                    mipmapped: false)
+                    width: 768,
+                    height: 768,
+                    mipmapped: true)
+            finiteSourceDescriptor.mipmapLevelCount = 6
             finiteSourceDescriptor.storageMode = .shared
             finiteSourceDescriptor.usage = [.shaderRead]
             guard let finiteSource = device.makeTexture(
@@ -14194,48 +14374,90 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         "current compositor finite source allocation failed",
                 ]
             }
-            let finiteSourceData = Data([0x40, 0x80, 0xc0, 0xff])
-            finiteSourceData.withUnsafeBytes { bytes in
-                finiteSource.replace(
-                    region: MTLRegionMake2D(0, 0, 1, 1),
-                    mipmapLevel: 0,
-                    withBytes: bytes.baseAddress!,
-                    bytesPerRow: 4)
+            let finiteSourceSalt = UInt32(0x6d2b79f5)
+            var finiteSourcePayloads: [Data] = []
+            for level in 0..<6 {
+                let width = max(1, 768 >> level)
+                let height = max(1, 768 >> level)
+                let bytesPerRow = width * 4
+                var payload = Data(count: bytesPerRow * height)
+                payload.withUnsafeMutableBytes {
+                    (raw: UnsafeMutableRawBufferPointer) in
+                    let bytes = raw.bindMemory(to: UInt8.self)
+                    for y in 0..<height {
+                        for x in 0..<width {
+                            let offset = y * bytesPerRow + x * 4
+                            let word = UInt32(truncatingIfNeeded:
+                                x &* 0x45d9f3b
+                                ^ y &* 0x119de1f
+                                ^ level &* 0x9e3779b9)
+                                ^ finiteSourceSalt
+                            bytes[offset] = UInt8(
+                                truncatingIfNeeded: word)
+                            bytes[offset + 1] = UInt8(
+                                truncatingIfNeeded: word >> 8)
+                            bytes[offset + 2] = UInt8(
+                                truncatingIfNeeded: word >> 16)
+                            bytes[offset + 3] = 0xff
+                        }
+                    }
+                }
+                payload.withUnsafeBytes { bytes in
+                    finiteSource.replace(
+                        region: MTLRegionMake2D(
+                            0, 0, width, height),
+                        mipmapLevel: level,
+                        withBytes: bytes.baseAddress!,
+                        bytesPerRow: bytesPerRow)
+                }
+                finiteSourcePayloads.append(payload)
             }
-            let capturedSourceSnapshot = carendererOutputSnapshot(
-                capturedSource,
-                commandQueue: queue,
-                capture:
-                    "\(capture)-current-\(role)-captured-source-4",
-                outputDirectory: outputDirectory)
-            let finiteSourceSnapshot = carendererOutputSnapshot(
-                finiteSource,
-                commandQueue: queue,
-                capture:
-                    "\(capture)-current-\(role)-finite-source-4",
-                outputDirectory: outputDirectory)
-            guard let capturedSourceFile =
-                    capturedSourceSnapshot["rawFile"] as? String,
-                  let finiteSourceFile =
-                    finiteSourceSnapshot["rawFile"] as? String
+            let capturedSourceSnapshots = (0..<6).map { level in
+                carendererOutputSnapshot(
+                    capturedSource,
+                    commandQueue: queue,
+                    capture:
+                        "\(capture)-current-\(role)-captured-source-3",
+                    outputDirectory: outputDirectory,
+                    mipmapLevel: level)
+            }
+            let finiteSourceSnapshots = (0..<6).map { level in
+                carendererOutputSnapshot(
+                    finiteSource,
+                    commandQueue: queue,
+                    capture:
+                        "\(capture)-current-\(role)-finite-source-3",
+                    outputDirectory: outputDirectory,
+                    mipmapLevel: level)
+            }
+            let capturedSourceFiles = capturedSourceSnapshots.compactMap {
+                $0["rawFile"] as? String
+            }
+            let finiteSourceFiles = finiteSourceSnapshots.compactMap {
+                $0["rawFile"] as? String
+            }
+            guard capturedSourceFiles.count == 6,
+                  finiteSourceFiles.count == 6
             else {
                 return [
                     "executed": false,
                     "reason":
                         "current compositor source readback failed",
-                    "capturedSource": capturedSourceSnapshot,
-                    "finiteSource": finiteSourceSnapshot,
+                    "capturedSourceMips": capturedSourceSnapshots,
+                    "finiteSourceMips": finiteSourceSnapshots,
                 ]
             }
-            let capturedSourceData: Data
-            let finiteSourceReadback: Data
+            let capturedSourceReadbacks: [Data]
+            let finiteSourceReadbacks: [Data]
             do {
-                capturedSourceData = try Data(
-                    contentsOf: outputDirectory.appendingPathComponent(
-                        capturedSourceFile))
-                finiteSourceReadback = try Data(
-                    contentsOf: outputDirectory.appendingPathComponent(
-                        finiteSourceFile))
+                capturedSourceReadbacks = try capturedSourceFiles.map {
+                    try Data(contentsOf:
+                        outputDirectory.appendingPathComponent($0))
+                }
+                finiteSourceReadbacks = try finiteSourceFiles.map {
+                    try Data(contentsOf:
+                        outputDirectory.appendingPathComponent($0))
+                }
             } catch {
                 return [
                     "executed": false,
@@ -14243,20 +14465,23 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "stage": "current compositor source readback",
                 ]
             }
-            guard capturedSourceData.count == 4,
-                  finiteSourceReadback == finiteSourceData,
-                  capturedSourceData != finiteSourceReadback
+            guard finiteSourceReadbacks == finiteSourcePayloads,
+                  capturedSourceReadbacks != finiteSourceReadbacks
             else {
                 return [
                     "executed": false,
                     "reason":
                         "current compositor finite source control differs",
-                    "capturedSourceBytes": capturedSourceData.count,
-                    "finiteSourceHex": finiteSourceReadback.map {
-                        String(format: "%02x", $0)
-                    }.joined(),
+                    "capturedSourceBytes":
+                        capturedSourceReadbacks.reduce(0) {
+                            $0 + $1.count
+                        },
+                    "finiteSourceBytes":
+                        finiteSourceReadbacks.reduce(0) {
+                            $0 + $1.count
+                        },
                     "capturedAndFiniteSourceDiffer":
-                        capturedSourceData != finiteSourceReadback,
+                        capturedSourceReadbacks != finiteSourceReadbacks,
                 ]
             }
 
@@ -14276,7 +14501,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pixelFormat: .rgba16Float,
                 uniformBuffer: alphaUniform,
                 captureAuxiliary: false,
-                fragmentTextureOverrides: [4: finiteSource])
+                fragmentTextureOverrides: [3: finiteSource])
             guard capturedSourceAlphaTrace["executed"] as? Bool == true,
                   let capturedAlphaOutput =
                     capturedSourceAlphaTrace["output"]
@@ -14752,7 +14977,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     uniformBuffer: caseUniform,
                     captureAuxiliary: false,
                     initialBGRA8: seed,
-                    fragmentTextureOverrides: [4: finiteSource])
+                    fragmentTextureOverrides: [3: finiteSource])
                 let candidate = candidateRender(
                     name:
                         "current-\(role)-candidate-"
@@ -14822,7 +15047,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && comparison["maximumChannelDelta"] as? Int == 0
             }
             return [
-                "schemaVersion": 2,
+                "schemaVersion": 3,
                 "executed":
                     casesExecuted
                     && sourcePathSensitive
@@ -14839,17 +15064,23 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "forcedCoverageIntervention":
                     interventionRecord(forcedCoverage),
                 "sourceIntervention": [
-                    "schemaVersion": 1,
-                    "bindingIndex": 4,
+                    "schemaVersion": 2,
+                    "bindingIndex": 3,
                     "method":
                         "isolated replay binding override immediately "
                         + "before the selected draw",
-                    "capturedSource": capturedSourceSnapshot,
-                    "finiteSource": finiteSourceSnapshot,
-                    "finiteSourceEncoding": "opaque-bgra8",
-                    "finiteSourceHex": finiteSourceData.map {
-                        String(format: "%02x", $0)
-                    }.joined(),
+                    "capturedSourceMips": capturedSourceSnapshots,
+                    "finiteSourceMips": finiteSourceSnapshots,
+                    "finiteSourceEncoding":
+                        "opaque-bgra8-six-mip-coordinate-hash-v1",
+                    "finiteSourceFormula":
+                        "word=u32(x*0x045d9f3b ^ y*0x0119de1f "
+                        + "^ level*0x9e3779b9) ^ 0x6d2b79f5; "
+                        + "bgra=(word[7:0],word[15:8],"
+                        + "word[23:16],0xff)",
+                    "finiteSourceSalt": "0x6d2b79f5",
+                    "basePixels": [768, 768],
+                    "mipmapLevelCount": 6,
                     "capturedAndFiniteSourceDiffer": true,
                 ],
                 "capturedSourceAlphaTrace":
@@ -15184,7 +15415,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             candidate: rebuiltBGRA,
             outputDirectory: outputDirectory)
         var result: [String: Any] = [
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "executed":
                 capturedBGRA["executed"] as? Bool == true
                 && rebuiltBGRA["executed"] as? Bool == true
@@ -15328,14 +15559,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && $0["candidatesExact"] as? Bool == true
             }
         return [
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "executed": executed,
             "selectionPolicy":
                 "exactly one current Iscd and one immediately later "
                 + "current Irsd draw in the frozen sample",
             "activityPolicy":
-                "replace only texture 4 in each isolated replay with "
-                + "the frozen opaque finite BGRA8 texel 4080c0ff",
+                "replace only inherited texture 3 in each isolated replay "
+                + "with the frozen opaque six-mip 768x768 BGRA8 pattern",
             "capturedAppleFunctionsUnmodified": true,
             "capturedAppleResourcesMutated": false,
             "liveAppleFrameMutated": false,
@@ -17811,6 +18042,135 @@ private final class MetalUniformProbe: @unchecked Sendable {
             error)
     }
 
+    func forwardNewRenderPipelineStateWithOptions(
+        device: AnyObject,
+        selector: Selector,
+        descriptor: MTLRenderPipelineDescriptor,
+        options: UInt,
+        reflection:
+            AutoreleasingUnsafeMutablePointer<MTLRenderPipelineReflection?>?,
+        error: AutoreleasingUnsafeMutablePointer<NSError?>?
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalNewRenderPipelineStateWithOptions else {
+            return nil
+        }
+        return originalNewRenderPipelineStateWithOptions(
+            device,
+            selector,
+            descriptor,
+            options,
+            reflection,
+            error)
+    }
+
+    func forwardNewRenderPipelineStateWithCompletion(
+        device: AnyObject,
+        selector: Selector,
+        descriptor: MTLRenderPipelineDescriptor,
+        completion: @escaping MetalRenderPipelineCompletionHandler
+    ) {
+        guard let originalNewRenderPipelineStateWithCompletion,
+              let descriptorCopy = descriptor.copy()
+                as? MTLRenderPipelineDescriptor
+        else {
+            completion(
+                nil,
+                NSError(
+                    domain: "LiquidGlassMetalPipelineProbe",
+                    code: 1))
+            return
+        }
+        let wrapped: MetalRenderPipelineCompletionHandler = {
+            pipelineState,
+            error in
+            if let pipelineState {
+                self.recordCreatedPipeline(
+                    pipelineState: pipelineState,
+                    descriptor: descriptorCopy)
+            }
+            completion(pipelineState, error)
+        }
+        originalNewRenderPipelineStateWithCompletion(
+            device,
+            selector,
+            descriptor,
+            wrapped)
+    }
+
+    func forwardNewRenderPipelineStateWithOptionsCompletion(
+        device: AnyObject,
+        selector: Selector,
+        descriptor: MTLRenderPipelineDescriptor,
+        options: UInt,
+        completion: @escaping MetalRenderPipelineCompletionHandler
+    ) {
+        guard let originalNewRenderPipelineStateWithOptionsCompletion,
+              let descriptorCopy = descriptor.copy()
+                as? MTLRenderPipelineDescriptor
+        else {
+            completion(
+                nil,
+                NSError(
+                    domain: "LiquidGlassMetalPipelineProbe",
+                    code: 2))
+            return
+        }
+        let wrapped: MetalRenderPipelineCompletionHandler = {
+            pipelineState,
+            error in
+            if let pipelineState {
+                self.recordCreatedPipeline(
+                    pipelineState: pipelineState,
+                    descriptor: descriptorCopy)
+            }
+            completion(pipelineState, error)
+        }
+        originalNewRenderPipelineStateWithOptionsCompletion(
+            device,
+            selector,
+            descriptor,
+            options,
+            wrapped)
+    }
+
+    func forwardNewPrecompiledRenderPipelineState(
+        device: AnyObject,
+        selector: Selector,
+        descriptor: MTLRenderPipelineDescriptor,
+        options: UInt,
+        pipelineCache: AnyObject?,
+        completion: @escaping MetalRenderPipelineCompletionHandler
+    ) {
+        guard let originalNewPrecompiledRenderPipelineState,
+              let descriptorCopy = descriptor.copy()
+                as? MTLRenderPipelineDescriptor
+        else {
+            completion(
+                nil,
+                NSError(
+                    domain: "LiquidGlassMetalPipelineProbe",
+                    code: 3))
+            return
+        }
+        let wrapped: MetalRenderPipelineCompletionHandler = {
+            pipelineState,
+            error in
+            if let pipelineState {
+                self.recordCreatedPipeline(
+                    pipelineState: pipelineState,
+                    descriptor: descriptorCopy)
+            }
+            completion(pipelineState, error)
+        }
+        originalNewPrecompiledRenderPipelineState(
+            device,
+            selector,
+            descriptor,
+            options,
+            pipelineCache,
+            wrapped)
+    }
+
     func forwardMakeRenderCommandEncoder(
         commandBuffer: AnyObject,
         selector: Selector,
@@ -19881,13 +20241,26 @@ private func carendererOutputSnapshot(
     _ texture: MTLTexture,
     commandQueue: MTLCommandQueue,
     capture: String,
-    outputDirectory: URL
+    outputDirectory: URL,
+    mipmapLevel: Int = 0
 ) -> [String: Any] {
-    let width = texture.width
-    let height = texture.height
+    guard mipmapLevel >= 0,
+          mipmapLevel < texture.mipmapLevelCount
+    else {
+        return [
+            "rawCapture": false,
+            "reason": "CARenderer output mip level outside texture",
+            "mipmapLevel": mipmapLevel,
+            "mipmapLevelCount": texture.mipmapLevelCount,
+        ]
+    }
+    let width = max(1, texture.width >> mipmapLevel)
+    let height = max(1, texture.height >> mipmapLevel)
     var record: [String: Any] = [
         "width": width,
         "height": height,
+        "mipmapLevel": mipmapLevel,
+        "mipmapLevelCount": texture.mipmapLevelCount,
         "pixelFormat": texture.pixelFormat.rawValue,
         "storageMode": texture.storageMode.rawValue,
     ]
@@ -19939,7 +20312,7 @@ private func carendererOutputSnapshot(
                         0,
                         width,
                         height),
-                    mipmapLevel: 0)
+                    mipmapLevel: mipmapLevel)
             }
         }
         raw = sharedRaw
@@ -19961,7 +20334,7 @@ private func carendererOutputSnapshot(
         blit.copy(
             from: texture,
             sourceSlice: 0,
-            sourceLevel: 0,
+            sourceLevel: mipmapLevel,
             sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
             sourceSize: MTLSize(
                 width: width,
@@ -19993,7 +20366,10 @@ private func carendererOutputSnapshot(
         raw = copiedRaw
         record["readback"] = "private-texture-blit"
     }
-    let filename = "\(capture)-\(filenameSuffix).raw"
+    let mipSuffix = mipmapLevel == 0
+        ? ""
+        : String(format: "-mip-%02d", mipmapLevel)
+    let filename = "\(capture)\(mipSuffix)-\(filenameSuffix).raw"
     do {
         try raw.write(
             to: outputDirectory.appendingPathComponent(filename),
@@ -25222,6 +25598,7 @@ struct Main {
                     ).utf8))
             exit(2)
         }
+        _ = MetalUniformProbe.shared.install()
         let app = NSApplication.shared
         let delegate = ProbeDelegate(
             outputDirectory: URL(fileURLWithPath: output),
