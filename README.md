@@ -13114,3 +13114,208 @@ The exact current boundary count is now:
 This closure modified `lg-test` capture transport, analysis, tests, results,
 and this README. It did not modify Walle's protected production shader or
 `flake.nix`, did not weaken a tolerance, and does not claim universal parity.
+
+### Retained small-clear `Tghn` construction boundary
+
+The two retained alternate-background sequences contain 60 executing
+`PBGRABsovXm_TghnA2Xhf_Isrc_Isrc` states: samples 2 through 31 of
+`clear-light-materialize-01` at diameter 53 and
+`clear-dark-dematerialize-06` at diameter 51. This is retrospective analysis
+of an already opened corpus. It closes the listed arithmetic only over that
+retained domain and deliberately leaves the secondary-coordinate tie policy,
+the complete fragment-byte constructor, and pixels fail-closed.
+
+Every state has the same 13-record topology: pipeline, scissor, fragment
+buffer 1, texture 3, sampler 0, texture 4, sampler 1, fragment buffers 2 and
+6, vertex buffers 3, 2, and 1, then a four-vertex/six-index triangle draw.
+The allocation deltas are exactly `256,8,8,32,64,192` bytes. The index stream
+is always `000001000200020003000000`. Backdrop texture 3 is always 64-by-64
+BGRA8 with two mip levels; the `Tmua` output is RGBA16Float, 128-by-128 in 58
+states and 64-by-128 in two states. Fragment buffer 2 begins with eight zero
+bytes, fragment buffer 6 begins with `003c000000000000`, vertex buffer 3 is
+the two exact reciprocal texture sizes, and vertex buffer 2 is the fixed
+1024-point orthographic matrix. The first 40 bytes of every 48-byte vertex
+are classified as float4 position, two float2 coordinates, and an all-one
+half4. The last eight bytes per vertex remain excluded and unclassified; the
+analysis does not relabel changing bytes as padding merely because the draw
+appears to ignore them.
+
+The small-context public profile is now exact for all 46 non-clamp numeric
+fields in all 60 states, or 2,760/2,760 binary32 words. Let `k` be the
+captured binary32 remaining value, `E` the already measured binary64 dynamic
+element width, and `G = double(k)*E`. The ordinary profile law applies except
+for these context-limited fields:
+
+```text
+inputBlurDistance0          = -G/2
+inputOuterRefractionAmount  = G/5
+inputOuterRefractionHeight  = G/8
+inputShadowHeight           = 2G/5
+inputInnerRefractionAmount  = -min(binary32(60*k), G)
+inputInnerRefractionHeight  = min(binary32(20*k), 0.36*G)
+inputShadowAmount           = min(binary32(75*k), 0.625*G)
+
+x        = clamp(E, 48, 160)
+u        = binary32((x-48)/112)
+endpoint = add32(0.08, mul32(sub32(0.24,0.08), u))
+inputSDRShadowOpacity = mix32(0, endpoint, k)
+```
+
+The observed and predicted public-word streams share SHA-256
+`7c14aa254ce62ec9614297b1137878fe3a89a6f5bb216e890d50fb0fa183c04c`.
+The `Tghn` fragment allocation reserves 256 bytes and has 210 known meaningful
+bytes, corresponding to the established dynamic-profile tail beginning at
+the displacement matrix and ending at complex refraction. This analysis
+checks the exact public inputs and the displacement prefix, but it does not
+yet claim an independently generated 210-byte payload; that byte constructor
+remains a required gate.
+
+The backdrop quad construction is also exact. Apply the already proved
+variable-blur selected-region helper to obtain integral
+`[originX,originY,extentX,extentY]`. Define
+
+```text
+q  = binary32(2/(2-k)) = binary32(1/backdropScale)
+bX = mul32(originX,q)       bY = mul32(originY,q)
+dX = mul32(extentX,q)       dY = mul32(extentY,q)
+```
+
+Apple stores the four position pairs as
+
+```text
+(bX, sub32(bY,8))
+(add32(bX,dX), sub32(bY,8))
+(add32(bX,dX), add32(bY,dY))
+(bX, add32(bY,dY))
+```
+
+This staging matches 480/480 position components. The unnormalised backdrop
+coordinate uses binary64 fused multiply-add with `r = 1/double(q)` and the
+pre-binary32 edge sum:
+
+```text
+lowX  = binary32(fma(double(bX),    r, -originX))
+highX = binary32(fma(double(bX+dX), r, -originX))
+lowY  = binary32(fma(double(bY)-8,  r, -originY))
+highY = binary32(fma(double(bY+dY), r, -originY))
+```
+
+Here `bX+dX` and `bY+dY` denote binary64 addition of the two already rounded
+binary32 terms, not `add32`. This matches all 480/480 backdrop-coordinate
+components. Observed and predicted SHA-256 values are respectively identical
+at
+`b75f85a15ec98473680507cfdc0d00a1b9924e54f6cbcfde4f6168609444df5e`
+for position and
+`4baa3287e361a4df9c428fbb0d3dd73f376146073e046d3726cdd4028e4eb2be`
+for backdrop coordinates. The scissor is the nearest-integer rectangle
+`[centerX-D/2, centerY-D/2-8, D, D+8]`, where the center comes from the
+preceding `Tmua` grid; all 240/240 scissor components are exact.
+
+The second texture coordinate isolates a much smaller open question. Decode
+the integral `Tmua` surface origin from its orthographic MVP. Using the same
+pre-rounded edges and subtracting that origin is exact for every non-halfway
+high edge. Across 120 unique high-axis decisions, 89 are not halfway and all
+89 match. Thirty-one land exactly halfway between adjacent binary32 values;
+Apple chooses the opposite side from ordinary ties-to-even in 12 of those 31.
+Each high edge is duplicated across two vertices, so the full 480-component
+stream has 24, not 12, mismatched components. The exact retained count for
+this deliberately non-authoritative candidate is therefore 456/480. Any
+earlier shorthand of 468/480 conflated unique decisions with duplicated
+vertex components and is superseded by this census. No table of the 12 opened
+answers is admitted as a transferable algorithm.
+
+The reproducible analyzer is
+`Analysis/analyze_small_clear_background.py`, SHA-256
+`15e19a212756d4f7776767934aa1b4e4cbd6b1418aebed9f393a4ed537b82e5c`.
+Its six discriminator tests are
+`Analysis/test_analyze_small_clear_background.py`, SHA-256
+`588caa86ab18120981db82f3528082d15d8a62393c152f2994af2a79e8f6ac8c`.
+The compact result is `Analysis/small_clear_background_result.json`, SHA-256
+`cc21d4fa6c67f614c83941b544a01a9f24da8e39f7600651561b710e180b8359`.
+
+The exact boundary ledger remains:
+
+1. **Apple unknowns blocking gated Walle integration: zero.** Exact work may
+   proceed behind immutable comparison gates.
+2. **Small-clear sub-boundaries: two.** `Tghn` still needs the 12 unique
+   secondary-coordinate decisions, the 210-byte payload constructor, and an
+   exact Retina pass replay. `Tmua/A2Xghfc` producer/composition construction
+   and pixels remain the other sub-boundary.
+3. **Product proofs after construction: two.** A Walle-shaped physical Retina
+   color/compositor transfer and a fresh production-Walle frame with zero
+   unequal bytes remain mandatory.
+
+This step modified only `lg-test` analysis, tests, result, and this README. It
+did not modify Walle's protected production shader or `flake.nix`, weaken a
+tolerance, authorize production parity, or claim that `Tghn` pixels are
+closed.
+
+### Preregistered small-clear `Tghn` pixel-influence replay
+
+The first prospective replay for the retained `Tghn` residual is frozen
+before any answer-bearing output. The source has been compiled with Apple
+Command Line Tools on the target M1 Max, but the renderer has not been
+launched and no reference or candidate pixels exist at preregistration. The
+run is restricted to the physical 3456-by-2234 Retina display at 2x, macOS
+26.6.1 build 25G76, clear/light materialization of
+`circle-combined-holdout-01`, and samples 2 through 31. Native compilation and
+capture may not contain a Nix-store path; only validator tests and
+post-capture validation use the Mac's explicit Nix profile. GitHub Actions and
+a debugger are forbidden.
+
+Selection is value-blind with respect to candidate and reference pixels. The
+probe reserves the first captured
+`com.apple.coreanimation.PBGRABsovXm_TghnA2Xhf_Isrc_Isrc` draw whose
+independently reconstructed high secondary coordinate is exactly midway
+between adjacent binary32 values and whose captured word differs from the
+ordinary ties-to-even word. The midpoint is tested by literal binary64
+equality; there is no image tolerance and no opened-answer lookup table. If
+the new live timeline contains no qualifying state, the run fails without
+promotion.
+
+The selected command prefix is replayed unchanged into a cloned target. Three
+cloned-vertex candidates then change only:
+
+1. both duplicated high-coordinate words for every qualifying axis to the
+   independently reconstructed ties-to-even value;
+2. bytes 40 through 47 of all four vertices to zero; or
+3. those same tail bytes to finite pattern `003c003800bc0040`.
+
+Every command, fragment byte, index, texture, sampler, viewport, scissor, and
+captured Apple pipeline remains unchanged. The live Apple frame is not
+mutated. The validator independently recovers the 210-byte fragment prefix,
+192-byte active vertex stream, and fixed index stream; recomputes the first
+eligible sample and each mutation; reads every raw replay byte; and admits an
+observational-irrelevance result only at zero unequal bytes, zero unequal
+pixels, and maximum channel delta zero. A non-exact coordinate candidate keeps
+the midpoint rule mandatory. Neither result constructs the fragment payload
+or closes `Tmua/A2Xghfc`.
+
+The frozen preregistration is
+`Analysis/small_clear_background_intervention_preregistration.json`, SHA-256
+`e649ad01476283caec2a1ec4884de2b5c41a9e3ca9060bf75f52a016f1da7581`.
+The validator and its six tests are respectively
+`Analysis/validate_small_clear_background_intervention.py`, SHA-256
+`fead760663f2f853c0994a8f1cf0ebef3f37f19f780ba915484e8973e01a0c66`,
+and `Analysis/test_validate_small_clear_background_intervention.py`, SHA-256
+`cce0a21b7531202051a3655c9cecb22bdfdfc106ea6d138a59f4f41ce19a5df5`.
+The native runner is
+`Analysis/run_small_clear_background_intervention_local_macos_26_6_1.sh`,
+SHA-256
+`66d1d92217dd9c2ab51bf0aae7c55dba3e4aaa81a2b5b0debf93b2ef0e3db7b9`.
+The frozen Swift source SHA-256 is
+`c2f74579b8b57017c1dd9260c4ce6dbc7ead8183370e2e1d6f8ed4c750e2e8b5`.
+
+Until that prospective validator passes, the exact ledger does not change:
+
+1. **Unknowns blocking gated Walle work: zero.** Current exact constructors
+   may be integrated behind immutable comparison gates now.
+2. **Small-clear Apple sub-boundaries: two.** `Tghn` needs this pixel replay
+   and the independent 210-byte payload constructor; `Tmua/A2Xghfc` still
+   needs producer/composition construction and pixels.
+3. **Product proofs after construction: two.** Physical Retina transfer and a
+   fresh production-Walle zero-unequal-byte frame remain mandatory.
+
+This preregistration modified `lg-test` capture transport, analysis, tests,
+and this README. It did not modify Walle's protected production shader or
+`flake.nix`, and it does not claim parity before output exists.

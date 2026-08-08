@@ -1,0 +1,148 @@
+{
+  "TghnBoundaryClosed": false,
+  "TghnGeometryAndBackdropUVClosed": true,
+  "TghnPixelSemanticsClosed": false,
+  "TghnSecondaryUVClosed": false,
+  "appleUnknownsBlockingGatedWalleIntegration": 0,
+  "bindingTopology": {
+    "excludedUnclassifiedVertexByteCount": 1920,
+    "excludedUnclassifiedVertexBytesPerVertex": 8,
+    "fragmentAllocationStrideBytes": 256,
+    "fragmentProfileMeaningfulByteCount": 12600,
+    "fragmentProfileMeaningfulBytesPerState": 210,
+    "indexBytes": "000001000200020003000000",
+    "indexCountPerState": 6,
+    "recordCountPerState": 13,
+    "vertexCountPerState": 4,
+    "vertexStrideBytes": 48
+  },
+  "cases": [
+    {
+      "appearance": "dark",
+      "caseId": "clear-dark-dematerialize-06",
+      "diameter": 51,
+      "stateCount": 30,
+      "timelineSHA256": "0fb1572ce1822fa3a00da0cf37357ba7d923d60d21da85b6a14207bf20c3fe31"
+    },
+    {
+      "appearance": "light",
+      "caseId": "clear-light-materialize-01",
+      "diameter": 53,
+      "stateCount": 30,
+      "timelineSHA256": "85dc1f54a54f86852ee46b1c611f8968b470c0551a4647c0f7b8a59030ccb016"
+    }
+  ],
+  "classification": "retrospective exact construction over the retained combined holdout; secondary-UV tie policy and pixels remain fail-closed",
+  "fragmentPayloadByteConstructorClosed": false,
+  "metrics": {
+    "activeColorHalf4": {
+      "componentCount": 960,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "fcf699359f7bb18fb93fcbc3a9b1ec92ce1e1ff613adb7648f31e91571611609",
+      "predictedSHA256": "fcf699359f7bb18fb93fcbc3a9b1ec92ce1e1ff613adb7648f31e91571611609"
+    },
+    "backdropUV": {
+      "componentCount": 480,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "4baa3287e361a4df9c428fbb0d3dd73f376146073e046d3726cdd4028e4eb2be",
+      "predictedSHA256": "4baa3287e361a4df9c428fbb0d3dd73f376146073e046d3726cdd4028e4eb2be"
+    },
+    "dynamicResamplingScale": {
+      "componentCount": 60,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "a087381f984ce8f1ca0409b8191dde016802245cf8ce3950e97a4c2d17f16ae9",
+      "predictedSHA256": "a087381f984ce8f1ca0409b8191dde016802245cf8ce3950e97a4c2d17f16ae9"
+    },
+    "positionXY": {
+      "componentCount": 480,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "b75f85a15ec98473680507cfdc0d00a1b9924e54f6cbcfde4f6168609444df5e",
+      "predictedSHA256": "b75f85a15ec98473680507cfdc0d00a1b9924e54f6cbcfde4f6168609444df5e"
+    },
+    "positionZW": {
+      "componentCount": 480,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "967d59e9e6c2747f3fb535986e2d82729b92b00e731560aba54b63bcf968b96f",
+      "predictedSHA256": "967d59e9e6c2747f3fb535986e2d82729b92b00e731560aba54b63bcf968b96f"
+    },
+    "profileDisplacementMatrix": {
+      "componentCount": 240,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "0b9f460550dfc484c08f7012d86885aeb1d8f4020212fefea8054c216a036f9e",
+      "predictedSHA256": "0b9f460550dfc484c08f7012d86885aeb1d8f4020212fefea8054c216a036f9e"
+    },
+    "publicProfileNumericFields": {
+      "componentCount": 2760,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "7c14aa254ce62ec9614297b1137878fe3a89a6f5bb216e890d50fb0fa183c04c",
+      "predictedSHA256": "7c14aa254ce62ec9614297b1137878fe3a89a6f5bb216e890d50fb0fa183c04c"
+    },
+    "scissor": {
+      "componentCount": 240,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "9271e0ba94447fe2bbbe9da6dfff5eff6b93ff394dfe4ad50978a579f5fc3951",
+      "predictedSHA256": "9271e0ba94447fe2bbbe9da6dfff5eff6b93ff394dfe4ad50978a579f5fc3951"
+    },
+    "secondaryUVRetrospectiveCandidate": {
+      "componentCount": 480,
+      "exact": false,
+      "mismatchedComponents": 24,
+      "observedSHA256": "08cfcefdd763a3d8041ee5cc8d1fc661e75b62800453f1b1c65daf5889b650c0",
+      "predictedSHA256": "9c3b6892a44b9d5cd137d204249528e41fdacc6489d1b86ba5df4b9383941271"
+    }
+  },
+  "productionFlakeChanged": false,
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "publicProfileNumericLawClosed": true,
+  "publicProfileNumericWordCount": 2760,
+  "remainingAppleAlgorithmFamilies": [
+    "small-clear Tghn and Tmua/A2Xghfc construction and pixels"
+  ],
+  "remainingProductProofs": [
+    "Walle-shaped physical Retina color/compositor transfer",
+    "fresh production-Walle frame with zero unequal bytes"
+  ],
+  "remainingSmallClearSubBoundaries": [
+    "Tghn secondary-UV/payload/pixels",
+    "Tmua/A2Xghfc producer/composition construction and pixels"
+  ],
+  "remainingTghnWork": [
+    "prospectively distinguish the 12 unique secondary-UV halfway decisions",
+    "construct all 210 meaningful fragment payload bytes independently",
+    "replay the exact Tghn pass on the physical Retina M1 Max and require zero unequal bytes"
+  ],
+  "secondaryUVTieBoundary": {
+    "componentCount": 120,
+    "duplicatedVertexComponentMismatches": 24,
+    "exactPolicyClosed": false,
+    "halfwayComponentCount": 31,
+    "mismatchedComponents": 12,
+    "mismatchedHalfwayDecisions": 12,
+    "mismatchedNonHalfwayComponents": 0,
+    "nonHalfwayComponentCount": 89,
+    "retrospectiveCandidateHasTransferAuthority": false
+  },
+  "smallClearBackgroundAnalysisSchemaVersion": 1,
+  "stateCount": 60,
+  "status": "exact-retained-Tghn-construction-with-open-ties-and-pixels",
+  "textureInventory": {
+    "TmuaOutput": {
+      "128x128": 58,
+      "64x128": 2
+    },
+    "backdrop": {
+      "64x64": 60
+    }
+  },
+  "universalCircleDomainParity": false,
+  "walleIntegrationMayBeginBehindGates": true
+}

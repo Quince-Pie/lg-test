@@ -4396,6 +4396,8 @@ private let finalHighlightRemainderPipelineLabel26_6_1 =
     "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd"
 private let smallClearFinalHighlightPipelineLabel26_6_1 =
     "com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd"
+private let smallClearBackgroundPipelineLabel26_6_1 =
+    "com.apple.coreanimation.PBGRABsovXm_TghnA2Xhf_Isrc_Isrc"
 
 private func isGlassBackgroundFragment(_ fragment: String) -> Bool {
     fragment.hasPrefix("glass_background")
@@ -5491,6 +5493,7 @@ private func glassUniformCallSiteEvidence(
 private let finalHighlightVertexTailCandidateSampleIndices = Array(24...31)
 private let finalHighlightSourceCandidateSampleIndices = Array(1...31)
 private let smallClearFinalColorCandidateSampleIndices = Array(2...31)
+private let smallClearBackgroundCandidateSampleIndices = Array(2...31)
 
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
@@ -5690,6 +5693,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var finalHighlightVertexTailInterventionCapture: String?
     private var finalHighlightSourceInterventionCapture: String?
     private var smallClearFinalColorInterventionCapture: String?
+    private var smallClearBackgroundInterventionCapture: String?
     private var computePipelineCreationRecords:
         [ObjectIdentifier: [String: Any]] = [:]
     private var glassUniformCallSiteCaptured = false
@@ -11074,6 +11078,580 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]
     }
 
+    private struct SmallClearBackgroundSelection {
+        let drawIndex: Int
+        let pipeline: MTLRenderPipelineState
+        let fragmentBuffer: MTLBuffer
+        let fragmentOffset: Int
+        let vertexBuffer: MTLBuffer
+        let vertexOffset: Int
+        let indexBuffer: MTLBuffer
+        let indexBufferOffset: Int
+    }
+
+    private func smallClearBackgroundSelection(
+        in commands: [ReplayCommand]
+    ) -> SmallClearBackgroundSelection? {
+        var currentPipeline: MTLRenderPipelineState?
+        var fragmentBuffer: MTLBuffer?
+        var fragmentOffset = 0
+        var vertexBuffer: MTLBuffer?
+        var vertexOffset = 0
+
+        for (drawIndex, command) in commands.enumerated() {
+            switch command {
+            case .pipeline(let pipeline):
+                currentPipeline = pipeline
+            case .fragmentBuffer(
+                let buffer,
+                let offset,
+                let index
+            ):
+                if index == 1 {
+                    fragmentBuffer = buffer
+                    fragmentOffset = offset
+                }
+            case .fragmentBufferOffset(let offset, let index):
+                if index == 1 {
+                    fragmentOffset = offset
+                }
+            case .vertexBuffer(
+                let buffer,
+                let offset,
+                let index
+            ):
+                if index == 1 {
+                    vertexBuffer = buffer
+                    vertexOffset = offset
+                }
+            case .vertexBufferOffset(let offset, let index):
+                if index == 1 {
+                    vertexOffset = offset
+                }
+            case .drawIndexedPrimitives(
+                let primitiveType,
+                let indexCount,
+                let indexType,
+                let indexBuffer,
+                let indexBufferOffset
+            ):
+                guard primitiveType == .triangle,
+                      indexCount == 6,
+                      indexType == .uint16,
+                      let currentPipeline,
+                      currentPipeline.label
+                        == smallClearBackgroundPipelineLabel26_6_1,
+                      let fragmentBuffer,
+                      let vertexBuffer
+                else {
+                    continue
+                }
+                return SmallClearBackgroundSelection(
+                    drawIndex: drawIndex,
+                    pipeline: currentPipeline,
+                    fragmentBuffer: fragmentBuffer,
+                    fragmentOffset: fragmentOffset,
+                    vertexBuffer: vertexBuffer,
+                    vertexOffset: vertexOffset,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: indexBufferOffset)
+            default:
+                break
+            }
+        }
+        return nil
+    }
+
+    private func replaySmallClearBackgroundIntervention(
+        pass: ReplayPass,
+        preColor0: MTLTexture?,
+        queue: MTLCommandQueue,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let selection = smallClearBackgroundSelection(
+                in: pass.commands)
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "exact small-clear Tghn draw is unavailable",
+            ]
+        }
+        guard selection.fragmentBuffer.storageMode != .private,
+              selection.vertexBuffer.storageMode != .private,
+              selection.indexBuffer.storageMode != .private
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "Tghn replay input buffer is private",
+            ]
+        }
+
+        let stride = 48
+        let vertexCount = 4
+        let activeVertexByteCount = stride * vertexCount
+        let fragmentByteCount = 210
+        let indexByteCount = 12
+        guard selection.fragmentOffset >= 0,
+              selection.fragmentOffset + fragmentByteCount
+                <= selection.fragmentBuffer.length,
+              selection.vertexOffset >= 0,
+              selection.vertexOffset + activeVertexByteCount
+                <= selection.vertexBuffer.length,
+              selection.indexBufferOffset >= 0,
+              selection.indexBufferOffset + indexByteCount
+                <= selection.indexBuffer.length
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "Tghn replay input range exceeds buffer",
+            ]
+        }
+
+        let expectedIndices = Data([
+            0x00, 0x00, 0x01, 0x00,
+            0x02, 0x00, 0x02, 0x00,
+            0x03, 0x00, 0x00, 0x00,
+        ])
+        let capturedIndices = Data(
+            bytes: selection.indexBuffer.contents().advanced(
+                by: selection.indexBufferOffset),
+            count: indexByteCount)
+        guard capturedIndices == expectedIndices else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "Tghn index topology differs",
+            ]
+        }
+
+        func readFloat(
+            _ buffer: MTLBuffer,
+            _ offset: Int
+        ) -> Float {
+            var word: UInt32 = 0
+            memcpy(
+                &word,
+                buffer.contents().advanced(by: offset),
+                MemoryLayout<UInt32>.size)
+            return Float(bitPattern: UInt32(littleEndian: word))
+        }
+
+        func writeFloat(
+            _ value: Float,
+            to buffer: MTLBuffer,
+            at offset: Int
+        ) {
+            var word = value.bitPattern.littleEndian
+            _ = withUnsafeBytes(of: &word) { bytes in
+                memcpy(
+                    buffer.contents().advanced(by: offset),
+                    bytes.baseAddress!,
+                    bytes.count)
+            }
+        }
+
+        func floatEvidence(_ value: Float) -> [String: Any] {
+            [
+                "value": Double(value),
+                "littleEndianBits":
+                    String(format: "%08x", value.bitPattern),
+            ]
+        }
+
+        let fragmentScale = readFloat(
+            selection.fragmentBuffer,
+            selection.fragmentOffset)
+        let backdropScale = fragmentScale * Float(64)
+        guard backdropScale.isFinite,
+              backdropScale > 0
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "Tghn backdrop scale is invalid",
+            ]
+        }
+        let reciprocalScale = Float(1) / backdropScale
+
+        func vertexFloat(_ vertex: Int, _ byteOffset: Int) -> Float {
+            readFloat(
+                selection.vertexBuffer,
+                selection.vertexOffset + vertex * stride + byteOffset)
+        }
+
+        let baseX = vertexFloat(0, 0)
+        let stagedBaseY = vertexFloat(0, 4) + Float(8)
+        let backdropHighX = vertexFloat(1, 16)
+        let backdropHighY = vertexFloat(2, 20)
+        let lowSecondaryX = vertexFloat(0, 24)
+        let lowSecondaryY = vertexFloat(0, 28)
+        let originXRaw = Double(baseX) - Double(lowSecondaryX)
+        let originYRaw = Double(vertexFloat(0, 4))
+            - Double(lowSecondaryY)
+        guard backdropHighX.isFinite,
+              backdropHighY.isFinite
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "Tghn reconstructed extent is non-finite",
+            ]
+        }
+        let extentX = Int(backdropHighX.rounded(.toNearestOrEven))
+        let extentY = Int(backdropHighY.rounded(.toNearestOrEven))
+        guard originXRaw.isFinite,
+              originYRaw.isFinite,
+              originXRaw == originXRaw.rounded(.toNearestOrEven),
+              originYRaw == originYRaw.rounded(.toNearestOrEven),
+              extentX > 0,
+              extentY > 0,
+              extentX % 4 == 0,
+              extentY % 4 == 0
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "Tghn reconstructed integer geometry differs",
+            ]
+        }
+
+        let deltaX = Float(extentX) * reciprocalScale
+        let deltaY = Float(extentY) * reciprocalScale
+        let rawHighX = Double(baseX) + Double(deltaX) - originXRaw
+        let rawHighY = Double(stagedBaseY) + Double(deltaY) - originYRaw
+
+        struct AxisDecision {
+            let name: String
+            let raw: Double
+            let rounded: Float
+            let captured: Float
+            let duplicate: Float
+            let writeOffsets: [Int]
+            let halfway: Bool
+            let differs: Bool
+        }
+
+        func axisDecision(
+            name: String,
+            raw: Double,
+            captured: Float,
+            duplicate: Float,
+            writeOffsets: [Int]
+        ) -> AxisDecision {
+            let rounded = Float(raw)
+            let halfway: Bool
+            if raw == Double(rounded) {
+                halfway = false
+            } else {
+                let adjacent = raw < Double(rounded)
+                    ? rounded.nextDown
+                    : rounded.nextUp
+                halfway = raw
+                    == (Double(rounded) + Double(adjacent)) / 2.0
+            }
+            return AxisDecision(
+                name: name,
+                raw: raw,
+                rounded: rounded,
+                captured: captured,
+                duplicate: duplicate,
+                writeOffsets: writeOffsets,
+                halfway: halfway,
+                differs: rounded.bitPattern != captured.bitPattern)
+        }
+
+        let axes = [
+            axisDecision(
+                name: "x",
+                raw: rawHighX,
+                captured: vertexFloat(1, 24),
+                duplicate: vertexFloat(2, 24),
+                writeOffsets: [stride + 24, 2 * stride + 24]),
+            axisDecision(
+                name: "y",
+                raw: rawHighY,
+                captured: vertexFloat(2, 28),
+                duplicate: vertexFloat(3, 28),
+                writeOffsets: [2 * stride + 28, 3 * stride + 28]),
+        ]
+        guard axes.allSatisfy({
+                  $0.captured.bitPattern == $0.duplicate.bitPattern
+              })
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "reason": "Tghn duplicated high coordinate differs",
+            ]
+        }
+        let differingHalfwayAxes = axes.filter {
+            $0.halfway && $0.differs
+        }
+        let axisEvidence: [[String: Any]] = axes.map { axis in
+            [
+                "axis": axis.name,
+                "rawBinary64": axis.raw,
+                "rawBinary64Bits": String(
+                    format: "%016llx",
+                    axis.raw.bitPattern),
+                "ordinaryTiesToEven": floatEvidence(axis.rounded),
+                "captured": floatEvidence(axis.captured),
+                "duplicate": floatEvidence(axis.duplicate),
+                "exactHalfway": axis.halfway,
+                "ordinaryTiesToEvenDiffers": axis.differs,
+            ]
+        }
+        guard !differingHalfwayAxes.isEmpty else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "selected": false,
+                "selectionPolicy":
+                    "first exact-halfway Tghn state whose captured high "
+                    + "coordinate differs from ordinary ties-to-even",
+                "pipelineLabel": selection.pipeline.label ?? "",
+                "axisDecisions": axisEvidence,
+                "reason": "no differing exact-halfway decision in state",
+            ]
+        }
+
+        lock.lock()
+        let previouslySelectedCapture =
+            smallClearBackgroundInterventionCapture
+        if previouslySelectedCapture == nil {
+            smallClearBackgroundInterventionCapture = capture
+        }
+        lock.unlock()
+        if let previouslySelectedCapture {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "selected": false,
+                "selectionPolicy":
+                    "first exact-halfway Tghn state whose captured high "
+                    + "coordinate differs from ordinary ties-to-even",
+                "selectedCapture": previouslySelectedCapture,
+                "pipelineLabel": selection.pipeline.label ?? "",
+                "axisDecisions": axisEvidence,
+                "reason": "earlier eligible Tghn state selected",
+            ]
+        }
+
+        let commands = Array(
+            pass.commands.prefix(through: selection.drawIndex))
+        let reference = replayGlassPrefix(
+            pass: pass,
+            preColor0: preColor0,
+            queue: queue,
+            commands: commands,
+            replacingGlassPipeline: nil,
+            stopAfterGlass: false,
+            capture: capture,
+            suffix: "small-clear-background-prefix-reference",
+            outputDirectory: outputDirectory)
+        guard reference["executed"] as? Bool == true else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "selected": true,
+                "selectionPolicy":
+                    "first exact-halfway Tghn state whose captured high "
+                    + "coordinate differs from ordinary ties-to-even",
+                "pipelineLabel": selection.pipeline.label ?? "",
+                "axisDecisions": axisEvidence,
+                "reference": reference,
+                "reason": "Tghn prefix reference replay failed",
+            ]
+        }
+
+        func cloneVertexBuffer() -> MTLBuffer? {
+            guard let clone = selection.vertexBuffer.device.makeBuffer(
+                    length: selection.vertexBuffer.length,
+                    options: .storageModeShared)
+            else {
+                return nil
+            }
+            memcpy(
+                clone.contents(),
+                selection.vertexBuffer.contents(),
+                selection.vertexBuffer.length)
+            return clone
+        }
+
+        func activeVertexStream(_ buffer: MTLBuffer) -> Data {
+            Data(
+                bytes: buffer.contents().advanced(
+                    by: selection.vertexOffset),
+                count: activeVertexByteCount)
+        }
+
+        func replayCandidate(
+            name: String,
+            clone: MTLBuffer
+        ) -> [String: Any] {
+            let stream = activeVertexStream(clone)
+            let replay = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                commands: commands,
+                replacingGlassPipeline: nil,
+                stopAfterGlass: false,
+                vertexBufferOverrides: [
+                    ObjectIdentifier(selection.vertexBuffer): clone,
+                ],
+                capture: capture,
+                suffix: "small-clear-background-" + name,
+                outputDirectory: outputDirectory)
+            return [
+                "name": name,
+                "mutatedActiveVertexSHA256":
+                    transitionSHA256(stream),
+                "replay": replay,
+                "comparison": compareReplaySnapshots(
+                    reference: reference,
+                    candidate: replay,
+                    outputDirectory: outputDirectory),
+            ]
+        }
+
+        var interventions: [[String: Any]] = []
+        guard let tiesToEvenClone = cloneVertexBuffer() else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "selected": true,
+                "reason": "Tghn ties-to-even vertex clone failed",
+            ]
+        }
+        for axis in differingHalfwayAxes {
+            for offset in axis.writeOffsets {
+                writeFloat(
+                    axis.rounded,
+                    to: tiesToEvenClone,
+                    at: selection.vertexOffset + offset)
+            }
+        }
+        interventions.append(replayCandidate(
+            name: "ordinary-ties-to-even-high-coordinate",
+            clone: tiesToEvenClone))
+
+        let tailInterventions: [(String, [UInt8])] = [
+            ("zero-unclassified-tail", Array(repeating: 0, count: 8)),
+            (
+                "finite-unclassified-tail",
+                [0x00, 0x3c, 0x00, 0x38,
+                 0x00, 0xbc, 0x00, 0x40]),
+        ]
+        for (name, bytes) in tailInterventions {
+            guard let clone = cloneVertexBuffer() else {
+                return [
+                    "schemaVersion": 1,
+                    "executed": false,
+                    "eligible": true,
+                    "selected": true,
+                    "reason": "Tghn unclassified-tail vertex clone failed",
+                    "intervention": name,
+                ]
+            }
+            bytes.withUnsafeBytes { source in
+                for vertex in 0..<vertexCount {
+                    memcpy(
+                        clone.contents().advanced(
+                            by: selection.vertexOffset
+                                + vertex * stride + 40),
+                        source.baseAddress!,
+                        bytes.count)
+                }
+            }
+            interventions.append(replayCandidate(
+                name: name,
+                clone: clone))
+        }
+
+        func comparisonIsExact(_ record: [String: Any]) -> Bool {
+            guard let comparison = record["comparison"]
+                    as? [String: Any]
+            else {
+                return false
+            }
+            return comparison["compared"] as? Bool == true
+                && comparison["exactByteMatch"] as? Bool == true
+        }
+        let allInterventionsExact = interventions.allSatisfy(
+            comparisonIsExact)
+        let originalVertexStream = activeVertexStream(
+            selection.vertexBuffer)
+        let fragmentStream = Data(
+            bytes: selection.fragmentBuffer.contents().advanced(
+                by: selection.fragmentOffset),
+            count: fragmentByteCount)
+        lock.lock()
+        let descriptorAvailable = pipelineDescriptors[
+            ObjectIdentifier(selection.pipeline)
+        ] != nil
+        lock.unlock()
+        return [
+            "schemaVersion": 1,
+            "executed": true,
+            "eligible": true,
+            "selected": true,
+            "selectionPolicy":
+                "first exact-halfway Tghn state whose captured high "
+                + "coordinate differs from ordinary ties-to-even",
+            "classification":
+                "captured Apple small-clear Tghn coordinate/tail "
+                + "pixel-influence intervention",
+            "liveAppleFrameMutated": false,
+            "capturedApplePipelinesUnmodified": true,
+            "pipelineLabel": selection.pipeline.label ?? "",
+            "pipelineDescriptorAvailable": descriptorAvailable,
+            "drawIndex": selection.drawIndex,
+            "indexCount": 6,
+            "vertexCount": vertexCount,
+            "vertexStride": stride,
+            "fragmentMeaningfulByteCount": fragmentByteCount,
+            "backdropScale": floatEvidence(backdropScale),
+            "reciprocalScale": floatEvidence(reciprocalScale),
+            "reconstructedOrigin": [Int(originXRaw), Int(originYRaw)],
+            "reconstructedExtent": [extentX, extentY],
+            "axisDecisions": axisEvidence,
+            "differingHalfwayAxisCount": differingHalfwayAxes.count,
+            "originalActiveVertexSHA256":
+                transitionSHA256(originalVertexStream),
+            "fragmentPrefixSHA256": transitionSHA256(fragmentStream),
+            "indexSHA256": transitionSHA256(capturedIndices),
+            "reference": reference,
+            "interventionCount": interventions.count,
+            "allInterventionsExact": allInterventionsExact,
+            "interventions": interventions,
+        ]
+    }
+
     private struct FinalHighlightSourceSelection {
         let pipeline: MTLRenderPipelineState
         let vertexBuffer: MTLBuffer
@@ -14264,6 +14842,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
             && smallClearFinalColorCandidateSampleIndices.contains {
                 capture.hasSuffix(String(format: "-%02d", $0))
             }
+        let smallClearBackgroundInterventionRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_SMALL_CLEAR_BACKGROUND_TRACE"
+            ] == "1"
+            && capture.hasPrefix("transition-background-uniform-")
+            && smallClearBackgroundCandidateSampleIndices.contains {
+                capture.hasSuffix(String(format: "-%02d", $0))
+            }
         let selectedPass: ReplayPass?
         if sourceInterventionRequested {
             selectedPass = passes.last(where: {
@@ -14273,6 +14859,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             selectedPass = passes.last(where: {
                 finalHighlightVertexTailSelection(in: $0.commands) != nil
             }) ?? passes.last(where: containsGlassPipeline)
+        } else if smallClearBackgroundInterventionRequested {
+            selectedPass = passes.last(where: {
+                smallClearBackgroundSelection(in: $0.commands) != nil
+            })
         } else {
             selectedPass = passes.last(where: containsGlassPipeline)
         }
@@ -14281,6 +14871,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "executed": false,
                 "reason": sourceInterventionRequested
                     ? "captured no-background Iscd render pass unavailable"
+                    : smallClearBackgroundInterventionRequested
+                    ? "captured small-clear Tghn render pass unavailable"
                     : "captured glass render pass unavailable",
                 "capturedPassCount": passes.count,
             ]
@@ -14541,6 +15133,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "executed": false,
                 "reason": "source intervention load pass has no pre-pass copy",
             ]
+        }
+        if smallClearBackgroundInterventionRequested {
+            result["smallClearBackgroundIntervention"] =
+                replaySmallClearBackgroundIntervention(
+                    pass: pass,
+                    preColor0: preColor0,
+                    queue: queue,
+                    capture: capture,
+                    outputDirectory: outputDirectory)
         }
         if dynamicInterpolantTraceRequested {
             do {
@@ -21355,6 +21956,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
                 ] == "1"
+            let smallClearBackgroundTraceRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_SMALL_CLEAR_BACKGROUND_TRACE"
+                ] == "1"
             if matrixUniformBasisRequested,
                !dynamicUniformsRequested
             {
@@ -21617,6 +22222,57 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "circle-047-center case",
                     ])
             }
+            if smallClearBackgroundTraceRequested,
+               !dynamicUniformsRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 27,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "small-clear background trace requires "
+                            + "dynamic uniform capture",
+                    ])
+            }
+            if smallClearBackgroundTraceRequested,
+               allocationOnlyRequested
+                    || denseAllocationRequested
+                    || matrixUniformBasisRequested
+                    || fixedStateAllocationRequested
+                    || pathIsolationAllocationRequested
+                    || highlightVertexTailTraceRequested
+                    || highlightSourceTraceRequested
+                    || smallClearFinalColorTraceRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 28,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "small-clear background trace requires "
+                            + "exclusive targeted controlled replay",
+                    ])
+            }
+            if smallClearBackgroundTraceRequested,
+               direction != .materialize
+                    || material != .clear
+                    || appearance != .light
+                    || geometry.rawValue
+                        != "circle-combined-holdout-01"
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 29,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "small-clear background trace requires the "
+                            + "frozen clear/light materialize "
+                            + "circle-combined-holdout-01 case",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
@@ -21624,6 +22280,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             let dynamicUniformSampleIndices = Set(
                 highlightSourceTraceRequested
                     ? finalHighlightSourceCandidateSampleIndices
+                    : smallClearBackgroundTraceRequested
+                    ? smallClearBackgroundCandidateSampleIndices
                     : smallClearFinalColorTraceRequested
                     ? smallClearFinalColorCandidateSampleIndices
                     : highlightVertexTailTraceRequested
