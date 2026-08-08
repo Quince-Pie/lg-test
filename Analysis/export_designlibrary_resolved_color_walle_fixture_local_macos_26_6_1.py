@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import struct
 import subprocess
@@ -58,6 +59,18 @@ def command_output(arguments: tuple[str, ...]) -> str:
     return completed.stdout.strip()
 
 
+def use_native_apple_subprocess_environment() -> None:
+    retained = {
+        name: os.environ[name]
+        for name in ("HOME", "LOGNAME", "SSH_AUTH_SOCK", "TMPDIR", "USER")
+        if name in os.environ
+    }
+    os.environ.clear()
+    os.environ.update(retained)
+    os.environ["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
+    os.environ["DEVELOPER_DIR"] = "/Library/Developer/CommandLineTools"
+
+
 def export(output_directory: Path) -> JsonObject:
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         raise ExportError("fixture export requires native arm64 macOS")
@@ -84,6 +97,7 @@ def export(output_directory: Path) -> JsonObject:
         if sha256_file(path) != expected:
             raise ExportError("source SHA-256 differs for " + path.name)
 
+    use_native_apple_subprocess_environment()
     samples = resolved.sample_set()
     with tempfile.TemporaryDirectory(prefix="lg-resolved-color-fixture-") as directory:
         executable = Path(directory) / "resolved-color-components"
@@ -101,7 +115,10 @@ def export(output_directory: Path) -> JsonObject:
             stderr=subprocess.PIPE,
         )
         if completed.returncode != 0:
-            raise ExportError("native Swift fixture probe build failed")
+            raise ExportError(
+                "native Swift fixture probe build failed: "
+                + completed.stderr.decode("utf-8", errors="replace").strip()
+            )
 
         inspect_requests = [
             request
