@@ -140,6 +140,39 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
             for sample in validator.CANDIDATE_SAMPLES
         ]
 
+    @staticmethod
+    def transport_states() -> list[dict[str, object]]:
+        bounds = [
+            validator.TRANSPORT_ORIGIN,
+            validator.TRANSPORT_ORIGIN,
+            validator.TRANSPORT_EXTENT,
+            validator.TRANSPORT_EXTENT,
+        ]
+        position = [validator.TRANSPORT_ORIGIN, validator.TRANSPORT_ORIGIN]
+        states = [
+            {
+                "path": list(path),
+                "bounds": bounds,
+                "position": position,
+                "cornerRadius": 0,
+            }
+            for path in validator.TRANSPORT_OUTER_PATHS
+        ]
+        states.append(
+            {
+                "path": list(validator.TRANSPORT_ELEMENT_PATH),
+                "bounds": [
+                    0,
+                    0,
+                    validator.TRANSPORT_EXTENT,
+                    validator.TRANSPORT_EXTENT,
+                ],
+                "position": position,
+                "cornerRadius": validator.TRANSPORT_RADIUS,
+            }
+        )
+        return states
+
     def test_accepts_two_exact_nontrivial_mutations(self) -> None:
         for sample in validator.CANDIDATE_SAMPLES:
             result = validator.validate_intervention(
@@ -175,6 +208,18 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         ]
         with self.assertRaisesRegex(ValueError, "did not change input"):
             validator.validate_intervention(self.directory, record)
+
+    def test_accepts_exact_authenticated_transport_geometry(self) -> None:
+        validator.validate_transport_geometry(
+            self.transport_states(),
+            "transport",
+        )
+
+    def test_rejects_changed_transport_radius(self) -> None:
+        states = self.transport_states()
+        states[-1]["cornerRadius"] = validator.TRANSPORT_RADIUS + 0.25
+        with self.assertRaisesRegex(ValueError, "element radius differs"):
+            validator.validate_transport_geometry(states, "transport")
 
     def test_selection_requires_the_first_eligible_candidate(self) -> None:
         records = {record["sampleIndex"]: record for record in self.records()}
@@ -224,7 +269,7 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         preregistration.write_text(
             json.dumps(
                 {
-                    "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 2,
+                    "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 3,
                     "sourceSHA256": {},
                 }
             ),

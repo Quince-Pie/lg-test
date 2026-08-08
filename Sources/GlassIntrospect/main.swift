@@ -17729,6 +17729,76 @@ private func translatedTransitionLayerStates(
     }
 }
 
+private let finalHighlightVertexTailTransportOuterPaths = Set([
+    [1, 0, 1],
+    [1, 0, 1, 0],
+    [1, 0, 1, 0, 0],
+    [1, 0, 1, 1],
+    [1, 0, 1, 1, 0],
+    [1, 0, 1, 1, 0, 0],
+    [1, 0, 1, 2],
+])
+private let finalHighlightVertexTailTransportElementPath = [
+    1, 0, 1, 0, 0, 0, 0,
+]
+private let finalHighlightVertexTailTransportRadius = CGFloat(
+    Float(bitPattern: 0x4377_020b))
+private let finalHighlightVertexTailTransportExtent = CGFloat(
+    Float(bitPattern: 0x43f7_020b))
+private let finalHighlightVertexTailTransportOrigin = CGFloat(
+    Float(bitPattern: 0xc359_020b))
+
+private func finalHighlightVertexTailTransportLayerStates(
+    _ states: [TransitionLayerState]
+) -> [TransitionLayerState] {
+    states.map { state in
+        var bounds = state.bounds
+        var position = state.position
+        var cornerRadius = state.cornerRadius
+        if finalHighlightVertexTailTransportOuterPaths.contains(
+            state.path)
+        {
+            bounds = CGRect(
+                x: finalHighlightVertexTailTransportOrigin,
+                y: finalHighlightVertexTailTransportOrigin,
+                width: finalHighlightVertexTailTransportExtent,
+                height: finalHighlightVertexTailTransportExtent)
+            position = CGPoint(
+                x: finalHighlightVertexTailTransportOrigin,
+                y: finalHighlightVertexTailTransportOrigin)
+        } else if state.path
+                    == finalHighlightVertexTailTransportElementPath
+        {
+            bounds = CGRect(
+                x: 0,
+                y: 0,
+                width: finalHighlightVertexTailTransportExtent,
+                height: finalHighlightVertexTailTransportExtent)
+            position = CGPoint(
+                x: finalHighlightVertexTailTransportOrigin,
+                y: finalHighlightVertexTailTransportOrigin)
+            cornerRadius = finalHighlightVertexTailTransportRadius
+        }
+        return TransitionLayerState(
+            path: state.path,
+            className: state.className,
+            bounds: bounds,
+            position: position,
+            anchorPoint: state.anchorPoint,
+            zPosition: state.zPosition,
+            opacity: state.opacity,
+            isHidden: state.isHidden,
+            isOpaque: state.isOpaque,
+            masksToBounds: state.masksToBounds,
+            cornerRadius: cornerRadius,
+            contentsScale: state.contentsScale,
+            contentsRect: state.contentsRect,
+            transform: state.transform,
+            sublayerTransform: state.sublayerTransform,
+            backdropScale: state.backdropScale)
+    }
+}
+
 private func transitionLayerStateEvidence(
     _ state: TransitionLayerState
 ) -> [String: Any] {
@@ -19697,6 +19767,7 @@ private func transitionBackgroundUniformEvidence(
     allocationOnly: Bool,
     fixedStateRequested: Bool,
     pathIsolationRequested: Bool,
+    highlightVertexTailTraceRequested: Bool,
     outputDirectory: URL
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
@@ -19723,8 +19794,13 @@ private func transitionBackgroundUniformEvidence(
     var records: [[String: Any]] = []
     records.reserveCapacity(snapshots.count)
     for snapshot in snapshots {
+        let requestedLayerStates =
+            highlightVertexTailTraceRequested
+            ? finalHighlightVertexTailTransportLayerStates(
+                snapshot.layerStates)
+            : snapshot.layerStates
         let replay = installCompatibleTransitionLayerStates(
-            snapshot.layerStates,
+            requestedLayerStates,
             rootLayer: rootLayer)
         let installedCriticalPaths =
             transitionCarrierCriticalPaths.filter {
@@ -19740,7 +19816,7 @@ private func transitionBackgroundUniformEvidence(
                 "requestedProgress":
                     snapshot.requestedProgress,
                 "remaining": snapshot.remaining,
-                "replayedLayerCount": snapshot.layerStates.count,
+                "replayedLayerCount": requestedLayerStates.count,
                 "installedCarrierLayerCount":
                     replay.installedPaths.count,
                 "installedCriticalCarrierPaths":
@@ -19767,7 +19843,7 @@ private func transitionBackgroundUniformEvidence(
                 "requestedProgress":
                     snapshot.requestedProgress,
                 "remaining": snapshot.remaining,
-                "replayedLayerCount": snapshot.layerStates.count,
+                "replayedLayerCount": requestedLayerStates.count,
                 "installedCarrierLayerCount":
                     replay.installedPaths.count,
                 "installedCriticalCarrierPaths":
@@ -19823,7 +19899,7 @@ private func transitionBackgroundUniformEvidence(
             "sampleIndex": snapshot.sampleIndex,
             "requestedProgress": snapshot.requestedProgress,
             "remaining": snapshot.remaining,
-            "replayedLayerCount": snapshot.layerStates.count,
+            "replayedLayerCount": requestedLayerStates.count,
             "installedCarrierLayerCount":
                 replay.installedPaths.count,
             "installedCriticalCarrierPaths":
@@ -19841,6 +19917,32 @@ private func transitionBackgroundUniformEvidence(
             "presentationLayerAssignedToCARenderer": false,
             "render": render,
         ]
+        if highlightVertexTailTraceRequested {
+            record["finalHighlightVertexTailGeometryTransport"] = [
+                "schemaVersion": 1,
+                "requested": true,
+                "source":
+                    "previously captured current-build Apple Irsd state",
+                "sourceTimelineSHA256":
+                    "17a69db193892e7e30c6069e88a63a4a3badfd23e93916d91b10b126a67c8e7c",
+                "sourceSampleIndex": 28,
+                "sourceRemainingFloat32Bits": "3dfdf500",
+                "outerOriginFloat32Bits": "c359020b",
+                "extentFloat32Bits": "43f7020b",
+                "radiusFloat32Bits": "4377020b",
+                "outerPaths":
+                    finalHighlightVertexTailTransportOuterPaths
+                        .sorted { $0.lexicographicallyPrecedes($1) },
+                "elementPath":
+                    finalHighlightVertexTailTransportElementPath,
+                "requestedLayerStates": requestedLayerStates.filter {
+                    finalHighlightVertexTailTransportOuterPaths.contains(
+                        $0.path)
+                    || $0.path
+                        == finalHighlightVertexTailTransportElementPath
+                }.map(transitionLayerStateEvidence),
+            ]
+        }
         if allocationOnly {
             record["capturedLayerStates"] =
                 snapshot.layerStates.map(
@@ -21170,6 +21272,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             fixedStateAllocationRequested,
                         pathIsolationRequested:
                             pathIsolationAllocationRequested,
+                        highlightVertexTailTraceRequested:
+                            highlightVertexTailTraceRequested,
                         outputDirectory: outputDirectory)
                 carrierWindow.orderOut(nil)
                 writeTransitionProbeProgress(

@@ -16,6 +16,19 @@ EXPECTED_PATTERNS = {
     "finite-asymmetric-half4": "003c003800bc0040",
 }
 EXPECTED_RENDER_BYTES = 1024 * 1024 * 4
+TRANSPORT_OUTER_PATHS = (
+    (1, 0, 1),
+    (1, 0, 1, 0),
+    (1, 0, 1, 0, 0),
+    (1, 0, 1, 1),
+    (1, 0, 1, 1, 0),
+    (1, 0, 1, 1, 0, 0),
+    (1, 0, 1, 2),
+)
+TRANSPORT_ELEMENT_PATH = (1, 0, 1, 0, 0, 0, 0)
+TRANSPORT_ORIGIN = -217.0079803466797
+TRANSPORT_EXTENT = 494.0159606933594
+TRANSPORT_RADIUS = 247.0079803466797
 
 
 def fail(message: str) -> Never:
@@ -224,6 +237,117 @@ def validate_intervention(
     }
 
 
+def indexed_layer_states(
+    value: object,
+    label: str,
+) -> dict[tuple[int, ...], dict[str, Any]]:
+    require(isinstance(value, list), f"{label}: layer states are absent")
+    result: dict[tuple[int, ...], dict[str, Any]] = {}
+    for untyped in value:
+        require(isinstance(untyped, dict), f"{label}: layer state is malformed")
+        path = untyped.get("path")
+        require(
+            isinstance(path, list)
+            and all(type(component) is int for component in path),
+            f"{label}: layer path is malformed",
+        )
+        key = tuple(path)
+        require(key not in result, f"{label}: layer path is duplicated")
+        result[key] = untyped
+    return result
+
+
+def validate_transport_geometry(value: object, label: str) -> None:
+    states = indexed_layer_states(value, label)
+    required_paths = set(TRANSPORT_OUTER_PATHS) | {TRANSPORT_ELEMENT_PATH}
+    require(
+        required_paths.issubset(states),
+        f"{label}: transported layer paths are incomplete",
+    )
+    outer_bounds = [
+        TRANSPORT_ORIGIN,
+        TRANSPORT_ORIGIN,
+        TRANSPORT_EXTENT,
+        TRANSPORT_EXTENT,
+    ]
+    position = [TRANSPORT_ORIGIN, TRANSPORT_ORIGIN]
+    for path in TRANSPORT_OUTER_PATHS:
+        state = states[path]
+        require(state.get("bounds") == outer_bounds, f"{label}: outer bounds differ")
+        require(state.get("position") == position, f"{label}: outer position differs")
+    element = states[TRANSPORT_ELEMENT_PATH]
+    require(
+        element.get("bounds") == [0, 0, TRANSPORT_EXTENT, TRANSPORT_EXTENT],
+        f"{label}: element bounds differ",
+    )
+    require(element.get("position") == position, f"{label}: element position differs")
+    require(
+        element.get("cornerRadius") == TRANSPORT_RADIUS,
+        f"{label}: element radius differs",
+    )
+
+
+def validate_geometry_transport(record: dict[str, Any]) -> None:
+    sample = record.get("sampleIndex")
+    transport = record.get("finalHighlightVertexTailGeometryTransport")
+    require(isinstance(transport, dict), f"sample {sample}: transport is absent")
+    expected = {
+        "schemaVersion": 1,
+        "requested": True,
+        "source": "previously captured current-build Apple Irsd state",
+        "sourceTimelineSHA256": (
+            "17a69db193892e7e30c6069e88a63a4a3badfd23e93916d91b10b126a67c8e7c"
+        ),
+        "sourceSampleIndex": 28,
+        "sourceRemainingFloat32Bits": "3dfdf500",
+        "outerOriginFloat32Bits": "c359020b",
+        "extentFloat32Bits": "43f7020b",
+        "radiusFloat32Bits": "4377020b",
+        "outerPaths": [list(path) for path in TRANSPORT_OUTER_PATHS],
+        "elementPath": list(TRANSPORT_ELEMENT_PATH),
+    }
+    for field, value in expected.items():
+        require(
+            transport.get(field) == value,
+            f"sample {sample}: transport {field} differs",
+        )
+    requested = transport.get("requestedLayerStates")
+    validate_transport_geometry(requested, f"sample {sample} requested transport")
+    require(
+        isinstance(requested, list) and len(requested) == 8,
+        f"sample {sample}: requested transport cardinality differs",
+    )
+
+    render = record.get("render")
+    require(isinstance(render, dict), f"sample {sample}: render is absent")
+    before = render.get("liveRenderBoundaryBefore")
+    after = render.get("liveRenderBoundaryAfter")
+    require(
+        isinstance(before, dict)
+        and isinstance(after, dict)
+        and before.get("executed") is True
+        and after.get("executed") is True,
+        f"sample {sample}: live transport readback failed",
+    )
+    validate_transport_geometry(
+        before.get("layerStates"),
+        f"sample {sample} pre-render transport",
+    )
+    validate_transport_geometry(
+        after.get("layerStates"),
+        f"sample {sample} post-render transport",
+    )
+    require(
+        before.get("layerStatesSHA256") == after.get("layerStatesSHA256"),
+        f"sample {sample}: transported layers changed during render",
+    )
+    require(
+        before.get("backgroundFilterInputValuesSHA256")
+        == after.get("backgroundFilterInputValuesSHA256"),
+        f"sample {sample}: filter changed during transport render",
+    )
+
+
 def candidate_trace(record: dict[str, Any]) -> dict[str, Any]:
     sample = record.get("sampleIndex")
     require(sample in CANDIDATE_SAMPLES, "unexpected candidate sample")
@@ -307,7 +431,7 @@ def validate(
         preregistration.get(
             "finalHighlightVertexTailInterventionPreregistrationSchemaVersion"
         )
-        == 2,
+        == 3,
         "preregistration schema differs",
     )
     validate_sources(preregistration)
@@ -371,13 +495,15 @@ def validate(
         set(target_records) == set(CANDIDATE_SAMPLES),
         "candidate sample set differs",
     )
+    for sample in CANDIDATE_SAMPLES:
+        validate_geometry_transport(target_records[sample])
     selected_sample = validate_selection(target_records)
     result = validate_intervention(
         capture_directory,
         target_records[selected_sample],
     )
     return {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "passed": True,
         "authority": (
             "current-build observational irrelevance of generated vertex "
@@ -390,6 +516,7 @@ def validate(
         "candidateSampleIndices": list(CANDIDATE_SAMPLES),
         "candidateSampleCount": len(CANDIDATE_SAMPLES),
         "selectedSampleIndex": selected_sample,
+        "geometryTransportValidated": True,
         "sampleCount": 1,
         "interventionCount": len(EXPECTED_PATTERNS),
         "comparedBytes": len(EXPECTED_PATTERNS) * EXPECTED_RENDER_BYTES,
