@@ -8,12 +8,18 @@ private enum CaptureError: Error {
     case command(String)
 }
 
-private let rigVersion =
-    "metal-raster-near-square-selector-sweep-1.0.0"
-private let role =
-    "production-near-square-fixed-grid-reciprocal-selector-calibration"
-private let widthFixedLower = 196_608
-private let widthFixedUpper = 229_376
+private let profile = ProcessInfo.processInfo.environment[
+    "LG_RASTER_NEAR_SQUARE_SELECTOR_PROFILE"
+] ?? "production"
+private let isWalleSmallProfile = profile == "walle-small"
+private let rigVersion = isWalleSmallProfile
+    ? "metal-raster-small-near-square-selector-sweep-1.0.0"
+    : "metal-raster-near-square-selector-sweep-1.0.0"
+private let role = isWalleSmallProfile
+    ? "walle-small-near-square-fixed-grid-reciprocal-selector-calibration"
+    : "production-near-square-fixed-grid-reciprocal-selector-calibration"
+private let widthFixedLower = isWalleSmallProfile ? 114_688 : 196_608
+private let widthFixedUpper = isWalleSmallProfile ? 147_456 : 229_376
 private let heightFixedDeltas = [
     -256, -128, -64, -32, -16, -8, -4, -2, -1,
     1, 2, 4, 8, 16, 32, 64, 128, 256,
@@ -22,13 +28,17 @@ private let widthCount = widthFixedUpper - widthFixedLower + 1
 private let caseCount = widthCount * heightFixedDeltas.count
 private let fixedUnitsPerPixel = 256
 private let origin = 64
-private let sampleX = 448
-private let sampleY = 449
+private let sampleX = isWalleSmallProfile ? 320 : 448
+private let sampleY = isWalleSmallProfile ? 321 : 449
 private let targetSize = 1_024
 private let recordBytes = 2 * MemoryLayout<UInt32>.stride
 private let rawBytes = caseCount * recordBytes
-private let preregistrationSha256 =
-    "9711b00d9f7b3fbd7fdfc88fdd54317f168453da36a41cab10734cbe5bad4866"
+private let preregistrationFilename = isWalleSmallProfile
+    ? "Analysis/raster_small_near_square_selector_sweep_preregistration.json"
+    : "Analysis/raster_near_square_selector_sweep_preregistration.json"
+private let preregistrationSha256 = isWalleSmallProfile
+    ? "c57ab9ec1fde557e85582a22778432167773a576f93464ed03c35a467227fe02"
+    : "9711b00d9f7b3fbd7fdfc88fdd54317f168453da36a41cab10734cbe5bad4866"
 
 private let metalSource = """
 #include <metal_stdlib>
@@ -97,6 +107,11 @@ private func sha256(_ data: Data) -> String {
 }
 
 private func run(outputDirectory: URL) throws {
+    guard profile == "production" || profile == "walle-small" else {
+        throw CaptureError.resource(
+            "unknown LG_RASTER_NEAR_SQUARE_SELECTOR_PROFILE: \(profile)"
+        )
+    }
     precondition(widthCount == 32_769)
     precondition(heightFixedDeltas.count == 18)
     precondition(caseCount == 589_842)
@@ -284,8 +299,7 @@ private func run(outputDirectory: URL) throws {
         ],
         "rasterNearSquareSelectorSweep": [
             "role": role,
-            "preregistrationFile":
-                "Analysis/raster_near_square_selector_sweep_preregistration.json",
+            "preregistrationFile": preregistrationFilename,
             "preregistrationSha256": preregistrationSha256,
             "widthFixedLower": widthFixedLower,
             "widthFixedUpper": widthFixedUpper,

@@ -17739,6 +17739,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let dynamicHighlightDiagnosticsRequested =
             dynamicHighlightTraceEnabled
             && (capture.hasSuffix("-01")
+                || capture.hasSuffix("-08")
                 || capture.hasSuffix("-12")
                 || capture.hasSuffix("-32"))
         let dynamicHighlightVertexTailTraceRequested =
@@ -18092,7 +18093,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     compositorReference:
                         captureDynamicCompositor
                         ? ["output": referenceSnapshot]
-                        : nil)
+                        : nil,
+                    currentSystemTrace:
+                        dynamicHighlightDiagnosticsRequested)
         } else if dynamicInterpolantTraceRequested {
             result["finalHighlightInterpolantTrace"] =
                 replayFinalHighlightAlphaTrace(

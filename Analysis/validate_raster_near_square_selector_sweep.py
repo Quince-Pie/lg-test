@@ -26,6 +26,9 @@ ROLE = "production-near-square-fixed-grid-reciprocal-selector-calibration"
 PREREGISTRATION = Path(__file__).with_name(
     "raster_near_square_selector_sweep_preregistration.json"
 )
+PREREGISTRATION_REPOSITORY_PATH = (
+    "Analysis/raster_near_square_selector_sweep_preregistration.json"
+)
 WIDTH_FIXED_LOWER = 196_608
 WIDTH_FIXED_UPPER = 229_376
 HEIGHT_DELTAS = (
@@ -109,8 +112,7 @@ def first_stage_numerator(
 ) -> tuple[int, int]:
     low_bits, high_bits = endpoint_bits(width_fixed)
     delta = arithmetic.float32(
-        arithmetic.bits_float32(high_bits)
-        - arithmetic.bits_float32(low_bits)
+        arithmetic.bits_float32(high_bits) - arithmetic.bits_float32(low_bits)
     )
     delta_index, delta_exponent = arithmetic.float_significand_and_lsb_exponent(
         arithmetic.float32_bits(delta)
@@ -118,8 +120,8 @@ def first_stage_numerator(
     opposite_bits = arithmetic.round_fraction_to_float32_bits(
         Fraction(height_fixed, FIXED_UNITS_PER_PIXEL)
     )
-    opposite_index, opposite_exponent = (
-        arithmetic.float_significand_and_lsb_exponent(opposite_bits)
+    opposite_index, opposite_exponent = arithmetic.float_significand_and_lsb_exponent(
+        opposite_bits
     )
     return arithmetic.product_stage(
         delta_index,
@@ -145,10 +147,9 @@ def reciprocal_exponent(width_fixed: int, height_fixed: int) -> int:
 def exact_floor_selector(width_fixed: int, height_fixed: int) -> int:
     determinant_fixed = width_fixed * height_fixed
     exponent = reciprocal_exponent(width_fixed, height_fixed)
-    exact = (
-        Fraction(FIXED_UNITS_PER_PIXEL * FIXED_UNITS_PER_PIXEL, determinant_fixed)
-        / power_of_two(exponent)
-    )
+    exact = Fraction(
+        FIXED_UNITS_PER_PIXEL * FIXED_UNITS_PER_PIXEL, determinant_fixed
+    ) / power_of_two(exponent)
     return exact.numerator // exact.denominator
 
 
@@ -195,8 +196,8 @@ def prediction_context(
     distance_bits = arithmetic.round_fraction_to_float32_bits(
         Fraction(abs(displacement_fixed), FIXED_UNITS_PER_PIXEL)
     )
-    distance_index, distance_exponent = (
-        arithmetic.float_significand_and_lsb_exponent(distance_bits)
+    distance_index, distance_exponent = arithmetic.float_significand_and_lsb_exponent(
+        distance_bits
     )
     middle_index, middle_exponent = coefficients.column_product_stage(
         constant_index,
@@ -267,9 +268,7 @@ def prediction(
     )
     return tuple(
         arithmetic.float32_bits(
-            arithmetic.float32(
-                math.fma(LOCAL_PIXEL + phase, setup_slope, constant)
-            )
+            arithmetic.float32(math.fma(LOCAL_PIXEL + phase, setup_slope, constant))
         )
         for phase in PULL_PHASES
     )  # type: ignore[return-value]
@@ -296,9 +295,7 @@ def preflight_metadata() -> JsonObject:
             digest.update(RECORD.pack(*record))
         distinct += len(set(records)) == len(records)
     return {
-        "candidateStreamBytes": (
-            CASE_COUNT * len(RECOVERY_OFFSETS) * RECORD.size
-        ),
+        "candidateStreamBytes": (CASE_COUNT * len(RECOVERY_OFFSETS) * RECORD.size),
         "candidateStreamSha256": digest.hexdigest(),
         "candidateDistinctCaseCount": distinct,
         "candidateMultiplicityPerCase": len(RECOVERY_OFFSETS),
@@ -318,10 +315,8 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or manifest.get("rigVersion") != RIG_VERSION
         or not isinstance(record, dict)
         or record.get("role") != ROLE
-        or record.get("preregistrationFile")
-        != "Analysis/raster_near_square_selector_sweep_preregistration.json"
-        or record.get("preregistrationSha256")
-        != sha256_bytes(preregistration_bytes)
+        or record.get("preregistrationFile") != PREREGISTRATION_REPOSITORY_PATH
+        or record.get("preregistrationSha256") != sha256_bytes(preregistration_bytes)
         or preregistration.get("role") != ROLE
         or record.get("widthFixedLower") != WIDTH_FIXED_LOWER
         or record.get("widthFixedUpper") != WIDTH_FIXED_UPPER
@@ -405,9 +400,7 @@ def validate(root: Path) -> tuple[JsonObject, bytes | None, bytes | None]:
         delta_offset_counts[height_delta][offset] += 1
 
     measured_preflight = {
-        "candidateStreamBytes": (
-            CASE_COUNT * len(RECOVERY_OFFSETS) * RECORD.size
-        ),
+        "candidateStreamBytes": (CASE_COUNT * len(RECOVERY_OFFSETS) * RECORD.size),
         "candidateStreamSha256": candidate_digest.hexdigest(),
         "candidateDistinctCaseCount": candidate_distinct,
         "candidateMultiplicityPerCase": len(RECOVERY_OFFSETS),
@@ -417,9 +410,7 @@ def validate(root: Path) -> tuple[JsonObject, bytes | None, bytes | None]:
         raise ValueError("near-square selector preflight differs")
 
     complete = len(selectors) == CASE_COUNT and not failures and ambiguous == 0
-    selector_raw = (
-        struct.pack(f"<{len(selectors)}I", *selectors) if complete else None
-    )
+    selector_raw = struct.pack(f"<{len(selectors)}I", *selectors) if complete else None
     offset_raw = (
         struct.pack(f"<{len(selector_offsets)}b", *selector_offsets)
         if complete
@@ -465,8 +456,7 @@ def validate(root: Path) -> tuple[JsonObject, bytes | None, bytes | None]:
             },
             "selectorOffsetCountsByHeightDelta": {
                 str(delta): {
-                    str(offset): count
-                    for offset, count in sorted(counts.items())
+                    str(offset): count for offset, count in sorted(counts.items())
                 }
                 for delta, counts in delta_offset_counts.items()
             },

@@ -14466,3 +14466,85 @@ The corrected ledger is:
 4. **Quality regression remains forbidden.** This work does not alter Walle's
    protected production shader or `flake.nix`, and no mismatch is hidden by a
    tolerance, bias, or lower-quality approximation.
+
+### Walle-size near-square highlight closure and remaining product boundary
+
+The square calibration above was not sufficient for the first natural sample:
+its final-highlight allocation is `127624` by `127623` fixed units, rather than
+a square.  A second, separately preregistered native profile therefore covers
+every width from `114688` through `147456` fixed units at each of eighteen
+nonzero height deltas from -256 through +256.  Its sample pixel, `(320,321)`,
+distinguishes all six predeclared reciprocal candidates in all 589,842 cases.
+The preregistration, native source, shared validator, and profile wrapper have
+SHA-256 values
+`c57ab9ec1fde557e85582a22778432167773a576f93464ed03c35a467227fe02`,
+`f788c8c14041af357ddd50f1bf6cc43a2266e3da0b65da339cab8fde01124694`,
+`2d9889e1810bf3f257aeb1abeef5147bb8d19aedb5194fb45a4ad207848eceb7`,
+and
+`025e3299f851ed6064e099a93db7f568949e319224ff7b4eea8124b1158955f6`,
+respectively.
+
+The profile was built and captured with the native Apple toolchain on the
+physical Retina M1 Max; no Nix-store path participated.  Its 4,718,736-byte raw
+stream has SHA-256
+`fbc18370599dbbf87f7d0fdc3c8080e0c07f037bde4fc02705e90d7fb7f55163`.
+Independent replay matched one and only one candidate in all 589,842 cases:
+zero missing, zero ambiguous, and zero mismatched.  The exact-floor hypothesis
+matched 280,364 cases and failed 309,478.  Recovered offsets from exact floor
+were `-1: 12,778`, `0: 280,364`, `+1: 289,377`, and `+2: 7,323`.  The versioned
+1,858,186-byte archive is
+`Analysis/raster_small_near_square_selectors_u32le.zlib`, SHA-256
+`7d0f0743a894c47518139456d5e7d9d805526126f760650239babde35388bba6`.
+This remains an authenticated finite-domain calibration, not a claimed
+portable reciprocal closed form.
+
+A fresh natural capture made from commit
+`1514f55572c9755b99bf3804a84e95f369f87593` authenticated Apple's current
+specialization in all eight requested samples before exposing its diagnostic
+attachments.  Its timeline SHA-256 is
+`efaa2e4a2b8e9d1f87d429daef27411e76bf43cea8734f14cfaf65fbc3d1ca76`.
+Applying the frozen square and near-square tables plus final-highlight division
+mode 1 gives zero unequal SDF words out of 16,777,216 and zero unequal
+binary16-alpha words out of 8,388,608.  The comparison result has SHA-256
+`6efde069e1c2060660e303dbe357d3cdc6c47856d29f1acbc767fd2966719818`.
+Because the near-square table was created after this capture was opened, this
+is exact calibration evidence but not yet a prospective promotion.  One new
+natural capture from a commit already containing the table is the sole formal
+promotion gate for this measured final-highlight path.
+
+Thirty current-system uniform interventions independently discriminate the
+remaining division choice.  Modes 0 and 2 each differ in 25,970 of 31,457,280
+binary16 words; modes 1 and 3 each differ in 401.  Combined with the natural
+path evidence, mode 1 is the admitted measured-path choice.  The intervention
+result has SHA-256
+`ce6631524d3833a69e6cf8ce1c7469d616fae87c64c104ce8aeeffc51549bc7b`.
+The 401 off-manifold words mean arbitrary invented uniform combinations are
+not yet a universally exact Apple shader model.  They do not weaken the exact
+natural Walle-domain result and are not a blocker for a gated implementation.
+
+The independently rendered Walle background prefix now has a much smaller and
+explicit residual.  With Apple's captured scissor, eight 1024-by-1024 states
+compare over 33,554,432 bytes with 72 unequal bytes in 66 pixels, maximum
+channel delta one; the channel counts are `[3,3,3,63]`.  The comparison result
+has SHA-256
+`81958d21107d1a227a3ae3c37c27447e4189d0b63aa1b96e080cf4a362d46239`.
+Removing the captured scissor is categorically wrong: sample 24 alone rises to
+19,568 unequal bytes in 5,666 pixels with maximum delta 255.  Therefore the
+scissor is construction evidence, not an optional optimization.
+
+The current implementation boundary is now:
+
+1. **Measured natural final highlight: no observed arithmetic unknown.** It is
+   ready for Walle integration behind the frozen geometry, OS/GPU-family, and
+   selector-domain gates.  One unseen recapture still separates exact replay
+   from formal prospective promotion.
+2. **Full rendered Walle parity: two concrete subunknowns in one background
+   category.** Recover the independent scissor/crop constructor, then close the
+   sparse 72-byte alpha-edge arithmetic residual at zero tolerance.
+3. **Universal arbitrary-uniform emulation: one additional nonblocking
+   research problem.** Close the 401 intervention-only binary16 words before
+   claiming the Apple algorithm for inputs outside the admitted natural path.
+4. **Production parity is not yet claimed.** After the two background
+   subunknowns close, fresh AMD and physical-Retina end-to-end frame gates must
+   still report zero unequal bytes.  The protected Walle shader and `flake.nix`
+   remain unchanged, and quality degradation remains forbidden.
