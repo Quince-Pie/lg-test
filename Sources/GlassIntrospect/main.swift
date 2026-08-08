@@ -4354,6 +4354,30 @@ private let glassBackgroundRenderSymbol =
     "EPKNS0_5LayerERNS0_7ContextEfPPNS0_7SurfaceEPfS8_" +
     "PKNS_11ColorMatrixE"
 private let glassBackgroundRenderCodeByteCount = 0x2000
+private let glassBackgroundFragment26_6_1 =
+    "TghzA2Xhf_Isrc"
+private let glassBackgroundPipelineLabel26_6_1 =
+    "com.apple.coreanimation.PBGRABsovXm_TghzA2Xhf_Isrc"
+
+private func isGlassBackgroundFragment(_ fragment: String) -> Bool {
+    fragment.hasPrefix("glass_background")
+        || fragment == glassBackgroundFragment26_6_1
+}
+
+private func isGlassBackgroundPipeline(
+    _ pipeline: [String: Any]
+) -> Bool {
+    if let creation = pipeline["creationDescriptor"]
+            as? [String: Any],
+       let fragment = creation["fragmentFunction"] as? String,
+       isGlassBackgroundFragment(fragment)
+    {
+        return true
+    }
+    return pipeline["label"] as? String
+        == glassBackgroundPipelineLabel26_6_1
+}
+
 private let captureBackdropSymbol =
     "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 private let captureBackdropCodeByteCount = 0x4000
@@ -5729,15 +5753,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
         guard capture.hasPrefix(
                 "transition-background-uniform-"),
-              index == 3,
-              let creation = pipeline["creationDescriptor"]
-                as? [String: Any],
-              let fragment = creation["fragmentFunction"]
-                as? String
+              index == 3
         else {
             return false
         }
-        return fragment.hasPrefix("glass_background")
+        let creation = pipeline["creationDescriptor"]
+            as? [String: Any]
+        let fragment = creation?["fragmentFunction"]
+            as? String
+        return isGlassBackgroundPipeline(pipeline)
             || fragment == "TimgA2Xhfc_Isrc"
     }
 
@@ -5748,14 +5772,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
         pipeline: [String: Any],
         index: Int
     ) -> [String: Any]? {
-        let creation =
-            pipeline["creationDescriptor"] as? [String: Any]
-        let fragment = creation?["fragmentFunction"] as? String
         guard !glassUniformCallSiteCaptured,
               capture
                 == "transition-matrix-uniform-01-neutral-axes",
               index == 1,
-              fragment?.hasPrefix("glass_background") == true
+              isGlassBackgroundPipeline(pipeline)
         else {
             return nil
         }
@@ -16775,16 +16796,16 @@ private func carendererUniformEvidence(
         guard snapshot["stage"] as? String == "fragment",
               snapshot["index"] as? Int == 1,
               let pipeline = snapshot["pipeline"]
-                as? [String: Any],
-              let creation = pipeline["creationDescriptor"]
-                as? [String: Any],
-              let fragment = creation["fragmentFunction"]
-                as? String
+                as? [String: Any]
         else {
             return false
         }
-        return fragment.hasPrefix("glass_background")
-            || fragment.hasPrefix("glass_foreground")
+        let creation = pipeline["creationDescriptor"]
+            as? [String: Any]
+        let fragment = creation?["fragmentFunction"]
+            as? String
+        return isGlassBackgroundPipeline(pipeline)
+            || fragment?.hasPrefix("glass_foreground") == true
             || fragment == "A2Xghfc"
     }
     var result: [String: Any] = [

@@ -12222,3 +12222,89 @@ This closes canonical static Walle-process/layer-shell integration in the
 diagnostic mode. It does not establish ordinary live-transition state
 production or physical Retina transfer, so formal parity remains false. No
 additional Apple capture was required for these Walle-side rendering steps.
+
+### macOS 26.6.1 transition-profile clamp closure
+
+The last unexplained byte in the dynamic 258-byte background profile is now
+decoded from the executing QuartzCore implementation on the physical M1 Mac.
+This is current-build evidence for macOS 26.6.1 build 25G76, not an inference
+from an older pipeline name. The authoritative fragment-buffer binding label
+is
+`com.apple.coreanimation.PBGRABsovXm_TghzA2Xhf_Isrc`; the corresponding
+fragment token is `TghzA2Xhf_Isrc`. `GlassIntrospect` now accepts that exact
+binding label as well as creation descriptors from the earlier named shader
+families. The updated source builds successfully with Apple Command Line
+Tools. A source-built presentation transport attempt stopped before its first
+dynamic record and contributes no value evidence; every result below comes
+from the authenticated frozen capture binary.
+
+A value-blind LLDB inventory opened the complete current render symbol:
+
+```text
+CA::OGL::GlassBackgroundFilter::render(...)
+QuartzCore UUID       F1BA3189-E95A-3ECA-B59A-5A6872754484
+module offset         1,687,188
+symbol byte count     4,980
+complete code SHA-256 16faaced4d173d6af88e53cf4dde07e0d080572757a2a0d16d32f99048e1ef46
+```
+
+The current atom table and code path correct an earlier field attribution.
+Atom 358 is `inputClamp`, atom 378 is `inputFaceOpacity`, and atom 414 is
+`inputSDRHoldingToneWhite`. Atom 414 converts directly to profile offset 252;
+it is not the offset-248 clamp carrier. The render code reads atom 358, reads a
+binary32 gamma from render-context offset `0x258`, forms a binary32 reciprocal,
+calls `powf`, and then converts the result to binary16 at offset 248. The exact
+law is:
+
+```text
+gamma bits     = 0x400ccccd                 // 2.200000047683716
+exponent bits  = 0x3ee8ba2e                 // binary32(1.0f / 2.2f)
+profile[248:2] = binary16(Darwin.powf(inputClamp, exponent))
+```
+
+The direct render trace arms only after the ordinary 60-second presentation
+timeline. It records 31 `CARenderer` invocations, exactly 93 scalar returns,
+three returns per invocation, and zero failures. Every atom-358 return equals
+the public `inputClamp` binary32 value, every atom-378 return equals
+`inputFaceOpacity`, every atom-414 return equals `inputSDRHoldingToneWhite`,
+and all 31 context words are `cdcc0c40`. The recovered law matches all 31
+observed offset-248 half words. The old opacity-affine shortcut matches only
+25/31 and is rejected.
+
+The same law was then applied to all retained current-build materialize and
+dematerialize profiles: clear and regular crossed with light and dark, 32
+materialize states per profile and 31 genuine dematerialize states per
+profile. The independent C23 packer matches 252/252 complete profiles,
+65,016/65,016 bytes, including 48,888/48,888 bytes after the 64-byte captured
+geometry prefix. GCC 15, Clang 21, ASan/UBSan, and Apple clang produce the same
+result. The compact corpus result has SHA-256
+`7db7d5f847567f168df552eaf8754b7c948d6ada2fb3ca3df905172e955e787f`.
+
+Using host `powf` would still be unsafe between sampled states. Across every
+positive binary32 base from 1 through 2 inclusive, 8,388,609 inputs, glibc's
+packed-half stream hashes to
+`08c936e616b5c06096bfe76a793139c26321c03465ab106eb29699d8a244cef8`,
+whereas Darwin hashes to
+`adc847b647eb666e040c51493d3de90a5ec775d6670afd35f7b2f30195d0239e`.
+Walle therefore uses the measured portable Darwin positive-normal path, not
+glibc. On the M1 that implementation matches Darwin for all 8,388,609
+binary32 results before half conversion; GCC 15 and Clang 21 then reproduce
+the Darwin half stream exactly.
+
+The reproducible current-build instrumentation is:
+
+```text
+Analysis/capture_glass_background_render_inventory_local_macos_26_6_1_lldb.py
+  SHA-256 3f13bc5d55fcfeea4aa35705317604faf32d0572dab45222c3616cee50068a0e
+Analysis/capture_transition_render_key_414_local_macos_26_6_1_lldb.py
+  SHA-256 266996787c5876f54f316be2e863684acabfd748c2f0627ec5155e9a1f803b5d
+```
+
+This closes the dynamic numeric-input and profile-packing family for gated
+Walle work. It does not claim formal Liquid Glass parity. Two renderer
+algorithm families remain open: live dynamic producer/crop/backdrop/
+coordinate/mip construction across profiles and directions, and transition
+foreground/final-highlight production. Physical Retina color/compositor
+transfer and a fresh zero-unequal-byte Walle frame remain final product
+proofs. The production shader and Walle `flake.nix` are still byte-identical
+to their protected versions.
