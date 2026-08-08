@@ -1,0 +1,129 @@
+{
+  "smallClearBackgroundProfileConstructorSchemaVersion": 1,
+  "classification": "retrospective independent current-build Tghn byte constructor joined to the prospective physical-Retina pixel-influence closure and cross-compiler transfer",
+  "status": "exact-current-build-small-clear-Tghn-construction-and-pixels",
+  "sourceEvidence": {
+    "captureRoot": "artifacts/combined-transition-geometry-holdout-7432ffa-run1",
+    "retainedConstructionResult": "Analysis/small_clear_background_result.json",
+    "retainedConstructionResultSHA256": "cc21d4fa6c67f614c83941b544a01a9f24da8e39f7600651561b710e180b8359",
+    "prospectivePixelResult": "Analysis/small_clear_background_intervention_result.json",
+    "prospectivePixelResultSHA256": "50a9c78541d9953eda3e2d1ab51e7d84be9636df0b7fd5bc4910edab64d3ae18",
+    "timelines": [
+      {
+        "appearance": "dark",
+        "caseId": "clear-dark-dematerialize-06",
+        "diameter": 51,
+        "direction": "dematerialize",
+        "profileCount": 30,
+        "timelineSHA256": "0fb1572ce1822fa3a00da0cf37357ba7d923d60d21da85b6a14207bf20c3fe31"
+      },
+      {
+        "appearance": "light",
+        "caseId": "clear-light-materialize-01",
+        "diameter": 53,
+        "direction": "materialize",
+        "profileCount": 30,
+        "timelineSHA256": "85dc1f54a54f86852ee46b1c611f8968b470c0551a4647c0f7b8a59030ccb016"
+      }
+    ]
+  },
+  "profileConstructor": {
+    "profileCount": 60,
+    "profileSizeBytes": 210,
+    "comparedByteCount": 12600,
+    "exactByteCount": 12600,
+    "unequalByteCount": 0,
+    "observedSHA256": "91d7807370e65dfe65e0955d91674aa68eaba9cfae87781b1ec3a3aded70add0",
+    "predictedSHA256": "91d7807370e65dfe65e0955d91674aa68eaba9cfae87781b1ec3a3aded70add0",
+    "layout": "established 258-byte dynamic profile bytes 48 through 257 inclusive",
+    "capturedExpectedBytesUsedByProduction": false,
+    "capturedExpectedBytesUsedOnlyByTestFixture": true
+  },
+  "newDiscriminators": {
+    "innerHeightReciprocal": {
+      "law": "binary32(1/min(binary32(20*k),0.36*G)) with the selected minimum retained in binary64 until the reciprocal result is rounded to binary32",
+      "roundedInputReciprocalDifferingProfileCount": 6,
+      "exactProfileCount": 60
+    },
+    "shadowOffset": {
+      "publicPoints": [0, 8],
+      "compositionHeight": 128,
+      "packedNormalizedY": 0.0625,
+      "exactProfileCount": 60
+    },
+    "colorMatrixProductOrder": {
+      "faceDescendingFMAMismatchedBytes": 0,
+      "faceAscendingFMAMismatchedBytes": 4,
+      "bleedDescendingFMAMismatchedBytes": 0,
+      "bleedAscendingFMAMismatchedBytes": 0,
+      "shadowDescendingFMAMismatchedBytes": 1,
+      "shadowAscendingFMAMismatchedBytes": 0,
+      "matrixComparedByteCount": 4320,
+      "discriminatingCaseId": "clear-dark-dematerialize-06",
+      "discriminatingSampleIndex": 24,
+      "discriminatingProfileByteOffset": 148,
+      "correspondingFullProfileByteOffset": 196,
+      "commonDescendingShadowHalf": "0x3bf7",
+      "observedAscendingShadowHalf": "0x3bf6",
+      "law": "face and bleed use the established descending binary32 FMA product order; Tghn shadow uses ascending binary32 FMA product order"
+    }
+  },
+  "compilerTransfer": {
+    "gcc15": {
+      "release": true,
+      "asanUbsan": true
+    },
+    "clang21": {
+      "release": true,
+      "asanUbsan": true
+    },
+    "appleClang21": {
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+      "release": true,
+      "asanUbsan": true,
+      "asanLeakDetectionSupported": false,
+      "nixStorePathPresent": false,
+      "machine": "Apple M1 Max at 10.0.41.19"
+    },
+    "ordinaryProfileRegressionGate": {
+      "exactProfileCount": 252,
+      "profileCount": 252,
+      "exactByteCount": 65016,
+      "comparedByteCount": 65016,
+      "exactModeledByteCount": 48888,
+      "modeledComparedByteCount": 48888
+    }
+  },
+  "walleFiles": {
+    "parity/liquid_glass_transition_profile.c": "b14035d9e1cefd1e008bd4810d3aa3449f2d6b771cd8ebc2c74cbbee11e7547c",
+    "parity/liquid_glass_transition_profile.h": "c164d94863b881354bf03fd36092b3636fb0dc5b277be42b5fdf68796d2f1d01",
+    "parity/emit_liquid_glass_small_clear_background_profile.c": "d0159b6643038b7a2f827e46d789cb85f534ef255a5615df28345b96f096802e",
+    "parity/test_liquid_glass_small_clear_background_profile.c": "25decf2d35ca24d21d41c1a38a47d4770b2bfe56acabac6a2f8101e4f900f78c",
+    "parity/verify_small_clear_background_profile_corpus.py": "5013c181a5608d6613fc154740609879da68ca417e8e74e48f6ebad5e1dd22e7",
+    "parity/run_small_clear_background_profile_gate.sh": "18f7cae33979f2bdede34b22012e8b85b1b666dd6152bf464f4d3365ce2157d9",
+    "parity/small_clear_background_profile_v1_fixture.bin": "0910b3b604fd3b4fbb66117e5b0c2ff2ba2eb98542fe2785880c05aac84ce693",
+    "parity/small_clear_background_profile_v1_fixture.json": "02d05b70b454f8841b7e0cedc3ad34600b3b2b57c4ff97775497f89e8775aa98"
+  },
+  "scope": {
+    "appleUnknownsBlockingGatedWalleIntegration": 0,
+    "walleIntegrationMayProceedBehindExactGates": true,
+    "smallClearTghnProfileConstructorClosed": true,
+    "smallClearTghnGeometryClosed": true,
+    "smallClearTghnPixelSemanticsClosed": true,
+    "smallClearTghnBoundaryClosed": true,
+    "smallClearTmuaA2XghfcClosed": false,
+    "universalCircleDomainParity": false,
+    "productionParityAuthorized": false,
+    "productionShaderChanged": false,
+    "productionFlakeChanged": false,
+    "protectedProductionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "protectedFlakeSHA256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01"
+  },
+  "remainingAppleAlgorithmFamilies": [
+    "small-clear Tmua/A2Xghfc producer and composition construction plus exact pixels"
+  ],
+  "remainingProductProofs": [
+    "Walle-shaped physical Retina color and compositor transfer",
+    "fresh production-Walle frame with zero unequal bytes"
+  ]
+}

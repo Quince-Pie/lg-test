@@ -13408,3 +13408,64 @@ This closure modified `lg-test` capture transport, validators, tests, result,
 and this README. It did not modify Walle's protected production shader or
 `flake.nix`, does not weaken a tolerance, and does not yet claim formal Liquid
 Glass parity.
+
+### Independent small-clear `Tghn` profile closure
+
+The last `Tghn` construction item is now closed. A separate C23 constructor in
+the sibling Walle tree accepts only appearance, diameter, the exact binary32
+remaining value, the measured binary64 element extent, and the binary32
+backdrop scale. It emits the complete 210-byte fragment profile without
+reading a captured profile or an answer table. Against both retained
+small-clear timelines it matches 60/60 profiles and 12,600/12,600 bytes. The
+common observed and predicted profile-stream SHA-256 is
+`91d7807370e65dfe65e0955d91674aa68eaba9cfae87781b1ec3a3aded70add0`.
+
+The profile is the established 258-byte dynamic layout from byte 48 through
+byte 257, but the small context exposes three operation-order distinctions
+that the ordinary corpus did not:
+
+1. The reciprocal at full-profile offset 68 uses the selected inner height in
+   binary64, before its public binary32 store. Computing the reciprocal from
+   that rounded store differs in six of the 60 profiles.
+2. The exact public shadow offset `[0,8]` is normalized by the invariant
+   128-pixel `Tmua` output height, so full-profile offset 116 is exactly
+   binary32 `0.0625`, not the ordinary profile's `-8`.
+3. Face and bleed matrices retain the established descending binary32 FMA
+   product order, while the `Tghn` shadow matrix uses ascending product order.
+   This is not cosmetic: clear/dark dematerialize sample 24 distinguishes
+   half word `0x3bf6` at Tghn byte 148 from the common-order candidate
+   `0x3bf7`. Across 4,320 matrix bytes, descending face has zero mismatches and
+   ascending face has four; ascending shadow has zero and descending shadow
+   has one. The split-order law is exact throughout the corpus.
+
+The fixture contains captured expected bytes only for the test executable;
+the production constructor receives no captured payload. GCC 15, Clang 21,
+and native Apple clang 21 all pass 60/60 profiles in optimized and ASan/UBSan
+builds. The native M1 binary contains no Nix-store path. Each compiler gate
+also rechecks the pre-existing ordinary constructor at 252/252 profiles,
+65,016/65,016 complete bytes, and 48,888/48,888 independently modeled bytes.
+The protected shader and `flake.nix` remain byte-identical at their required
+SHA-256 values.
+
+The compact result is
+`Analysis/small_clear_background_profile_constructor_result.json`, SHA-256
+`800fa8e045b89d4dff28ef04eebfb58142bcf0dcbb9ed41a5545425a0a5c61a6`.
+The Walle fixture and manifest have SHA-256 values
+`0910b3b604fd3b4fbb66117e5b0c2ff2ba2eb98542fe2785880c05aac84ce693`
+and
+`02d05b70b454f8841b7e0cedc3ad34600b3b2b57c4ff97775497f89e8775aa98`.
+
+The exact ledger is now:
+
+1. **Unknowns blocking gated Walle work: zero.** The closed `Tghn` branch can
+   be integrated behind its immutable byte and pixel gates now.
+2. **Remaining Apple construction boundaries: one.** Only small-clear
+   `Tmua/A2Xghfc` producer/composition construction and exact pixels remain.
+3. **Remaining product proofs: two.** Walle-shaped physical Retina transfer
+   and a fresh production-Walle frame with zero unequal bytes remain required.
+
+This step modified the sibling Walle parity constructor, fixture, verifier,
+tests, gate, and parity README, plus this `lg-test` result and README. It did
+not modify the protected production shader or `flake.nix`, does not weaken any
+tolerance, and does not claim formal parity before the remaining construction
+and product gates pass.
