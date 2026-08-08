@@ -20,6 +20,24 @@ SAMPLE = 24
 SOURCE_BASE_PIXELS = 768
 SOURCE_MIP_COUNT = 6
 FINITE_SOURCE_SALT = 0x6D2B79F5
+QUARTZCORE_LIBRARY_PATH = (
+    "/System/Library/Frameworks/QuartzCore.framework/Versions/A/"
+    "Resources/default.metallib"
+)
+QUARTZCORE_LIBRARY_BYTES = 160_220_928
+QUARTZCORE_LIBRARY_SHA256 = (
+    "eb32770f9a595d777a040dee7454fe30d668ccacaa803f35ddb2f97646193ca7"
+)
+QUARTZCORE_G13G_SLICE_SHA256 = (
+    "5566617c9a00a05fb768d3e659308288e17e6b21c3dc8df903e99a7c914ef119"
+)
+CAPTURED_VERTEX_STREAM_SHA256 = (
+    "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b"
+)
+WIDENED_IRSD_VERTEX_STREAM_SHA256 = (
+    "736890b297ce90ad499ca3e6c010d3667cd09db70806d1f044d9c6314f258afd"
+)
+IMAGE_FUNCTION = {"Iscd": 21, "Irsd": 20}
 PIPELINES = {
     "Iscd": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd",
     "Irsd": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd",
@@ -260,9 +278,7 @@ def expected_finite_source_mips() -> tuple[bytes, ...]:
         for y in range(height):
             for x in range(width):
                 word = (
-                    x * 0x045D9F3B
-                    ^ y * 0x0119DE1F
-                    ^ level * 0x9E3779B9
+                    x * 0x045D9F3B ^ y * 0x0119DE1F ^ level * 0x9E3779B9
                 ) & 0xFFFF_FFFF
                 word ^= FINITE_SOURCE_SALT
                 offset = (y * width + x) * 4
@@ -291,6 +307,105 @@ def validate_intervention(untyped: object, *, label: str) -> None:
         tuple(observed) == FORCED_COVERAGE_EDITS,
         f"{label} edits differ",
     )
+
+
+def validate_system_specialization(
+    untyped: object,
+    *,
+    role: str,
+) -> None:
+    specialization = mapping(untyped, f"{role} system specialization")
+    expected = {
+        "schemaVersion": 1,
+        "role": role,
+        "libraryPath": QUARTZCORE_LIBRARY_PATH,
+        "libraryByteCount": QUARTZCORE_LIBRARY_BYTES,
+        "librarySHA256": QUARTZCORE_LIBRARY_SHA256,
+        "g13gSliceSHA256": QUARTZCORE_G13G_SLICE_SHA256,
+        "baseFunction": "fixed_frag_lph_cpf",
+        "functionConstantCount": 60,
+        "generic": False,
+        "vertexLayout": 0,
+        "framebufferFetch": True,
+        "attachmentCount": 2,
+        "textureFunction": 66,
+        "blendFunction": 43,
+        "imageCount": 1,
+        "destinationCount": 1,
+        "extendedRange": False,
+        "imageFunction0": IMAGE_FUNCTION[role],
+        "texcoordCount0": 1,
+        "allUnlistedConstantsZero": True,
+        "specializedFunctionRuntimeName": "fixed_frag_lph_cpf",
+    }
+    for field, value in expected.items():
+        require(
+            specialization.get(field) == value,
+            f"{role} system specialization {field} differs",
+        )
+
+
+def validate_geometry_activity_control(
+    untyped: object,
+    *,
+    role: str,
+) -> None:
+    control = mapping(untyped, f"{role} geometry activity control")
+    common = {
+        "schemaVersion": 1,
+        "vertexCount": 16,
+        "vertexStride": 48,
+        "positionOffsets": [0, 4],
+        "capturedVertexStreamSHA256": CAPTURED_VERTEX_STREAM_SHA256,
+        "capturedApplePipelineMutated": False,
+        "liveAppleFrameMutated": False,
+    }
+    for field, value in common.items():
+        require(
+            control.get(field) == value,
+            f"{role} geometry activity {field} differs",
+        )
+    if role == "Iscd":
+        expected = {
+            "method": "captured-Iscd-geometry",
+            "vertexStreamMutated": False,
+        }
+    else:
+        expected = {
+            "method": "widen-Irsd-center-seams-v1",
+            "halfExpansionPixels": 32,
+            "capturedColumnXFloat32Bits": [
+                "436212e0",
+                "43f10a76",
+                "43f10a75",
+                "443885be",
+            ],
+            "capturedRowYFloat32Bits": [
+                "44477b48",
+                "44077ac5",
+                "44077ac6",
+                "438ef485",
+            ],
+            "widenedColumnXFloat32Bits": [
+                "436212e0",
+                "43e10a76",
+                "4400853b",
+                "443885be",
+            ],
+            "widenedRowYFloat32Bits": [
+                "44477b48",
+                "440f7ac6",
+                "43fef58c",
+                "438ef485",
+            ],
+            "widenedVertexStreamSHA256": WIDENED_IRSD_VERTEX_STREAM_SHA256,
+            "vertexStreamMutated": True,
+        }
+    for field, value in expected.items():
+        require(
+            control.get(field) == value,
+            f"{role} geometry activity {field} differs",
+        )
 
 
 def indexed_layer_states(
@@ -376,10 +491,8 @@ def validate_geometry_transport(record: Mapping[str, object]) -> None:
         )
         live_element = states[TRANSPORT_ELEMENT_PATH]
         require(
-            live_element.get("bounds")
-            == [0, 0, 494.0159606933594, 494.0159606933594]
-            and live_element.get("position")
-            == [-217.0079803466797, -217.0079803466797]
+            live_element.get("bounds") == [0, 0, 494.0159606933594, 494.0159606933594]
+            and live_element.get("position") == [-217.0079803466797, -217.0079803466797]
             and live_element.get("cornerRadius") == 247.0079803466797,
             f"live {name} element geometry differs",
         )
@@ -486,17 +599,19 @@ def validate_source_intervention(
     for level, expected_mip in enumerate(expected_mips):
         width = max(1, SOURCE_BASE_PIXELS >> level)
         height = max(1, SOURCE_BASE_PIXELS >> level)
-        captured_mips.append(snapshot_payload(
-            capture_directory,
-            captured_snapshots[level],
-            label=f"{role} captured source mip {level}",
-            pixel_format=80,
-            byte_count=width * height * 4,
-            width=width,
-            height=height,
-            mipmap_level=level,
-            mipmap_level_count=SOURCE_MIP_COUNT,
-        ))
+        captured_mips.append(
+            snapshot_payload(
+                capture_directory,
+                captured_snapshots[level],
+                label=f"{role} captured source mip {level}",
+                pixel_format=80,
+                byte_count=width * height * 4,
+                width=width,
+                height=height,
+                mipmap_level=level,
+                mipmap_level_count=SOURCE_MIP_COUNT,
+            )
+        )
         finite_mip = snapshot_payload(
             capture_directory,
             finite_snapshots[level],
@@ -540,7 +655,7 @@ def validate_source_intervention(
     require(
         comparison["mismatchedByteCount"] > 0
         and comparison["mismatchedPixelCount"] > 0,
-        f"{role} texture-4 path-sensitivity control is inactive",
+        f"{role} texture-3 path-sensitivity control is inactive",
     )
     reported = mapping(
         record.get("sourcePathSensitivityComparison"),
@@ -578,7 +693,7 @@ def validate_role(
 ) -> JSONObject:
     record = mapping(untyped, f"{role} record")
     expected_scalars = {
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "executed": True,
         "role": role,
         "pipelineLabel": PIPELINES[role],
@@ -589,18 +704,26 @@ def validate_role(
         "matrixCaseCount": len(MATRIX_CASES),
         "casesExecuted": True,
         "positiveControlsPassed": True,
+        "systemSpecializationExact": True,
         "candidatesExact": True,
     }
     for field, value in expected_scalars.items():
         require(record.get(field) == value, f"{role} {field} differs")
     uses_auxiliary = record.get("usesAuxiliaryAttachment")
     require(
-        type(uses_auxiliary) is bool
-        and (role != "Irsd" or uses_auxiliary is True),
+        type(uses_auxiliary) is bool and (role != "Irsd" or uses_auxiliary is True),
         f"{role} auxiliary attachment topology differs",
     )
     draw_index = record.get("drawIndex")
     require(type(draw_index) is int and draw_index >= 0, f"{role} drawIndex differs")
+    validate_system_specialization(
+        record.get("systemSpecialization"),
+        role=role,
+    )
+    validate_geometry_activity_control(
+        record.get("geometryActivityControl"),
+        role=role,
+    )
     validate_intervention(
         record.get("forcedCoverageIntervention"),
         label=f"{role} forced coverage",
@@ -672,6 +795,7 @@ def validate_role(
     require(set(by_name) == set(MATRIX_CASES), f"{role} case names differ")
     total_activity_bytes = 0
     total_activity_pixels = 0
+    total_system_comparison_bytes = 0
     output_hashes: dict[str, str] = {}
     for name in MATRIX_CASES:
         case = by_name[name]
@@ -682,9 +806,7 @@ def validate_role(
         require(
             len(matrix_words) == 24
             and all(
-                isinstance(word, str)
-                and len(word) == 6
-                and word.startswith("0x")
+                isinstance(word, str) and len(word) == 6 and word.startswith("0x")
                 for word in matrix_words
             ),
             f"{role} {name} matrix words differ",
@@ -693,7 +815,9 @@ def validate_role(
             case.get("uniformIntervention"),
             f"{role} {name} intervention",
         )
-        require(combined.get("name") == name, f"{role} {name} intervention name differs")
+        require(
+            combined.get("name") == name, f"{role} {name} intervention name differs"
+        )
         combined_edits = sequence(
             combined.get("edits"),
             f"{role} {name} edits",
@@ -720,6 +844,11 @@ def validate_role(
             case.get("apple"),
             label=f"{role} {name} Apple",
         )
+        system_specialized_apple = output_payload(
+            capture_directory,
+            case.get("systemSpecializedApple"),
+            label=f"{role} {name} system-specialized Apple",
+        )
         independent_candidate = output_payload(
             capture_directory,
             case.get("candidate"),
@@ -736,6 +865,16 @@ def validate_role(
             activity,
             label=f"{role} {name} activity comparison",
         )
+        system_comparison = mismatch_metrics(apple, system_specialized_apple)
+        require(
+            system_comparison["exactByteMatch"] is True,
+            f"{role} {name} system specialization bytes differ",
+        )
+        validate_reported_comparison(
+            case.get("capturedVsSystemSpecializationComparison"),
+            system_comparison,
+            label=f"{role} {name} system specialization comparison",
+        )
         comparison = mismatch_metrics(apple, independent_candidate)
         require(
             comparison["exactByteMatch"] is True,
@@ -748,6 +887,7 @@ def validate_role(
         )
         total_activity_bytes += int(activity["mismatchedByteCount"])
         total_activity_pixels += int(activity["mismatchedPixelCount"])
+        total_system_comparison_bytes += len(apple)
         output_hashes[name] = sha256_bytes(apple)
     return {
         "role": role,
@@ -757,6 +897,7 @@ def validate_role(
         "matrixCaseCount": len(MATRIX_CASES),
         "positiveControlUnequalBytes": total_activity_bytes,
         "positiveControlUnequalPixels": total_activity_pixels,
+        "comparedSystemSpecializationBytes": total_system_comparison_bytes,
         "comparedCandidateBytes": len(MATRIX_CASES) * BGRA_BYTES,
         "sourceIntervention": source_summary,
         "outputSHA256": output_hashes,
@@ -770,17 +911,18 @@ def validate(
 ) -> JSONObject:
     preregistration = load_json(preregistration_path)
     require(
-        preregistration.get("currentFinalCompositorTransferPreregistrationSchemaVersion")
-        == 3,
+        preregistration.get(
+            "currentFinalCompositorTransferPreregistrationSchemaVersion"
+        )
+        == 4,
         "preregistration schema differs",
     )
     descriptor_capture = mapping(
-        preregistration.get("v3DescriptorCapture"),
-        "v3DescriptorCapture",
+        preregistration.get("descriptorCapture"),
+        "descriptorCapture",
     )
     require(
-        descriptor_capture.get("installationBoundary")
-        == "before NSApplication.shared"
+        descriptor_capture.get("installationBoundary") == "before NSApplication.shared"
         and descriptor_capture.get("selectors")
         == [
             "newRenderPipelineStateWithDescriptor:error:",
@@ -797,8 +939,7 @@ def validate(
         "supersedesFailedRun",
     )
     require(
-        superseded.get("captureCommit")
-        == "b838af32b291561b362bd1dc0243ac0213359978"
+        superseded.get("captureCommit") == "b838af32b291561b362bd1dc0243ac0213359978"
         and superseded.get("timelineSHA256")
         == "52e523f76997426348b6ce83c9f3dcae08e5fe05936b6c6dd1ccc0195e0b1464"
         and superseded.get("frozenValidatorExitStatus") == 1
@@ -821,8 +962,7 @@ def validate(
         "v2 inherited texture 3",
     )
     require(
-        superseded_v2.get("captureCommit")
-        == "8c7dd82ebe0c0abbb3d04aa005adfd2ddc79848b"
+        superseded_v2.get("captureCommit") == "8c7dd82ebe0c0abbb3d04aa005adfd2ddc79848b"
         and superseded_v2.get("timelineSHA256")
         == "105832a92ff8211ffbcb55492ac2c09a4bd16964c592a8f58a66aaa333c20ef1"
         and superseded_v2.get("nativeCaptureExitStatus") == 0
@@ -846,6 +986,51 @@ def validate(
         },
         "failed-v2 amendment differs",
     )
+    superseded_v3 = mapping(
+        preregistration.get("supersedesFailedV3Run"),
+        "supersedesFailedV3Run",
+    )
+    observed_v3 = mapping(
+        superseded_v3.get("observedTransport"),
+        "v3 observed transport",
+    )
+    require(
+        superseded_v3.get("captureCommit") == "2e41aba0275a5e829c43f283071b462d8ac675b3"
+        and superseded_v3.get("timelineSHA256")
+        == "22296e449db47aff8bbd142e2b4ef6b33b0a68a31bdfc6fc053d0f91bd457cec"
+        and superseded_v3.get("nativeCaptureExitStatus") == 0
+        and superseded_v3.get("frozenValidatorExitStatus") == 1
+        and superseded_v3.get("promotedEvidence") is False
+        and superseded_v3.get("arithmeticCasesChanged") is False
+        and superseded_v3.get("candidateChanged") is False
+        and superseded_v3.get("toleranceChanged") is False
+        and observed_v3.get("IscdPrivateBitcodeRebuildFailed") is True
+        and observed_v3.get("IrsdPixelSampleCoverage") == 0
+        and observed_v3.get("IrsdPositiveMatrixCaseCount") == 0
+        and observed_v3.get("capturedVertexStreamSHA256")
+        == CAPTURED_VERTEX_STREAM_SHA256,
+        "failed-v3 amendment differs",
+    )
+    specialization = mapping(
+        preregistration.get("systemSpecialization"),
+        "systemSpecialization",
+    )
+    require(
+        specialization.get("libraryPath") == QUARTZCORE_LIBRARY_PATH
+        and specialization.get("libraryByteCount") == QUARTZCORE_LIBRARY_BYTES
+        and specialization.get("librarySHA256") == QUARTZCORE_LIBRARY_SHA256
+        and specialization.get("g13gSliceSHA256") == QUARTZCORE_G13G_SLICE_SHA256
+        and specialization.get("baseFunction") == "fixed_frag_lph_cpf"
+        and specialization.get("functionConstantCount") == 60
+        and specialization.get("extendedRange") is False
+        and specialization.get("imageFunctionByRole") == IMAGE_FUNCTION
+        and specialization.get("capturedComparisonRequirement")
+        == (
+            "each reconstructed system specialization must equal its captured "
+            "Apple pipeline byte-for-byte in all seven matrix cases"
+        ),
+        "system-specialization preregistration differs",
+    )
     nonvacuity = mapping(preregistration.get("nonvacuity"), "nonvacuity")
     expected_source_mips = expected_finite_source_mips()
     require(
@@ -866,11 +1051,26 @@ def validate(
         ),
         "finite-source preregistration differs",
     )
+    geometry_activity = mapping(
+        nonvacuity.get("geometryActivity"),
+        "geometry activity",
+    )
+    require(
+        geometry_activity.get("IscdMethod") == "captured-Iscd-geometry"
+        and geometry_activity.get("IrsdMethod") == "widen-Irsd-center-seams-v1"
+        and geometry_activity.get("IrsdHalfExpansionPixels") == 32
+        and geometry_activity.get("capturedVertexStreamSHA256")
+        == CAPTURED_VERTEX_STREAM_SHA256
+        and geometry_activity.get("widenedIrsdVertexStreamSHA256")
+        == WIDENED_IRSD_VERTEX_STREAM_SHA256
+        and geometry_activity.get("capturedApplePipelineChanged") is False
+        and geometry_activity.get("liveAppleFrameChanged") is False,
+        "geometry-activity preregistration differs",
+    )
     validate_sources(preregistration)
     candidate_source_sha256 = preregistration.get("candidateMetalSourceSHA256")
     require(
-        isinstance(candidate_source_sha256, str)
-        and len(candidate_source_sha256) == 64,
+        isinstance(candidate_source_sha256, str) and len(candidate_source_sha256) == 64,
         "candidate Metal source hash is malformed",
     )
 
@@ -933,7 +1133,7 @@ def validate(
         "currentFinalCompositorTransfer",
     )
     expected_transfer = {
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "executed": True,
         "selectionPolicy": (
             "exactly one current Iscd and one immediately later current Irsd draw "
@@ -941,7 +1141,15 @@ def validate(
         ),
         "activityPolicy": (
             "replace only inherited texture 3 in each isolated replay with "
-            "the frozen opaque six-mip 768x768 BGRA8 pattern"
+            "the frozen opaque six-mip 768x768 BGRA8 pattern; retain captured "
+            "Iscd geometry and widen only the Irsd center seams by 32 pixels "
+            "per side in its isolated replay"
+        ),
+        "systemSpecializationPolicy": (
+            "instantiate QuartzCore fixed_frag_lph_cpf from the pinned system "
+            "default.metallib with the statically decoded non-extended Iscd/"
+            "Irsd constants and require exact BGRA8 equality to each captured "
+            "Apple pipeline"
         ),
         "capturedAppleFunctionsUnmodified": True,
         "capturedAppleResourcesMutated": False,
@@ -974,7 +1182,7 @@ def validate(
         "current Iscd/Irsd draw order differs",
     )
     return {
-        "currentFinalCompositorTransferResultSchemaVersion": 3,
+        "currentFinalCompositorTransferResultSchemaVersion": 4,
         "accepted": True,
         "captureDirectory": capture_directory.name,
         "sampleIndex": SAMPLE,
@@ -983,6 +1191,13 @@ def validate(
         "roles": summaries,
         "matrixCasesPerRole": len(MATRIX_CASES),
         "positiveControlCount": len(PIPELINES) * len(MATRIX_CASES),
+        "exactSystemSpecializationComparisonCount": (
+            len(PIPELINES) * len(MATRIX_CASES)
+        ),
+        "comparedSystemSpecializationBytes": (
+            len(PIPELINES) * len(MATRIX_CASES) * BGRA_BYTES
+        ),
+        "unequalSystemSpecializationBytes": 0,
         "exactCandidateComparisonCount": len(PIPELINES) * len(MATRIX_CASES),
         "comparedCandidateBytes": len(PIPELINES) * len(MATRIX_CASES) * BGRA_BYTES,
         "unequalCandidateBytes": 0,

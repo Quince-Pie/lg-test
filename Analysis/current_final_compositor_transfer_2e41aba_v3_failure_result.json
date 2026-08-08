@@ -1,0 +1,52 @@
+{
+  "currentFinalCompositorTransferFailureResultSchemaVersion": 3,
+  "status": "rejected-before-any-nonvacuous-current-function-arithmetic-comparison",
+  "captureCommit": "2e41aba0275a5e829c43f283071b462d8ac675b3",
+  "captureDirectory": "local-current-final-compositor-transfer-2e41aba-v3",
+  "timelineSHA256": "22296e449db47aff8bbd142e2b4ef6b33b0a68a31bdfc6fc053d0f91bd457cec",
+  "nativeCaptureExitStatus": 0,
+  "frozenValidatorExitStatus": 1,
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "transportFindings": {
+    "Iscd": {
+      "selected": true,
+      "executed": false,
+      "capturedDescriptorAvailable": true,
+      "failure": "rebuilding the captured descriptor failed because Metal could not copy the private captured fragment-function bitcode"
+    },
+    "Irsd": {
+      "selected": true,
+      "executed": false,
+      "drawIndex": 23,
+      "capturedDescriptorAvailable": true,
+      "usesAuxiliaryAttachment": true,
+      "capturedAndFiniteSourceDiffer": true,
+      "sourceMipReadbackCount": 6,
+      "sourcePathSensitive": false,
+      "forcedAlphaNonzeroPixelCount": 0,
+      "matrixCaseCount": 7,
+      "activeMatrixCaseCount": 0,
+      "candidateUnequalByteCount": 0,
+      "interpretation": "the current Irsd center-seam triangles hit no pixel sample centers, so all seven Apple comparisons equal the seed and candidate equality is vacuous"
+    },
+    "capturedVertexStream": {
+      "byteCount": 768,
+      "vertexCount": 16,
+      "vertexStride": 48,
+      "IscdAndIrsdByteIdentical": true,
+      "sha256": "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b",
+      "IrsdTrianglesCoverPixelSampleCenters": false
+    }
+  },
+  "promotedEvidence": false,
+  "remainingAppleConstructionQuestions": 1,
+  "nextCorrection": "instantiate fixed_frag_lph_cpf from the pinned QuartzCore system metallib with the decoded Iscd/Irsd constants, require exact BGRA8 equality to the captured pipelines, and widen only the isolated Irsd center seams to create nonzero raster coverage",
+  "arithmeticCasesChanged": false,
+  "candidateChanged": false,
+  "toleranceChanged": false,
+  "productionParity": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

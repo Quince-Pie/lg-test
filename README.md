@@ -13982,3 +13982,96 @@ The exact ledger before the answer-bearing run is:
 This work modifies only `lg-test`. The protected Walle shader and `flake.nix`
 remain byte-identical, and no quality concession or production-parity claim is
 authorized before the new evidence passes.
+
+### Rejected v3 outcome and nonvacuous v4 specialization gate
+
+The v3 run at commit
+`2e41aba0275a5e829c43f283071b462d8ac675b3` is rejected. The native M1
+Retina capture exited zero, the preflight reported 3456-by-2234 physical
+pixels at backing scale two, and both exact current descriptors were retained,
+but the frozen validator exited one. Rebuilding `Iscd` from its captured
+private fragment function failed with Metal's `unable to copy bitcode for
+function` error. `Irsd` executed all source readbacks and all seven matrix
+cases, but its alpha trace contained no nonzero pixel and every Apple output
+equalled the seed. Its zero candidate differences were therefore vacuous and
+promote no arithmetic evidence. The timeline SHA-256 is
+`22296e449db47aff8bbd142e2b4ef6b33b0a68a31bdfc6fc053d0f91bd457cec`.
+The compact failure result is
+`Analysis/current_final_compositor_transfer_2e41aba_v3_failure_result.json`,
+SHA-256
+`38f20378fb4516bac9958dd6e72703249a34b0b0f704abc14deb7e554e0852e8`.
+
+The failure is geometric, not evidence that current `Irsd` is universally
+inactive. An exact scan of the five retained natural current-`Irsd` states
+found the same 16-vertex, 48-byte-stride stream at the preceding `Iscd` and
+`Irsd` draws and the same four center-edge index strips. One state has exactly
+duplicated center seams; the other four have zero or one-binary32-ULP seam
+width on each thin axis. None of the 40 retained triangles contains a pixel
+sample center, so all five retained `Irsd` draws have zero raster coverage.
+That establishes why v3 was vacuous, but it does not extrapolate zero coverage
+to every possible unseen placement. The v3 selected vertex stream is frozen
+at 768 bytes with SHA-256
+`9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b`.
+
+Static decoding removes the private-bitcode rebuild problem. The exact system
+library is
+`/System/Library/Frameworks/QuartzCore.framework/Versions/A/Resources/default.metallib`,
+160,220,928 bytes, SHA-256
+`eb32770f9a595d777a040dee7454fe30d668ccacaa803f35ddb2f97646193ca7`.
+Its Apple-G13G slice has SHA-256
+`5566617c9a00a05fb768d3e659308288e17e6b21c3dc8df903e99a7c914ef119`.
+All 60 AIR function constants were decoded from the FlatBuffer tables. The
+extended-range `Iscd` and `Irsd` specializations differ in exactly one value:
+`fc_image_function0` is 21 for `Iscd` and 20 for `Irsd`. Extended and ordinary
+`Iscd` differ only in `fc_extended_range`; it is false for the captured
+ordinary BGRA8 family. The remaining nonzero current-family constants are
+framebuffer fetch true, attachment count two, texture function 66, blend
+function 43, image count one, destination count one, and texcoord-0 count one.
+All other decoded constants are zero. A native M1 construction check loads
+`fixed_frag_lph_cpf` from that exact library and specializes both selectors
+successfully.
+
+The frozen v4 gate uses those two reconstructed Apple specializations while
+retaining each captured descriptor's vertex function, attachment topology,
+textures, uniforms, and draw. It requires every reconstructed BGRA8 result to
+equal the corresponding captured Apple pipeline byte-for-byte in all seven
+matrix cases. This is a direct runtime check of the static decode, not an
+assumption that similarly named containers are equivalent.
+
+`Iscd` keeps the exact captured geometry. For only isolated `Irsd` proof
+replays, a clone of the exact captured vertex stream widens each center seam
+by 32 pixels per side. No attribute other than position x/y changes, and the
+captured vertex buffer, captured Apple pipeline, and live Apple frame remain
+untouched. The widened stream SHA-256 is
+`736890b297ce90ad499ca3e6c010d3667cd09db70806d1f044d9c6314f258afd`.
+The same finite six-mip source, seven arithmetic cases, independent mode-9
+candidate, and zero tolerance remain frozen. Promotion now requires 14 active
+Apple controls, 14 exact captured-versus-system comparisons, and 14 exact
+captured-versus-independent-candidate comparisons, covering 58,720,256 bytes
+in each equality family with zero unequal bytes.
+
+The v4 preregistration SHA-256 is
+`21c744fc2e5647e180bd791e2afd370af4fb04398d1959fe842beaecb4721b49`.
+The validator, its ten tests, the native runner, and the Swift probe have
+SHA-256 values
+`db7c449e7f2e5b74e8eca7faeb23d69bee0e24a225a93384a66fb9eac5cb4c3e`,
+`09baab573ea9af991f04c5cd5715ee92bb9624012a2b848b067bbd22f2b9774b`,
+`ed27e3702ac7c4fa7ce0ec3905701aa741f4e868f380a235f5f44933d8bcaa44`,
+and
+`ad81eb9b9b935a46565e01c32486a8804c9b85f77eacc0d44d00210606b653a3`,
+respectively. The probe type-checks natively against Apple's 26.5 SDK on the
+M1 Max.
+
+The exact ledger before v4 is:
+
+1. **Remaining Apple construction questions: one.** The v4 physical-Retina
+   gate decides whether the recovered compositor arithmetic and reconstructed
+   selectors transfer exactly to active current `Iscd/Irsd` draws.
+2. **Product proof gates after that answer: two.** A Walle-shaped physical
+   Retina transfer and a fresh production-Walle frame with zero unequal bytes
+   remain mandatory before production parity.
+3. **Quality tolerance: zero.** No visual approximation, shader-quality
+   reduction, fitted tolerance, or post-capture case selection is permitted.
+
+This amendment again modifies only `lg-test`; Walle's protected production
+shader and `flake.nix` remain byte-identical.

@@ -10904,6 +10904,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let pipeline: MTLRenderPipelineState
         let uniformBuffer: MTLBuffer
         let uniformOffset: Int
+        let vertexBuffer: MTLBuffer
+        let vertexOffset: Int
         let fragmentTextures: [Int: MTLTexture]
     }
 
@@ -10913,6 +10915,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var currentPipeline: MTLRenderPipelineState?
         var activeUniformBuffer: MTLBuffer?
         var activeUniformOffset = 0
+        var activeVertexBuffer: MTLBuffer?
+        var activeVertexOffset = 0
         var activeFragmentTextures: [Int: MTLTexture] = [:]
         var selections: [FinalHighlightSelection] = []
 
@@ -10933,6 +10937,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 if bufferIndex == 1 {
                     activeUniformOffset = offset
                 }
+            case .vertexBuffer(
+                let buffer,
+                let offset,
+                let bufferIndex
+            ):
+                if bufferIndex == 1 {
+                    activeVertexBuffer = buffer
+                    activeVertexOffset = offset
+                }
+            case .vertexBufferOffset(let offset, let bufferIndex):
+                if bufferIndex == 1 {
+                    activeVertexOffset = offset
+                }
             case .fragmentTexture(let texture, let textureIndex):
                 if let texture {
                     activeFragmentTextures[textureIndex] = texture
@@ -10947,7 +10964,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             guard replayCommandIsDraw(command),
                   let currentPipeline,
                   isFinalHighlightPipeline(currentPipeline),
-                  let activeUniformBuffer
+                  let activeUniformBuffer,
+                  let activeVertexBuffer
             else {
                 continue
             }
@@ -10956,6 +10974,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pipeline: currentPipeline,
                 uniformBuffer: activeUniformBuffer,
                 uniformOffset: activeUniformOffset,
+                vertexBuffer: activeVertexBuffer,
+                vertexOffset: activeVertexOffset,
                 fragmentTextures: activeFragmentTextures))
         }
         return selections
@@ -13134,7 +13154,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         _ commands: [ReplayCommand],
         selection: FinalHighlightSelection,
         pipeline: MTLRenderPipelineState,
-        uniformBuffer: MTLBuffer
+        uniformBuffer: MTLBuffer,
+        vertexBufferOverride: MTLBuffer? = nil
     ) -> [ReplayCommand] {
         var result: [ReplayCommand] = []
         for command in commands[...selection.drawIndex] {
@@ -13161,9 +13182,177 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 offset,
                 index))
         }
+        if let vertexBufferOverride {
+            result.append(.vertexBuffer(
+                vertexBufferOverride,
+                selection.vertexOffset,
+                1))
+        }
         result.append(.pipeline(pipeline))
         result.append(commands[selection.drawIndex])
         return result
+    }
+
+    private struct CurrentQuartzCoreSpecialization {
+        let function: MTLFunction
+        let record: [String: Any]
+    }
+
+    private func currentQuartzCoreFragmentSpecialization(
+        device: MTLDevice,
+        role: String
+    ) throws -> CurrentQuartzCoreSpecialization {
+        let imageFunction: UInt8
+        switch role {
+        case "Iscd":
+            imageFunction = 21
+        case "Irsd":
+            imageFunction = 20
+        default:
+            throw NSError(
+                domain: "GlassIntrospect.CurrentQuartzCoreSpecialization",
+                code: 1,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "current compositor specialization role differs",
+                ])
+        }
+
+        let libraryPath =
+            "/System/Library/Frameworks/QuartzCore.framework/Versions/A/"
+            + "Resources/default.metallib"
+        let libraryURL = URL(fileURLWithPath: libraryPath)
+        let libraryData = try Data(
+            contentsOf: libraryURL,
+            options: [.mappedIfSafe])
+        let expectedLibraryBytes = 160_220_928
+        let expectedLibrarySHA256 =
+            "eb32770f9a595d777a040dee7454fe30d668ccacaa803f35ddb2f97646193ca7"
+        guard libraryData.count == expectedLibraryBytes,
+              transitionSHA256(libraryData) == expectedLibrarySHA256
+        else {
+            throw NSError(
+                domain: "GlassIntrospect.CurrentQuartzCoreSpecialization",
+                code: 2,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "QuartzCore default.metallib identity differs",
+                ])
+        }
+
+        let library = try device.makeLibrary(URL: libraryURL)
+        let values = MTLFunctionConstantValues()
+        func setBool(_ index: Int, _ value: Bool) {
+            var mutable = value
+            values.setConstantValue(
+                &mutable,
+                type: .bool,
+                index: index)
+        }
+        func setUChar(_ index: Int, _ value: UInt8) {
+            var mutable = value
+            values.setConstantValue(
+                &mutable,
+                type: .uchar,
+                index: index)
+        }
+        func setUChar2(
+            _ index: Int,
+            _ x: UInt8,
+            _ y: UInt8
+        ) {
+            var mutable = SIMD2<UInt8>(x, y)
+            values.setConstantValue(
+                &mutable,
+                type: .uchar2,
+                index: index)
+        }
+        func setUChar4(
+            _ index: Int,
+            _ x: UInt8,
+            _ y: UInt8,
+            _ z: UInt8,
+            _ w: UInt8
+        ) {
+            var mutable = SIMD4<UInt8>(x, y, z, w)
+            values.setConstantValue(
+                &mutable,
+                type: .uchar4,
+                index: index)
+        }
+
+        setBool(0, false)
+        setUChar(3, 0)
+        setBool(4, true)
+        setUChar(5, 2)
+        for index in 7...27 {
+            setBool(index, false)
+        }
+        setUChar(28, 66)
+        setUChar(29, 43)
+        setUChar(31, 0)
+        setUChar(32, 1)
+        setUChar(34, 0)
+        setUChar(35, 1)
+        setUChar(36, 0)
+        setBool(37, false)
+        setBool(38, false)
+        setBool(39, false)
+        setBool(40, false)
+        setBool(41, false)
+        setBool(42, false)
+        setBool(43, false)
+        setBool(46, false)
+        setUChar(47, imageFunction)
+        setUChar(48, 0)
+        setUChar(49, 0)
+        setUChar(50, 0)
+        setUChar(51, 0)
+        setUChar(52, 0)
+        setUChar(53, 1)
+        setUChar(54, 0)
+        setUChar(55, 0)
+        setUChar(56, 0)
+        setUChar(57, 0)
+        setUChar(58, 0)
+        setUChar4(59, 0, 0, 0, 0)
+        setUChar4(60, 0, 0, 0, 0)
+        setUChar2(61, 0, 0)
+        setUChar2(62, 0, 0)
+        setBool(63, false)
+        setBool(64, false)
+        setUChar(65, 0)
+        setUChar(66, 0)
+
+        let function = try library.makeFunction(
+            name: "fixed_frag_lph_cpf",
+            constantValues: values)
+        return CurrentQuartzCoreSpecialization(
+            function: function,
+            record: [
+                "schemaVersion": 1,
+                "role": role,
+                "libraryPath": libraryPath,
+                "libraryByteCount": libraryData.count,
+                "librarySHA256": expectedLibrarySHA256,
+                "g13gSliceSHA256":
+                    "5566617c9a00a05fb768d3e659308288e17e6b21c3dc8df903e99a7c914ef119",
+                "baseFunction": "fixed_frag_lph_cpf",
+                "functionConstantCount": 60,
+                "generic": false,
+                "vertexLayout": 0,
+                "framebufferFetch": true,
+                "attachmentCount": 2,
+                "textureFunction": 66,
+                "blendFunction": 43,
+                "imageCount": 1,
+                "destinationCount": 1,
+                "extendedRange": false,
+                "imageFunction0": Int(imageFunction),
+                "texcoordCount0": 1,
+                "allUnlistedConstantsZero": true,
+                "specializedFunctionRuntimeName": function.name,
+            ])
     }
 
     private func replayFinalHighlightAlphaTrace(
@@ -13587,6 +13776,25 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
         }
 
+        let currentCompositorRole: String?
+        if currentCompositorTransfer {
+            switch selection.pipeline.label {
+            case finalHighlightShapePipelineLabel26_6_1:
+                currentCompositorRole = "Iscd"
+            case finalHighlightRemainderPipelineLabel26_6_1:
+                currentCompositorRole = "Irsd"
+            default:
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor pipeline label differs",
+                    "pipelineLabel": selection.pipeline.label ?? "",
+                ]
+            }
+        } else {
+            currentCompositorRole = nil
+        }
+
         let rebuiltDescriptor = capturedDescriptor.copy()
             as? MTLRenderPipelineDescriptor
         let floatDescriptor = capturedDescriptor.copy()
@@ -13602,6 +13810,34 @@ private final class MetalUniformProbe: @unchecked Sendable {
         floatDescriptor.label =
             "lg.apple-final-highlight-alpha-rgba16float"
         floatDescriptor.colorAttachments[0]?.pixelFormat = .rgba16Float
+
+        var currentSystemSpecialization: [String: Any]?
+        if let currentCompositorRole {
+            do {
+                let specialization =
+                    try currentQuartzCoreFragmentSpecialization(
+                        device: device,
+                        role: currentCompositorRole)
+                rebuiltDescriptor.label =
+                    "lg.current-quartzcore-specialized-bgra8-"
+                    + currentCompositorRole
+                rebuiltDescriptor.fragmentFunction =
+                    specialization.function
+                floatDescriptor.label =
+                    "lg.current-quartzcore-specialized-rgba16float-"
+                    + currentCompositorRole
+                floatDescriptor.fragmentFunction =
+                    specialization.function
+                currentSystemSpecialization = specialization.record
+            } catch {
+                return [
+                    "executed": false,
+                    "reason": error.localizedDescription,
+                    "stage":
+                        "current QuartzCore fragment specialization",
+                ]
+            }
+        }
 
         var interpolantPipeline: MTLRenderPipelineState?
         var interpolantPipelineRecord: [String: Any]?
@@ -13990,7 +14226,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             captureAuxiliary: Bool = true,
             captureInterpolantPulls: Bool = false,
             initialBGRA8: Data? = nil,
-            fragmentTextureOverrides: [Int: MTLTexture] = [:]
+            fragmentTextureOverrides: [Int: MTLTexture] = [:],
+            vertexBufferOverride: MTLBuffer? = nil
         ) -> [String: Any] {
             let targetDescriptor = MTLTextureDescriptor
                 .texture2DDescriptor(
@@ -14196,7 +14433,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pass.commands,
                 selection: selection,
                 pipeline: pipeline,
-                uniformBuffer: uniformBuffer)
+                uniformBuffer: uniformBuffer,
+                vertexBufferOverride: vertexBufferOverride)
             commands.insert(
                 contentsOf: fragmentTextureOverrides.keys.sorted().map {
                     .fragmentTexture(fragmentTextureOverrides[$0], $0)
@@ -14322,18 +14560,205 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
 
-            let role: String
-            switch selection.pipeline.label {
-            case finalHighlightShapePipelineLabel26_6_1:
-                role = "Iscd"
-            case finalHighlightRemainderPipelineLabel26_6_1:
-                role = "Irsd"
-            default:
+            guard let role = currentCompositorRole,
+                  let currentSystemSpecialization
+            else {
                 return [
                     "executed": false,
                     "reason":
-                        "current compositor pipeline label differs",
-                    "pipelineLabel": selection.pipeline.label ?? "",
+                        "current compositor specialization is unavailable",
+                ]
+            }
+
+            let vertexStride = 48
+            let vertexCount = 16
+            let activeVertexBytes = vertexStride * vertexCount
+            guard selection.vertexBuffer.storageMode != .private,
+                  selection.vertexOffset >= 0,
+                  selection.vertexOffset + activeVertexBytes
+                    <= selection.vertexBuffer.length
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor vertex stream is unavailable",
+                ]
+            }
+            let originalVertexStream = Data(
+                bytes: selection.vertexBuffer.contents().advanced(
+                    by: selection.vertexOffset),
+                count: activeVertexBytes)
+            let expectedVertexStreamSHA256 =
+                "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b"
+            guard transitionSHA256(originalVertexStream)
+                    == expectedVertexStreamSHA256
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor captured vertex stream differs",
+                ]
+            }
+            var currentVertexOverride: MTLBuffer?
+            var geometryActivityControl: [String: Any] = [
+                "schemaVersion": 1,
+                "method": "captured-Iscd-geometry",
+                "vertexCount": vertexCount,
+                "vertexStride": vertexStride,
+                "positionOffsets": [0, 4],
+                "capturedVertexStreamSHA256":
+                    expectedVertexStreamSHA256,
+                "vertexStreamMutated": false,
+                "capturedApplePipelineMutated": false,
+                "liveAppleFrameMutated": false,
+            ]
+            if role == "Irsd" {
+                guard let clone = device.makeBuffer(
+                        length: selection.vertexBuffer.length,
+                        options: .storageModeShared)
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current Irsd vertex activity clone failed",
+                    ]
+                }
+                memcpy(
+                    clone.contents(),
+                    selection.vertexBuffer.contents(),
+                    selection.vertexBuffer.length)
+                let base = clone.contents().advanced(
+                    by: selection.vertexOffset)
+                func position(
+                    vertex: Int,
+                    componentOffset: Int
+                ) -> Float {
+                    base.load(
+                        fromByteOffset:
+                            vertex * vertexStride + componentOffset,
+                        as: Float.self)
+                }
+                func setPosition(
+                    vertex: Int,
+                    componentOffset: Int,
+                    value: Float
+                ) {
+                    base.storeBytes(
+                        of: value,
+                        toByteOffset:
+                            vertex * vertexStride + componentOffset,
+                        as: Float.self)
+                }
+                let columnX = (0..<4).map {
+                    position(vertex: $0, componentOffset: 0)
+                }
+                let rowY = (0..<4).map {
+                    position(vertex: $0 * 4, componentOffset: 4)
+                }
+                guard (0..<4).allSatisfy({ row in
+                        (0..<4).allSatisfy { column in
+                            position(
+                                vertex: row * 4 + column,
+                                componentOffset: 0) == columnX[column]
+                                && position(
+                                    vertex: row * 4 + column,
+                                    componentOffset: 4) == rowY[row]
+                        }
+                    }),
+                      columnX[0] < columnX[1],
+                      columnX[2] < columnX[3],
+                      rowY[0] > rowY[1],
+                      rowY[2] > rowY[3]
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current Irsd four-by-four grid differs",
+                    ]
+                }
+                let halfExpansion = Float(32.0)
+                let centerX = (columnX[1] + columnX[2]) * 0.5
+                let centerY = (rowY[1] + rowY[2]) * 0.5
+                let widenedColumnX = [
+                    columnX[0],
+                    centerX - halfExpansion,
+                    centerX + halfExpansion,
+                    columnX[3],
+                ]
+                let widenedRowY = [
+                    rowY[0],
+                    centerY + halfExpansion,
+                    centerY - halfExpansion,
+                    rowY[3],
+                ]
+                guard widenedColumnX[0] < widenedColumnX[1],
+                      widenedColumnX[1] < widenedColumnX[2],
+                      widenedColumnX[2] < widenedColumnX[3],
+                      widenedRowY[0] > widenedRowY[1],
+                      widenedRowY[1] > widenedRowY[2],
+                      widenedRowY[2] > widenedRowY[3]
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current Irsd seam expansion exceeds grid",
+                    ]
+                }
+                for row in 0..<4 {
+                    for column in 0..<4 {
+                        let vertex = row * 4 + column
+                        setPosition(
+                            vertex: vertex,
+                            componentOffset: 0,
+                            value: widenedColumnX[column])
+                        setPosition(
+                            vertex: vertex,
+                            componentOffset: 4,
+                            value: widenedRowY[row])
+                    }
+                }
+                let widenedVertexStream = Data(
+                    bytes: base,
+                    count: activeVertexBytes)
+                let expectedWidenedVertexStreamSHA256 =
+                    "736890b297ce90ad499ca3e6c010d3667cd09db70806d1f044d9c6314f258afd"
+                guard widenedVertexStream != originalVertexStream,
+                      transitionSHA256(widenedVertexStream)
+                        == expectedWidenedVertexStreamSHA256
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current Irsd seam expansion differs",
+                    ]
+                }
+                currentVertexOverride = clone
+                geometryActivityControl = [
+                    "schemaVersion": 1,
+                    "method": "widen-Irsd-center-seams-v1",
+                    "vertexCount": vertexCount,
+                    "vertexStride": vertexStride,
+                    "positionOffsets": [0, 4],
+                    "halfExpansionPixels": 32,
+                    "capturedColumnXFloat32Bits": columnX.map {
+                        String(format: "%08x", $0.bitPattern)
+                    },
+                    "capturedRowYFloat32Bits": rowY.map {
+                        String(format: "%08x", $0.bitPattern)
+                    },
+                    "widenedColumnXFloat32Bits": widenedColumnX.map {
+                        String(format: "%08x", $0.bitPattern)
+                    },
+                    "widenedRowYFloat32Bits": widenedRowY.map {
+                        String(format: "%08x", $0.bitPattern)
+                    },
+                    "capturedVertexStreamSHA256":
+                        expectedVertexStreamSHA256,
+                    "widenedVertexStreamSHA256":
+                        expectedWidenedVertexStreamSHA256,
+                    "vertexStreamMutated": true,
+                    "capturedApplePipelineMutated": false,
+                    "liveAppleFrameMutated": false,
                 ]
             }
 
@@ -14492,7 +14917,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pipeline: floatPipeline,
                 pixelFormat: .rgba16Float,
                 uniformBuffer: alphaUniform,
-                captureAuxiliary: false)
+                captureAuxiliary: false,
+                vertexBufferOverride: currentVertexOverride)
             let alphaTrace = render(
                 name:
                     "current-\(role)-finite-source-forced-alpha-"
@@ -14501,7 +14927,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pixelFormat: .rgba16Float,
                 uniformBuffer: alphaUniform,
                 captureAuxiliary: false,
-                fragmentTextureOverrides: [3: finiteSource])
+                fragmentTextureOverrides: [3: finiteSource],
+                vertexBufferOverride: currentVertexOverride)
             guard capturedSourceAlphaTrace["executed"] as? Bool == true,
                   let capturedAlphaOutput =
                     capturedSourceAlphaTrace["output"]
@@ -14977,7 +15404,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     uniformBuffer: caseUniform,
                     captureAuxiliary: false,
                     initialBGRA8: seed,
-                    fragmentTextureOverrides: [3: finiteSource])
+                    fragmentTextureOverrides: [3: finiteSource],
+                    vertexBufferOverride: currentVertexOverride)
+                let systemApple = render(
+                    name:
+                        "current-\(role)-system-specialized-"
+                        + matrixIntervention.name,
+                    pipeline: rebuiltPipeline,
+                    pixelFormat: .bgra8Unorm,
+                    uniformBuffer: caseUniform,
+                    captureAuxiliary: false,
+                    initialBGRA8: seed,
+                    fragmentTextureOverrides: [3: finiteSource],
+                    vertexBufferOverride: currentVertexOverride)
                 let candidate = candidateRender(
                     name:
                         "current-\(role)-candidate-"
@@ -14990,6 +15429,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 let comparison = compareReplaySnapshots(
                     reference: apple,
                     candidate: candidate,
+                    outputDirectory: outputDirectory)
+                let systemComparison = compareReplaySnapshots(
+                    reference: apple,
+                    candidate: systemApple,
                     outputDirectory: outputDirectory)
                 cases.append([
                     "name": matrixIntervention.name,
@@ -15005,8 +15448,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             }
                         },
                     "apple": apple,
+                    "systemSpecializedApple": systemApple,
                     "candidate": candidate,
                     "activityComparison": activity,
+                    "capturedVsSystemSpecializationComparison":
+                        systemComparison,
                     "candidateComparison": comparison,
                 ])
             }
@@ -15015,12 +15461,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 && cases.allSatisfy { record in
                     guard let apple = record["apple"]
                             as? [String: Any],
+                          let systemApple =
+                            record["systemSpecializedApple"]
+                                as? [String: Any],
                           let candidate = record["candidate"]
                             as? [String: Any]
                     else {
                         return false
                     }
                     return apple["executed"] as? Bool == true
+                        && systemApple["executed"] as? Bool == true
                         && candidate["executed"] as? Bool == true
                 }
             let positiveControlsPassed = cases.allSatisfy { record in
@@ -15046,8 +15496,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && comparison["mismatchedPixelCount"] as? Int == 0
                     && comparison["maximumChannelDelta"] as? Int == 0
             }
+            let systemSpecializationExact = cases.allSatisfy { record in
+                guard let comparison = record[
+                    "capturedVsSystemSpecializationComparison"
+                ] as? [String: Any]
+                else {
+                    return false
+                }
+                return comparison["compared"] as? Bool == true
+                    && comparison["exactByteMatch"] as? Bool == true
+                    && comparison["mismatchedByteCount"] as? Int == 0
+                    && comparison["mismatchedPixelCount"] as? Int == 0
+                    && comparison["maximumChannelDelta"] as? Int == 0
+            }
             return [
-                "schemaVersion": 3,
+                "schemaVersion": 4,
                 "executed":
                     casesExecuted
                     && sourcePathSensitive
@@ -15061,6 +15524,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "capturedAppleResourceMutated": false,
                 "liveAppleFrameMutated": false,
                 "usesAuxiliaryAttachment": usesAuxiliaryAttachment,
+                "systemSpecialization":
+                    currentSystemSpecialization,
+                "geometryActivityControl": geometryActivityControl,
                 "forcedCoverageIntervention":
                     interventionRecord(forcedCoverage),
                 "sourceIntervention": [
@@ -15137,6 +15603,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "matrixCaseCount": cases.count,
                 "casesExecuted": casesExecuted,
                 "positiveControlsPassed": positiveControlsPassed,
+                "systemSpecializationExact":
+                    systemSpecializationExact,
                 "candidatesExact": candidatesExact,
                 "cases": cases,
             ]
@@ -15556,17 +16024,25 @@ private final class MetalUniformProbe: @unchecked Sendable {
             && records.allSatisfy {
                 $0["executed"] as? Bool == true
                     && $0["positiveControlsPassed"] as? Bool == true
+                    && $0["systemSpecializationExact"] as? Bool == true
                     && $0["candidatesExact"] as? Bool == true
             }
         return [
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "executed": executed,
             "selectionPolicy":
                 "exactly one current Iscd and one immediately later "
                 + "current Irsd draw in the frozen sample",
             "activityPolicy":
                 "replace only inherited texture 3 in each isolated replay "
-                + "with the frozen opaque six-mip 768x768 BGRA8 pattern",
+                + "with the frozen opaque six-mip 768x768 BGRA8 pattern; "
+                + "retain captured Iscd geometry and widen only the Irsd "
+                + "center seams by 32 pixels per side in its isolated replay",
+            "systemSpecializationPolicy":
+                "instantiate QuartzCore fixed_frag_lph_cpf from the pinned "
+                + "system default.metallib with the statically decoded "
+                + "non-extended Iscd/Irsd constants and require exact "
+                + "BGRA8 equality to each captured Apple pipeline",
             "capturedAppleFunctionsUnmodified": true,
             "capturedAppleResourcesMutated": false,
             "liveAppleFrameMutated": false,

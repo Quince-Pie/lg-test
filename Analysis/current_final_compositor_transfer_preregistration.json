@@ -1,6 +1,6 @@
 {
-  "currentFinalCompositorTransferPreregistrationSchemaVersion": 3,
-  "status": "frozen-v3-before-answer-bearing-current-family-capture",
+  "currentFinalCompositorTransferPreregistrationSchemaVersion": 4,
+  "status": "frozen-v4-before-answer-bearing-current-family-capture",
   "purpose": "Decide the sole remaining Apple construction question: whether the already recovered exact binary16 vibrant-matrix/source-over compositor transfers without arithmetic change to both current macOS 26.6.1 Iscd and Irsd functions.",
   "supersedesFailedRun": {
     "captureCommit": "b838af32b291561b362bd1dc0243ac0213359978",
@@ -46,6 +46,28 @@
     "candidateChanged": false,
     "toleranceChanged": false
   },
+  "supersedesFailedV3Run": {
+    "captureCommit": "2e41aba0275a5e829c43f283071b462d8ac675b3",
+    "captureDirectory": "local-current-final-compositor-transfer-2e41aba-v3",
+    "timelineSHA256": "22296e449db47aff8bbd142e2b4ef6b33b0a68a31bdfc6fc053d0f91bd457cec",
+    "nativeCaptureExitStatus": 0,
+    "frozenValidatorExitStatus": 1,
+    "promotedEvidence": false,
+    "observedTransport": {
+      "IscdPrivateBitcodeRebuildFailed": true,
+      "IrsdPixelSampleCoverage": 0,
+      "IrsdPositiveMatrixCaseCount": 0,
+      "capturedVertexStreamSHA256": "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b"
+    },
+    "corrections": [
+      "instantiate Apple's generic fixed_frag_lph_cpf from the exact system QuartzCore metallib instead of copying private captured function bitcode",
+      "require the reconstructed Iscd and Irsd system specializations to equal the captured Apple pipelines byte-for-byte",
+      "retain captured Iscd geometry and widen only the isolated Irsd center seams by 32 pixels per side so its Apple draw covers pixel sample centers"
+    ],
+    "arithmeticCasesChanged": false,
+    "candidateChanged": false,
+    "toleranceChanged": false
+  },
   "host": {
     "transport": "local SSH only",
     "machine": "physical M1 Max Mac",
@@ -60,7 +82,7 @@
     "nativeNixStorePathPermitted": false,
     "nixScope": "validator tests and post-capture validation only"
   },
-  "v3DescriptorCapture": {
+  "descriptorCapture": {
     "installationBoundary": "before NSApplication.shared",
     "selectors": [
       "newRenderPipelineStateWithDescriptor:error:",
@@ -70,6 +92,31 @@
       "newPrecompiledRenderPipelineStateWithDescriptor:options:pipelineCache:completionHandler:"
     ],
     "requirement": "the exact captured descriptor for each selected current pipeline must be available before any replay is constructed"
+  },
+  "systemSpecialization": {
+    "libraryPath": "/System/Library/Frameworks/QuartzCore.framework/Versions/A/Resources/default.metallib",
+    "libraryByteCount": 160220928,
+    "librarySHA256": "eb32770f9a595d777a040dee7454fe30d668ccacaa803f35ddb2f97646193ca7",
+    "g13gSliceSHA256": "5566617c9a00a05fb768d3e659308288e17e6b21c3dc8df903e99a7c914ef119",
+    "baseFunction": "fixed_frag_lph_cpf",
+    "functionConstantCount": 60,
+    "generic": false,
+    "vertexLayout": 0,
+    "framebufferFetch": true,
+    "attachmentCount": 2,
+    "textureFunction": 66,
+    "blendFunction": 43,
+    "imageCount": 1,
+    "destinationCount": 1,
+    "extendedRange": false,
+    "texcoordCount0": 1,
+    "imageFunctionByRole": {
+      "Iscd": 21,
+      "Irsd": 20
+    },
+    "allUnlistedConstantsZero": true,
+    "staticDecode": "the x Iscd and x Irsd containers differ in exactly fc_image_function0=21 versus 20 across all 60 constants; non-x Iscd differs from x Iscd only by fc_extended_range=false",
+    "capturedComparisonRequirement": "each reconstructed system specialization must equal its captured Apple pipeline byte-for-byte in all seven matrix cases"
   },
   "frozenCase": {
     "material": "regular",
@@ -98,6 +145,16 @@
     "sourceIntervention": "replace inherited texture 3 immediately before only the isolated selected draw with the frozen opaque six-mip BGRA8 coordinate pattern",
     "sourceTopology": "each current draw must inherit the same 768x768 six-mip BGRA8Unorm 2D texture observed at render-command sequence 37 in the rejected v2 capture",
     "sourcePathSensitivityRequirement": "the captured-source and finite-source RGBA16Float alpha-oracle outputs must differ by at least one byte and one 8-byte pixel for each current function",
+    "geometryActivity": {
+      "IscdMethod": "captured-Iscd-geometry",
+      "IrsdMethod": "widen-Irsd-center-seams-v1",
+      "IrsdHalfExpansionPixels": 32,
+      "capturedVertexStreamSHA256": "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b",
+      "widenedIrsdVertexStreamSHA256": "736890b297ce90ad499ca3e6c010d3667cd09db70806d1f044d9c6314f258afd",
+      "capturedApplePipelineChanged": false,
+      "liveAppleFrameChanged": false,
+      "scope": "the widened clone is bound only in isolated Irsd proof replays; the captured vertex buffer and live Apple frame remain untouched"
+    },
     "finiteSourceEncoding": "opaque-bgra8-six-mip-coordinate-hash-v1",
     "finiteSourceFormula": "word=u32(x*0x045d9f3b ^ y*0x0119de1f ^ level*0x9e3779b9) ^ 0x6d2b79f5; bgra=(word[7:0],word[15:8],word[23:16],0xff)",
     "finiteSourceMipSHA256": [
@@ -120,7 +177,7 @@
     "failedPositiveControlMeaning": "rejected experiment, never evidence of equivalence"
   },
   "alphaIsolation": {
-    "method": "rebuild the captured Apple descriptor for RGBA16Float and replace only its 48-byte vibrant matrix with the frozen alpha oracle",
+    "method": "rebuild the descriptor for RGBA16Float with the pinned system-specialized Apple fragment and replace only its 48-byte vibrant matrix with the frozen alpha oracle",
     "alphaOracleHalfWords": [
       "0x0000", "0x0000", "0x0000", "0x0000",
       "0x0000", "0x0000", "0x0000", "0x0000",
@@ -160,6 +217,9 @@
     "matrixCasesPerPipeline": 7,
     "positiveControlCount": 14,
     "sourcePathSensitivityControlCount": 2,
+    "systemSpecializationComparisonCount": 14,
+    "systemSpecializationComparedBytes": 58720256,
+    "requiredUnequalSystemSpecializationBytes": 0,
     "candidateComparisonCount": 14,
     "candidateComparedBytes": 58720256,
     "requiredUnequalCandidateBytes": 0,
@@ -171,9 +231,9 @@
     "arithmeticModeChangeAfterCapturePermitted": false
   },
   "sourceSHA256": {
-    "Sources/GlassIntrospect/main.swift": "ed6ec1751e34a24030652afaff7b3addbf9ced313257625bfd76e6e76da21060",
-    "Analysis/validate_current_final_compositor_transfer.py": "8692667188abc29986e2774d1364829fd58e1d74df33634aa33db263972805d3",
-    "Analysis/test_validate_current_final_compositor_transfer.py": "a921b4f715b4275c99049216a740c0b8032336bdb945880b3d1a568d0829df33",
+    "Sources/GlassIntrospect/main.swift": "ad81eb9b9b935a46565e01c32486a8804c9b85f77eacc0d44d00210606b653a3",
+    "Analysis/validate_current_final_compositor_transfer.py": "db7c449e7f2e5b74e8eca7faeb23d69bee0e24a225a93384a66fb9eac5cb4c3e",
+    "Analysis/test_validate_current_final_compositor_transfer.py": "09baab573ea9af991f04c5cd5715ee92bb9624012a2b848b067bbd22f2b9774b",
     "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
     "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
     "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
@@ -182,5 +242,5 @@
     "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
     "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208"
   },
-  "promotionRule": "Only a validator pass over both exact current functions, fourteen nonzero Apple destination controls, and fourteen complete zero-unequal-byte independent comparisons may close the last Apple construction question. A pass authorizes the next Walle-shaped physical Retina transfer gate, not production parity or a shader change. A failure identifies either transport, current-function activity, or a concrete arithmetic mismatch and cannot be rounded, fitted, excluded, or relabelled."
+  "promotionRule": "Only a validator pass over both exact current functions, fourteen nonzero Apple destination controls, fourteen complete zero-unequal-byte captured-versus-system-specialization comparisons, and fourteen complete zero-unequal-byte independent-candidate comparisons may close the last Apple construction question. A pass authorizes the next Walle-shaped physical Retina transfer gate, not production parity or a shader change. A failure identifies either transport, current-function activity, specialization, or a concrete arithmetic mismatch and cannot be rounded, fitted, excluded, or relabelled."
 }
