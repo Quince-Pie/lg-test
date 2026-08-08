@@ -1,0 +1,161 @@
+{
+  "captureBinarySHA256": "9f48afc4c7ee44417db3ed1f6f733b742d9df2e69d8500c082ccc2026294ed0c",
+  "captureCommit": "7432ffa54d530acf98ffc827c4588df94a1a5419",
+  "cases": [
+    {
+      "caseId": "clear-dark-dematerialize-06",
+      "componentCount": 124,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 31,
+      "timelineSHA256": "0fb1572ce1822fa3a00da0cf37357ba7d923d60d21da85b6a14207bf20c3fe31"
+    },
+    {
+      "caseId": "clear-dark-materialize-02",
+      "componentCount": 128,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 32,
+      "timelineSHA256": "af9ba643aa1572bdd39fb55b7f7484ae5317a70509321086638bf3176ceefe9d"
+    },
+    {
+      "caseId": "clear-light-dematerialize-05",
+      "componentCount": 124,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 31,
+      "timelineSHA256": "bb6ab00d00712abe3e3e3016387f268c77581ef52beb5ebc480dfb4258c90c46"
+    },
+    {
+      "caseId": "clear-light-materialize-01",
+      "componentCount": 128,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 32,
+      "timelineSHA256": "85dc1f54a54f86852ee46b1c611f8968b470c0551a4647c0f7b8a59030ccb016"
+    },
+    {
+      "caseId": "regular-dark-dematerialize-08",
+      "componentCount": 124,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 31,
+      "timelineSHA256": "9c2c56d949dd7fff27e7583a2cf4b91e0d574033682275b553bcc8c60df0e58f"
+    },
+    {
+      "caseId": "regular-dark-materialize-04",
+      "componentCount": 128,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 32,
+      "timelineSHA256": "9e712a68193876937fa6001137a649d48802700d91b1afd955fc38625c759ded"
+    },
+    {
+      "caseId": "regular-light-dematerialize-07",
+      "componentCount": 124,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 31,
+      "timelineSHA256": "1a4129540e0e2c495a506de25e488d6b76479d9e4804beb8595158b2c75fe45b"
+    },
+    {
+      "caseId": "regular-light-materialize-03",
+      "componentCount": 128,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 32,
+      "timelineSHA256": "f5f8065c97375f2c545838d3bd28eab1f256c96330c5d1646f172cfa99b37068"
+    }
+  ],
+  "classification": "retrospective exact closure of one boundary in an immutable prospectively falsified corpus",
+  "closedAlgorithmBoundary": "exact binary64 off-center circle element extent and position staging",
+  "diagnosticEvidence": {
+    "cgrectConvertDisassemblySHA256": "37c2b6dcf9d7870bc6d4900fa63d627c6bd12b4ba3982aef24db19ecae24d77d",
+    "cgrectCornerReductionDisassemblySHA256": "d7ab32898412f348c3311780c89cf114506664bec210d3fd464729bee27814eb",
+    "pathSetCalleeTraceSHA256": "4a0efa90a5d266dfca42f73fa9d3a0e461e72f7d7697998a8962f516cf7a1780",
+    "sdfShapeGeometryTraceSHA256": "8562fb84e94211c036d6adaf56e9fa5e6b056fe53ff670a6944a10fc21173795",
+    "shapePathDisassemblySHA256": "b96023e18feff913b1f99c245e9f395bcf37222f2c257457180e6a35904f9018",
+    "shapeSetStagingTraceSHA256": "859563abb56062a7f723b26fbd8944d58a89ec7f7e2ec26b31e851db3546f44d"
+  },
+  "endpointStateCount": 4,
+  "familyMetrics": {
+    "clear-without-primary": {
+      "componentCount": 116,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 29
+    },
+    "current-clear": {
+      "componentCount": 148,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 37
+    },
+    "current-regular": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 126
+    },
+    "small-clear": {
+      "componentCount": 240,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "stateCount": 60
+    }
+  },
+  "liveStateCount": 248,
+  "metrics": {
+    "elementBinary32": {
+      "componentCount": 1008,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "elementBinary64": {
+      "componentCount": 1008,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "endpointElementBinary64": {
+      "componentCount": 16,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "extentBinary64": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "liveElementBinary64": {
+      "componentCount": 992,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "positionBinary64": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    }
+  },
+  "offcenterCircleElementStagingSchemaVersion": 1,
+  "operationOrder": [
+    "apply the transition scale and compensating scales about the shape center",
+    "translate into the snapped requested-center root coordinate",
+    "reduce transformed corners to a CGRect",
+    "translate that CGRect by the local carrier position and reduce corners again",
+    "inscribe Circle with half the per-axis excess",
+    "translate both square corners through OffsetShape Path.applying",
+    "subtract translated lower corners from translated upper corners"
+  ],
+  "preregistrationSHA256": "b942bb532449998d8bca2c9be6a61397d73edcd221f244c73ca96d108745c2aa",
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "remainingAlgorithmBoundaries": [
+    "window clipping and alternate 24-vertex/96-index topology construction",
+    "small-clear Tghn/Tmua/Tkfh/A2Xghfc construction and pixels"
+  ],
+  "stateCount": 252,
+  "status": "exact-retrospective-closure",
+  "timelineCount": 8,
+  "walleIntegrationMayBeginBehindGates": true
+}

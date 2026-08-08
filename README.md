@@ -12674,3 +12674,86 @@ protected production shader. Walle's zero-to-full-screen wipe crosses the
 small-clear range, so that branch cannot be omitted even though it occupies
 only the beginning of the transition. A new Walle-shaped Retina transfer and a
 fresh zero-unequal-byte Walle frame remain mandatory.
+
+### Exact off-center circle element staging closure
+
+The first boundary opened by the failed combined holdout is now closed
+retrospectively and bitwise. Focused LLDB traces on the physical M1 Max first
+separated the stages instead of fitting the final layer rectangle. The merged
+`CGRect.convert` routine constructs four corners, applies `ViewTransform` to
+each corner, and reduces the four results with pairwise `fcmp`/`fcsel` minima
+and maxima. A second conversion applies the local-carrier translation with the
+same corner/reduction sequence. `GlassEffectShapeSet` returns that predicted
+rectangle exactly. `SDFLayer.update` then forwards the selected `PathSet`
+position and extent without further arithmetic.
+
+The remaining low bits are produced by the intervening real shape path. The
+executing witness chain is `_AnyShapeBox` -> `_SizedShape` -> `OffsetShape` ->
+`AnyShape` -> `TransformedShape` -> `AnyShape` -> `Circle`. The specialized
+`Circle.path(in:)` implementation makes the input rectangle square by adding
+half of the excess dimension to the corresponding origin. `OffsetShape` then
+applies the translation to the resulting path. Crucially, Apple transforms the
+lower and upper square corners separately and subtracts those transformed
+corners to recover each extent; it does not retain the pre-translation
+diameter. For a staged rectangle `(x, y, w, h)`, the exact binary64 order is:
+
+```text
+d  = min(w, h)
+ix = (w - d) * 0.5
+iy = (h - d) * 0.5
+lx = ix + x
+ly = iy + y
+ux = (ix + d) + x
+uy = (iy + d) + y
+element = (lx, ly, ux - lx, uy - ly)
+```
+
+That last corner subtraction is observable. Replacing it with a retained
+`(d, d)`, or translating a completed rectangle in one algebraic step, chooses
+the wrong side of binary32 half ties in the discriminator states. With the
+executing order restored, the opened eight-case corpus matches exactly:
+
+```text
+all element components       1,008 / 1,008 binary64
+all GPU conversions          1,008 / 1,008 binary32
+live k < 1 components          992 / 992 binary64
+endpoint components              16 / 16 binary64
+position components             504 / 504 binary64
+extent components               504 / 504 binary64
+```
+
+Every family is covered independently: 37 current-clear states, 126
+current-regular states, 60 small-clear states, and 29 clear states without a
+primary `Tgh` draw all have zero element-staging mismatches. This also closes
+the three previously exposed GPU-float tie directions; none is handled with a
+tolerance or a special case.
+
+The reproducible analyzer is
+`Analysis/analyze_offcenter_circle_element_staging.py`, SHA-256
+`50bd51bf1e9769924e83b7442130dccdc2db3e6e63581eba9dda8479f8183136`.
+Its five discriminating tests are
+`Analysis/test_analyze_offcenter_circle_element_staging.py`, SHA-256
+`831d45ea64b27be84cda844165c9338776ca140ab4ee39f414fb148149548e5b`.
+The compact result is
+`Analysis/offcenter_circle_element_staging_result.json`, SHA-256
+`d396ee0f72cda4c8e787ee8cd3be9e9cde567a8c24a4a141fa4e84c34acbcfad`.
+It preserves the original prospective failure classification; this exact
+retrospective closure does not rewrite the red holdout as a pass.
+
+The local instruction and live-value diagnostics are hash-pinned in that
+result. They were collected from the source-built `7432ffa` probe on macOS
+26.6.1 build 25G76 with the built-in 2x Retina display. They explain the
+operation boundary; the immutable 252-state timelines provide the complete
+cross-family equality gate.
+
+Two Apple-renderer boundaries now remain before universal circle-domain
+parity:
+
+1. window clipping and the alternate 24-vertex/96-index construction; and
+2. small-clear `Tghn`/`Tmua`/`Tkfh`/`A2Xghfc` construction and pixels.
+
+There is no unknown blocking gated Walle integration of the already exact
+current branches. Universal parity and an unrestricted production rollout
+still require both boundaries, a Walle-shaped Retina transfer, and a fresh
+zero-unequal-byte Walle frame. This closure did not modify Walle's production
+shader or `flake.nix`.
