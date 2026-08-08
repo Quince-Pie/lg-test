@@ -14,7 +14,7 @@ from typing import Any
 import validate_variable_blur_selected_region_origin as selected
 
 
-RESULT_SCHEMA_VERSION = 1
+RESULT_SCHEMA_VERSION = 2
 TIMELINE_SCHEMA_VERSION = 5
 DYNAMIC_UNIFORM_SCHEMA_VERSION = 9
 EXPECTED_CAPTURE_METHOD = (
@@ -214,6 +214,10 @@ def float32_bits(value: float) -> int:
     return struct.unpack("<I", struct.pack("<f", value))[0]
 
 
+def float64_bits(value: float) -> int:
+    return struct.unpack("<Q", struct.pack("<d", value))[0]
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -281,6 +285,77 @@ def layer_states(record: Mapping[str, Any]) -> dict[tuple[int, ...], Mapping[str
             raise ValueError(f"duplicate captured layer path: {path}")
         result[path] = state
     return result
+
+
+def expected_dynamic_layer_state(
+    geometry: Mapping[str, Any], remaining: float
+) -> dict[str, tuple[float, ...]]:
+    """Reproduce the observed SwiftUI/CoreGraphics dynamic circle geometry."""
+    width = finite(geometry.get("width"), "geometry width")
+    height = finite(geometry.get("height"), "geometry height")
+    center_x = finite(geometry.get("centerX"), "geometry center x")
+    center_y = finite(geometry.get("centerY"), "geometry center y")
+    remaining32 = float32(remaining)
+    if (
+        geometry.get("shape") != "circle"
+        or width <= 0.0
+        or width != height
+        or remaining != remaining32
+        or not 0.0 < remaining32 <= 1.0
+    ):
+        raise ValueError("dynamic circle geometry differs")
+
+    carrier_extent = width * remaining32
+    carrier_position = (
+        center_x - carrier_extent / 2.0,
+        center_y - carrier_extent / 2.0,
+    )
+
+    progress32 = float32(1.0 - remaining32)
+    scale_limit = min((width + 16.0) / width, 1.2)
+    transition_scale = 1.0 + progress32 * (scale_limit - 1.0)
+    half = width / 2.0
+
+    def centered_affine(value: float, scale: float) -> float:
+        translation = half + (-half * scale)
+        # CGPointApplyAffineTransform uses FMUL, FMLA, then a separate FADD
+        # for the translation. Keep that final add outside the fused operation.
+        return math.fma(scale, value, 0.0) + translation
+
+    lower = centered_affine(0.0, transition_scale)
+    upper = centered_affine(width, transition_scale)
+    square_root = math.sqrt(scale_limit)
+    for scale in (1.0 / square_root, square_root):
+        lower = centered_affine(lower, scale)
+        upper = centered_affine(upper, scale)
+
+    integral_carrier_extent = math.floor(carrier_extent)
+    if carrier_extent - integral_carrier_extent == 0.5:
+        raise ValueError("dynamic carrier half-tie rule is not measured")
+    snapped_carrier_extent = math.floor(carrier_extent + 0.5)
+    root_translation_x = (
+        center_x
+        - half
+        + (snapped_carrier_extent - carrier_extent) / 2.0
+    )
+    root_translation_y = (
+        center_y
+        - half
+        + (snapped_carrier_extent - carrier_extent) / 2.0
+    )
+    root_lower = lower + root_translation_x
+    root_upper = upper + root_translation_x
+    element_extent = root_upper - root_lower
+    # This subtraction is observably different from the algebraically
+    # equivalent (snapped_carrier_extent - element_extent) / 2.
+    element_position_x = root_lower - carrier_position[0]
+    element_position_y = (lower + root_translation_y) - carrier_position[1]
+    return {
+        "carrierBounds": (0.0, 0.0, carrier_extent, carrier_extent),
+        "carrierPosition": carrier_position,
+        "elementBounds": (0.0, 0.0, element_extent, element_extent),
+        "elementPosition": (element_position_x, element_position_y),
+    }
 
 
 def vector(
@@ -683,6 +758,22 @@ def add_float_metric(
     )
 
 
+def add_float64_metric(
+    metrics: dict[str, Counter[str]],
+    name: str,
+    observed: Sequence[float],
+    predicted: Sequence[float],
+) -> None:
+    if len(observed) != len(predicted):
+        raise ValueError(f"{name} component count differs")
+    metric = metrics.setdefault(name, Counter())
+    metric["componentCount"] += len(observed)
+    metric["mismatchedComponents"] += sum(
+        float64_bits(left) != float64_bits(right)
+        for left, right in zip(observed, predicted, strict=True)
+    )
+
+
 def add_integer_metric(
     metrics: dict[str, Counter[str]],
     name: str,
@@ -783,6 +874,7 @@ def analyze(artifact_root: Path) -> JsonObject:
         timeline = mapping(
             json.loads(path.read_text(encoding="utf-8")), "transition timeline"
         )
+        geometry = mapping(timeline.get("geometry"), "timeline geometry")
         records = validate_envelope(timeline, expected)
         matrix_state_count = 0
         matrix_final_topologies: Counter[str] = Counter()
@@ -795,6 +887,46 @@ def analyze(artifact_root: Path) -> JsonObject:
             expected_layer_state_count = 13 if remaining == 1.0 else 16
             if layer_state_count != expected_layer_state_count:
                 raise ValueError("captured layer-state count differs")
+
+            states = layer_states(record)
+            carrier = mapping(states.get((1,)), "carrier layer state")
+            element = mapping(
+                states.get((1, 0, 1, 0, 0, 0, 0)),
+                "background SDF element layer state",
+            )
+            if (
+                carrier.get("class") != "CALayer"
+                or element.get("class") != "CASDFElementLayer"
+            ):
+                raise ValueError("dynamic geometry layer classes differ")
+            predicted_layer_state = expected_dynamic_layer_state(
+                geometry, remaining
+            )
+            add_float64_metric(
+                metrics,
+                "dynamicCarrierBounds",
+                vector(carrier.get("bounds"), "carrier bounds", 4),
+                predicted_layer_state["carrierBounds"],
+            )
+            add_float64_metric(
+                metrics,
+                "dynamicCarrierPosition",
+                vector(carrier.get("position"), "carrier position", 2),
+                predicted_layer_state["carrierPosition"],
+            )
+            add_float64_metric(
+                metrics,
+                "dynamicElementBounds",
+                vector(element.get("bounds"), "element bounds", 4),
+                predicted_layer_state["elementBounds"],
+            )
+            add_float64_metric(
+                metrics,
+                "dynamicElementPosition",
+                vector(element.get("position"), "element position", 2),
+                predicted_layer_state["elementPosition"],
+            )
+
             predicted_scale = expected_backdrop_scale(
                 str(expected["material"]), remaining
             )
@@ -1067,8 +1199,16 @@ def analyze(artifact_root: Path) -> JsonObject:
                 "allocation, and destination mip count"
             ),
             "mainGeometry": (
-                "captured public carrier and CASDFElementLayer state transformed "
-                "to six vertices in Apple's binary64 grouping, then binary32"
+                "independently constructed dynamic carrier and CASDFElementLayer "
+                "state transformed to six vertices in Apple's binary64 grouping, "
+                "then binary32"
+            ),
+            "dynamicLayerState": (
+                "binary32 remaining/progress, centered interpolated scale, "
+                "centered reciprocal sqrt((D+16)/D) pair, CoreGraphics fused "
+                "multiply plus separate translation add, observed non-half "
+                "nearest-integer carrier snap, and staged "
+                "root-lower-minus-carrier-position subtraction"
             ),
             "shadowGeometry": (
                 "captured public layer state plus material shadow margin transformed "
@@ -1110,7 +1250,6 @@ def analyze(artifact_root: Path) -> JsonObject:
             "constructionLawExact": False,
         },
         "remainingAlgorithmBoundaries": [
-            "independent upstream dynamic element extent/position production",
             "independent regular dynamic producer crop production",
             "transition foreground and final-highlight production",
         ],

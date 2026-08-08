@@ -2,6 +2,7 @@
 """Tests for the retained current-build transition geometry corpus gate."""
 
 import copy
+import math
 import struct
 import unittest
 
@@ -100,6 +101,88 @@ class MainGeometryTests(unittest.TestCase):
         )
         self.assertEqual(reassociated, 744.3486328125)
         self.assertNotEqual(vertices[1][0], reassociated)
+
+
+class DynamicLayerStateTests(unittest.TestCase):
+    GEOMETRY = {
+        "shape": "circle",
+        "width": 456,
+        "height": 456,
+        "centerX": 512,
+        "centerY": 512,
+    }
+    REMAINING = 0.9680185317993164
+
+    def test_current_state_is_bit_exact(self) -> None:
+        state = corpus.expected_dynamic_layer_state(
+            self.GEOMETRY, self.REMAINING
+        )
+        self.assertEqual(
+            state["carrierBounds"],
+            (0.0, 0.0, 441.4164505004883, 441.4164505004883),
+        )
+        self.assertEqual(
+            state["carrierPosition"],
+            (291.29177474975586, 291.29177474975586),
+        )
+        self.assertEqual(
+            corpus.float64_bits(state["elementBounds"][2]),
+            0x407C882FF0000001,
+        )
+        self.assertEqual(
+            corpus.float64_bits(state["elementPosition"][0]),
+            0xC01F05FE00000040,
+        )
+
+    def test_reciprocal_sqrt_pair_cannot_be_algebraically_removed(self) -> None:
+        state = corpus.expected_dynamic_layer_state(
+            self.GEOMETRY, self.REMAINING
+        )
+        width = float(self.GEOMETRY["width"])
+        half = width / 2.0
+        progress = float32(1.0 - float32(self.REMAINING))
+        scale_limit = (width + 16.0) / width
+        scale = 1.0 + progress * (scale_limit - 1.0)
+        translation = half + (-half * scale)
+        lower = math.fma(scale, 0.0, 0.0) + translation
+        upper = math.fma(scale, width, 0.0) + translation
+        carrier_extent = width * self.REMAINING
+        root_translation = (
+            512.0
+            - half
+            + (round(carrier_extent) - carrier_extent) / 2.0
+        )
+        collapsed = (upper + root_translation) - (lower + root_translation)
+        self.assertEqual(corpus.float64_bits(collapsed), 0x407C882FF0000000)
+        self.assertNotEqual(
+            corpus.float64_bits(collapsed),
+            corpus.float64_bits(state["elementBounds"][2]),
+        )
+
+    def test_element_position_cannot_be_reassociated(self) -> None:
+        state = corpus.expected_dynamic_layer_state(
+            self.GEOMETRY, self.REMAINING
+        )
+        carrier_extent = float(self.GEOMETRY["width"]) * self.REMAINING
+        reassociated = (
+            round(carrier_extent) - state["elementBounds"][2]
+        ) / 2.0
+        self.assertEqual(
+            corpus.float64_bits(reassociated), 0xC01F05FE00000020
+        )
+        self.assertNotEqual(
+            corpus.float64_bits(reassociated),
+            corpus.float64_bits(state["elementPosition"][0]),
+        )
+
+    def test_non_binary32_progress_fails_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "dynamic circle geometry differs"):
+            corpus.expected_dynamic_layer_state(self.GEOMETRY, 0.1)
+
+    def test_unmeasured_half_tie_fails_closed(self) -> None:
+        geometry = {**self.GEOMETRY, "width": 455, "height": 455}
+        with self.assertRaisesRegex(ValueError, "half-tie rule is not measured"):
+            corpus.expected_dynamic_layer_state(geometry, 0.5)
 
 
 class ShadowGeometryTests(unittest.TestCase):

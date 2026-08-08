@@ -12343,14 +12343,45 @@ corpus exercises destination mip counts 2 through 7, both producer fragments
 `TimgA2Xhfc_Isrc` and `Tds4A2Xhf_Isrc`, and both four- and sixteen-vertex
 producer meshes.
 
-The captured public carrier and `CASDFElementLayer` states independently
-produce the six background main vertices. Apple performs the layer translation
-and extent arithmetic in binary64 with its original association, then stores
-binary32. That replay matches 6,048/6,048 position/SDF components and
-3,024/3,024 homogeneous components. Reassociating the right or bottom edge, or
-rounding the extent first, differs by one ULP in real states and is rejected.
-This closes layer-state-to-main-mesh transfer; it does not yet close independent
-upstream production of those dynamic layer states.
+The dynamic carrier and `CASDFElementLayer` states are now independently
+reproduced as well. Direct LLDB brackets on the physical M1 Max followed
+SwiftUI's `UnitRect`/anchor conversion through each `ViewTransform.Item`, then
+opened the executing `CGPointApplyAffineTransform` instructions. Let `D` be the
+requested circle diameter, `h = D/2`, `p = binary32(1-k)`, and
+`r = min((D+16)/D, 1.2)`. The exact retained-state construction is:
+
+```text
+s = 1 + p*(r-1)
+A_z(x) = fma(z, x, 0) + (h + (-h*z))
+L,U = A_s(0), A_s(D)
+L,U = A_(1/sqrt(r))(L), A_(1/sqrt(r))(U)
+L,U = A_sqrt(r)(L), A_sqrt(r)(U)
+E = D*k
+T = 512-h + (round(E)-E)/2
+carrier extent/position = E, 512-E/2
+element extent/position = (U+T)-(L+T), (L+T)-(512-E/2)
+```
+
+The 252 retained states do not contain an exact half-integer `E`, so `round(E)`
+here records the uniquely observed nearest-integer result without claiming an
+unmeasured half-tie rule. Matrix translation is a separate multiply and add;
+CoreGraphics applies a fused multiply-add with zero and then adds translation
+separately. The apparently cancelling reciprocal square-root pair cannot be
+removed: doing so is one binary64 ULP wrong in a retained state. Likewise,
+reassociating element position as `(round(E)-elementExtent)/2` matches only
+174/252 states.
+
+The fail-closed replay matches all 1,008/1,008 carrier-bound components,
+504/504 carrier-position components, 1,008/1,008 element-bound components, and
+504/504 element-position components by binary64 bit pattern. Those independently
+constructed states then produce the six background main vertices. Apple
+performs the layer translation and extent arithmetic in binary64 with its
+original association, then stores binary32. That replay matches 6,048/6,048
+position/SDF components and 3,024/3,024 homogeneous components. Reassociating
+the right or bottom edge, or rounding the extent first, differs by one ULP in
+real states and is rejected. This closes current centered-circle dynamic
+layer-state construction and layer-state-to-main-mesh transfer; unseen geometry
+transfer remains explicitly false.
 
 The glass source-coordinate operation order is now exact for every retained
 main and shadow vertex. For each axis, with binary32 vertex position `p`,
@@ -12390,18 +12421,18 @@ sixteen-vertex/twenty-four-index border mesh. This is retained evidence, not yet
 an independent final-highlight construction law.
 
 The reproducible gate is
-`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its seven
-unit discriminators cover material scale, source-coordinate staging, main-mesh
-association, complete matrix cardinality, and fail-closed envelope mutation.
+`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its thirteen
+unit discriminators cover material scale, dynamic-state construction and
+operation order, source-coordinate staging, main/shadow mesh association,
+complete matrix cardinality, and fail-closed envelope mutation.
 The compact canonical result is
 `Analysis/transition_geometry_corpus_local_macos_26_6_1_result.json`, SHA-256
-`4754f134ce1cc44039793f2ef56eaf512b7df2804a282e38467f3aa21658cb9c`.
+`c84ebe2fc748e84ffc76a572b1f5dfab8c3f2a94fc9e597a9f7ffdcd21d9e7cd`.
 
 This is a hash-pinned retrospective corpus gate, not an unseen prospective
-geometry holdout and not formal Liquid Glass parity. Three concrete construction
-boundaries remain: independent dynamic element extent/position production,
-independent regular dynamic producer crop production, and transition
-foreground/final-highlight production.
+geometry holdout and not formal Liquid Glass parity. Two concrete construction
+boundaries remain: independent regular dynamic producer crop production and
+transition foreground/final-highlight production.
 Physical Retina color/compositor transfer and a fresh production-Walle frame
 with zero unequal bytes remain final product proofs. No production shader or
 Walle `flake.nix` change is authorized by this result alone.
