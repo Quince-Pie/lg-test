@@ -4394,6 +4394,8 @@ private let finalHighlightShapePipelineLabel26_6_1 =
     "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd"
 private let finalHighlightRemainderPipelineLabel26_6_1 =
     "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd"
+private let smallClearFinalHighlightPipelineLabel26_6_1 =
+    "com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd"
 
 private func isGlassBackgroundFragment(_ fragment: String) -> Bool {
     fragment.hasPrefix("glass_background")
@@ -5488,6 +5490,7 @@ private func glassUniformCallSiteEvidence(
 
 private let finalHighlightVertexTailCandidateSampleIndices = Array(24...31)
 private let finalHighlightSourceCandidateSampleIndices = Array(1...31)
+private let smallClearFinalColorCandidateSampleIndices = Array(2...10)
 
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
@@ -5686,6 +5689,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         [ObjectIdentifier: MTLRenderPipelineDescriptor] = [:]
     private var finalHighlightVertexTailInterventionCapture: String?
     private var finalHighlightSourceInterventionCapture: String?
+    private var smallClearFinalColorInterventionCapture: String?
     private var computePipelineCreationRecords:
         [ObjectIdentifier: [String: Any]] = [:]
     private var glassUniformCallSiteCaptured = false
@@ -10731,6 +10735,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private func finalHighlightVertexTailSelection(
         in commands: [ReplayCommand]
     ) -> FinalHighlightVertexTailSelection? {
+        let smallClearRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
+            ] == "1"
         var currentPipeline: MTLRenderPipelineState?
         var activeVertexBuffer: MTLBuffer?
         var activeVertexOffset = 0
@@ -10763,7 +10771,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 guard indexType == .uint16,
                       indexCount == 24,
                       let currentPipeline,
-                      isFinalHighlightRemainderPipeline(currentPipeline),
+                      (smallClearRequested
+                        ? currentPipeline.label
+                            == smallClearFinalHighlightPipelineLabel26_6_1
+                        : isFinalHighlightRemainderPipeline(
+                            currentPipeline)),
                       let activeVertexBuffer
                 else {
                     continue
@@ -10788,6 +10800,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
         capture: String,
         outputDirectory: URL
     ) -> [String: Any] {
+        let smallClearRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
+            ] == "1"
+        let branchName = smallClearRequested
+            ? "small-clear Tkfh border"
+            : "current Irsd border"
         guard let selection = finalHighlightVertexTailSelection(
                 in: pass.commands)
         else {
@@ -10796,7 +10815,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "executed": false,
                 "eligible": false,
                 "selected": false,
-                "reason": "current Irsd border draw is unavailable",
+                "reason": branchName + " draw is unavailable",
             ]
         }
         guard selection.vertexBuffer.storageMode != .private else {
@@ -10805,7 +10824,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "executed": false,
                 "eligible": false,
                 "selected": false,
-                "reason": "Irsd vertex buffer is private",
+                "reason": branchName + " vertex buffer is private",
             ]
         }
 
@@ -10826,7 +10845,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "executed": false,
                 "eligible": false,
                 "selected": false,
-                "reason": "Irsd vertex layout differs",
+                "reason": branchName + " vertex layout differs",
             ]
         }
 
@@ -10846,14 +10865,17 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "executed": false,
                 "eligible": false,
                 "selected": false,
-                "reason": "Irsd vertex attribute range exceeds buffer",
+                "reason": branchName + " vertex attribute range exceeds buffer",
             ]
         }
 
         lock.lock()
-        let previouslySelectedCapture =
-            finalHighlightVertexTailInterventionCapture
-        if previouslySelectedCapture == nil {
+        let previouslySelectedCapture = smallClearRequested
+            ? smallClearFinalColorInterventionCapture
+            : finalHighlightVertexTailInterventionCapture
+        if previouslySelectedCapture == nil, smallClearRequested {
+            smallClearFinalColorInterventionCapture = capture
+        } else if previouslySelectedCapture == nil {
             finalHighlightVertexTailInterventionCapture = capture
         }
         lock.unlock()
@@ -10869,7 +10891,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "pipelineLabel": selection.pipeline.label ?? "",
                 "indexCount": selection.indexCount,
                 "reason":
-                    "earlier topology-eligible Irsd candidate selected",
+                    smallClearRequested
+                    ? "earlier topology-eligible small-clear Tkfh "
+                        + "border candidate selected"
+                    : "earlier topology-eligible Irsd candidate selected",
             ]
         }
 
@@ -10906,7 +10931,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "executed": false,
                     "eligible": true,
                     "selected": true,
-                    "reason": "Irsd vertex clone failed",
+                    "reason": branchName + " vertex clone failed",
                     "intervention": intervention.name,
                 ]
             }
@@ -10973,7 +10998,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "selectionPolicy":
                 "first topology-eligible candidate in sample order",
             "classification":
-                "captured Apple Irsd pixel-influence intervention",
+                smallClearRequested
+                ? "captured Apple small-clear Tkfh border "
+                    + "pixel-influence intervention"
+                : "captured Apple Irsd pixel-influence intervention",
             "liveAppleFrameMutated": false,
             "capturedApplePipelinesUnmodified": true,
             "pipelineLabel": selection.pipeline.label ?? "",
@@ -14352,13 +14380,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 || capture.hasSuffix("-12")
                 || capture.hasSuffix("-32"))
         let dynamicHighlightVertexTailTraceRequested =
-            ProcessInfo.processInfo.environment[
+            (ProcessInfo.processInfo.environment[
                 "LG_TRANSITION_HIGHLIGHT_VERTEX_TAIL_TRACE"
             ] == "1"
             && capture.hasPrefix("transition-background-uniform-")
             && finalHighlightVertexTailCandidateSampleIndices.contains {
                 capture.hasSuffix(String(format: "-%02d", $0))
-            }
+            })
+            || (ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
+            ] == "1"
+            && capture.hasPrefix("transition-background-uniform-")
+            && smallClearFinalColorCandidateSampleIndices.contains {
+                capture.hasSuffix(String(format: "-%02d", $0))
+            })
         let dynamicHighlightSourceTraceRequested =
             ProcessInfo.processInfo.environment[
                 "LG_TRANSITION_FINAL_SOURCE_TRACE"
@@ -21227,6 +21262,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_FINAL_SOURCE_TRACE"
                 ] == "1"
+            let smallClearFinalColorTraceRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
+                ] == "1"
             if matrixUniformBasisRequested,
                !dynamicUniformsRequested
             {
@@ -21440,6 +21479,55 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "circle-combined-holdout-02 case",
                     ])
             }
+            if smallClearFinalColorTraceRequested,
+               !dynamicUniformsRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 24,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "small-clear final color trace requires "
+                            + "dynamic uniform capture",
+                    ])
+            }
+            if smallClearFinalColorTraceRequested,
+               allocationOnlyRequested
+                    || denseAllocationRequested
+                    || matrixUniformBasisRequested
+                    || fixedStateAllocationRequested
+                    || pathIsolationAllocationRequested
+                    || highlightVertexTailTraceRequested
+                    || highlightSourceTraceRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 25,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "small-clear final color trace requires "
+                            + "exclusive targeted controlled replay",
+                    ])
+            }
+            if smallClearFinalColorTraceRequested,
+               direction != .materialize
+                    || material != .clear
+                    || appearance != .light
+                    || geometry.rawValue != "circle-047-center"
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 26,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "small-clear final color trace requires the "
+                            + "frozen clear/light materialize "
+                            + "circle-047-center case",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
@@ -21447,6 +21535,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             let dynamicUniformSampleIndices = Set(
                 highlightSourceTraceRequested
                     ? finalHighlightSourceCandidateSampleIndices
+                    : smallClearFinalColorTraceRequested
+                    ? smallClearFinalColorCandidateSampleIndices
                     : highlightVertexTailTraceRequested
                     ? finalHighlightVertexTailCandidateSampleIndices
                     : denseAllocationRequested
