@@ -1,0 +1,102 @@
+{
+  "staticRegularProducerGeometryHoldoutPreregistrationSchemaVersion": 1,
+  "authority": "prospective direct-Retina transfer holdout",
+  "captureStatusAtFreeze": "no Apple output for this geometry exists",
+  "captureHost": {
+    "architecture": "arm64",
+    "metalDevice": "Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "physicalPixels": [
+      3456,
+      2234
+    ],
+    "logicalPoints": [
+      1728,
+      1117
+    ],
+    "backingScaleFactor": 2
+  },
+  "capturePolicy": {
+    "githubActionsPermitted": false,
+    "debuggerPermitted": false,
+    "nativeCaptureMayContainNixStorePath": false,
+    "material": "regular",
+    "appearance": "light",
+    "executeIndependentGlass": true,
+    "metalCaptureEnabled": true,
+    "comparisonToleranceBytes": 0
+  },
+  "geometry": {
+    "centerX": 301.25,
+    "centerY": 699.75,
+    "extendsBeyondWindow": false,
+    "height": 377,
+    "name": "circle-377-fractional-holdout",
+    "shape": "circle",
+    "width": 377,
+    "windowHeight": 1024,
+    "windowWidth": 1024
+  },
+  "predictedPolicy": {
+    "material": "regular",
+    "appearance": "light",
+    "backdropScale": 0.25,
+    "inputBleedAmount": 131.9499969482422,
+    "inputBlurRadius": 4.0,
+    "inputBleedBlurRadius": 160.0,
+    "radius1": 20.0,
+    "cropOrigin": [
+      0,
+      1
+    ],
+    "activeExtent": [
+      155,
+      160
+    ],
+    "textureCoordinateClamp": [
+      0,
+      0,
+      154,
+      159
+    ],
+    "producerExtent": [
+      192,
+      192
+    ],
+    "mipPolicy": {
+      "scaledRadius": 32.0,
+      "maximumLevelCount": 8,
+      "requestedLevelCount": 6,
+      "levelCount": 6,
+      "alignmentExponent": 6,
+      "alignmentScale": 64
+    },
+    "selectedRegion": [
+      -64,
+      -64,
+      320,
+      320
+    ],
+    "destinationExtent": [
+      320,
+      320
+    ],
+    "copyOffset": [
+      -64,
+      -65
+    ],
+    "effectiveOrigin": [
+      -64,
+      -64
+    ]
+  },
+  "sourceSHA256": {
+    "Sources/GlassIntrospect/main.swift": "114ae3c2c5f61b99fd377a20f6461cb2dc6513db819fe9978599b5da8075263b",
+    "Analysis/static_regular_producer_geometry.py": "a58f5b6acc8c5c863189079bfeb66f2c60c329d9ca385b4e67dee8c8a4898b36",
+    "Analysis/validate_static_regular_producer_geometry_holdout.py": "e71effe0dd1d697680ee2078e5e558965ba6fb3540800c5deac359ed2071943b",
+    "Analysis/test_static_regular_producer_geometry.py": "17fbd0a901fe91efa76a4630565f3b6d4836639d9e38ee44083bb5d8a017020d",
+    "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+  },
+  "promotionRule": "all predicted metadata fields and every active producer byte must match exactly on the unseen physical-Retina capture"
+}

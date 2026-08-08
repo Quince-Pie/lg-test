@@ -2309,6 +2309,10 @@ private struct ProbeGeometry {
             Specification(width: 346, center: CGPoint(x: 512, y: 512)),
         "circle-347-center":
             Specification(width: 347, center: CGPoint(x: 512, y: 512)),
+        "circle-377-fractional-holdout":
+            Specification(
+                width: 377,
+                center: CGPoint(x: 301.25, y: 699.75)),
         "circle-408-center":
             Specification(width: 408, center: CGPoint(x: 512, y: 512)),
         "circle-409-center":

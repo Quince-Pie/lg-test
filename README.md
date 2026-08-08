@@ -12048,3 +12048,62 @@ optical/temporal/mesh/source/mip/color inputs, including the nested resolved-
 color join; physical Retina pixel-format/color/display/compositor transfer;
 and fresh Walle frames with zero unequal bytes. The production shader remains
 unchanged and unauthorized for parity-sensitive edits.
+
+### Authoritative current scope and frozen static producer-geometry transfer
+
+This section supersedes the stale scope sentence immediately above. The exact
+`Color.Resolved` helper and every `Parameters` mixing field are closed by the
+205-case result already recorded in this README; nested resolved-color mixing
+is not an outstanding research unknown. Materialize and dematerialize numeric
+uniform transfer are also prospective transfer authorities. These results do
+not make the current Walle shader an Apple renderer: no production Walle frame
+has yet passed the zero-unequal-byte gate.
+
+The five opened regular/light static geometry captures from historical run
+`30589303022` expose one exact producer law. Apple computes
+`inputBleedAmount = binary32(0.35 * circleDiameter)`, expands the circle's
+window-space bounds by that distance, converts the vertical axis to
+bottom-left producer coordinates, clips both axes to the 1024-point window,
+and applies the exact 1/4 backdrop scale. Each lower crop edge is `ceil` and
+each upper-exclusive edge is `floor`. The active extent is their difference;
+the backing texture extent is independently rounded up to 64 pixels. The law
+predicts all five producer crop origins, active extents, storage extents,
+copy-base clamps, selected regions, destination extents, signed copy offsets,
+and effective origins exactly. Independently regenerated regular downsample
+pixels match all 957,100 active producer bytes with zero mismatches.
+
+This was an opened calibration, so it was not silently promoted. Before any
+new Apple output existed, the discriminator-rich
+`circle-377-fractional-holdout` was frozen with diameter 377 and center
+`(301.25, 699.75)`. It predicts all of the following:
+
+```text
+inputBleedAmount       131.9499969482422
+producer crop origin   (0, 1)
+active crop extent     155 x 160
+producer allocation    192 x 192
+copy clamp             (0, 0, 154, 159)
+radius1 / mip count    20 / 6
+selected region        (-64, -64, 320, 320)
+destination allocation 320 x 320
+copy offset            (-64, -65)
+effective origin       (-64, -64)
+```
+
+The new 192-pixel producer tier, one clipped axis, one nonzero crop axis,
+fractional center, and asymmetric copy offset jointly distinguish the model
+from the opened fixtures. The preregistration SHA-256 is
+`f0d4c328962af5b4b9ebab48dbab5772c55e449723becb83ca72faeef9598a36`.
+It pins the probe, model, zero-tolerance validator, tests, physical-Retina
+preflight, host build, material profile, and expected policy. Native capture
+uses Apple Command Line Tools with no Nix store path and no debugger; only
+post-capture validation uses `nix develop`. GitHub Actions is not used.
+
+A prospective pass requires every metadata field above and every active
+producer byte to be exact on the physical M1 Max Retina display. It promotes
+static regular producer crop/allocation to transfer authority and composes
+with the already exact copy/mip arithmetic. It still does not certify live
+transition producer geometry, the final physical display/compositor transfer,
+or an independently rendered Walle frame with zero unequal bytes. Those are
+the remaining formal parity boundaries; none prevents beginning gated Walle
+integration now.
