@@ -20,9 +20,6 @@ TRANSPORT_OUTER_PATHS = (
     (1, 0, 1),
     (1, 0, 1, 0),
     (1, 0, 1, 0, 0),
-    (1, 0, 1, 1),
-    (1, 0, 1, 1, 0),
-    (1, 0, 1, 1, 0, 0),
     (1, 0, 1, 2),
 )
 TRANSPORT_ELEMENT_PATH = (1, 0, 1, 0, 0, 0, 0)
@@ -314,7 +311,7 @@ def validate_geometry_transport(record: dict[str, Any]) -> None:
     requested = transport.get("requestedLayerStates")
     validate_transport_geometry(requested, f"sample {sample} requested transport")
     require(
-        isinstance(requested, list) and len(requested) == 8,
+        isinstance(requested, list) and len(requested) == 5,
         f"sample {sample}: requested transport cardinality differs",
     )
 
@@ -431,7 +428,7 @@ def validate(
         preregistration.get(
             "finalHighlightVertexTailInterventionPreregistrationSchemaVersion"
         )
-        == 3,
+        == 4,
         "preregistration schema differs",
     )
     validate_sources(preregistration)
@@ -503,7 +500,7 @@ def validate(
         target_records[selected_sample],
     )
     return {
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "passed": True,
         "authority": (
             "current-build observational irrelevance of generated vertex "

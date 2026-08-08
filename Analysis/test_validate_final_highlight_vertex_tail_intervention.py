@@ -269,7 +269,7 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         preregistration.write_text(
             json.dumps(
                 {
-                    "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 3,
+                    "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 4,
                     "sourceSHA256": {},
                 }
             ),

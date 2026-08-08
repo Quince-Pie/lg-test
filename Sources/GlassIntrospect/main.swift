@@ -17733,9 +17733,6 @@ private let finalHighlightVertexTailTransportOuterPaths = Set([
     [1, 0, 1],
     [1, 0, 1, 0],
     [1, 0, 1, 0, 0],
-    [1, 0, 1, 1],
-    [1, 0, 1, 1, 0],
-    [1, 0, 1, 1, 0, 0],
     [1, 0, 1, 2],
 ])
 private let finalHighlightVertexTailTransportElementPath = [
