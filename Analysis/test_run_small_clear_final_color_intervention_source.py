@@ -18,6 +18,9 @@ QUAD_FALLBACK_AMENDMENT = (
 PASS_SELECTION_AMENDMENT = (
     ANALYSIS / "small_clear_final_color_intervention_pass_selection_amendment.json"
 )
+CLEAR_LOAD_AMENDMENT = (
+    ANALYSIS / "small_clear_final_color_intervention_clear_load_amendment.json"
+)
 
 
 class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
@@ -30,6 +33,9 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
         )
         self.pass_selection_amendment = json.loads(
             PASS_SELECTION_AMENDMENT.read_text(encoding="utf-8")
+        )
+        self.clear_load_amendment = json.loads(
+            CLEAR_LOAD_AMENDMENT.read_text(encoding="utf-8")
         )
 
     def test_runner_uses_the_frozen_native_case(self) -> None:
@@ -47,7 +53,7 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
         self.assertIn("GITHUB_ACTIONS_USED=0", self.source)
 
     def test_runner_pins_every_compiled_input_and_the_preregistration(self) -> None:
-        for relative, digest in self.pass_selection_amendment["sourceSHA256"].items():
+        for relative, digest in self.clear_load_amendment["sourceSHA256"].items():
             self.assertEqual(
                 hashlib.sha256((REPOSITORY / relative).read_bytes()).hexdigest(),
                 digest,
@@ -67,6 +73,10 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
             PASS_SELECTION_AMENDMENT.read_bytes()
         ).hexdigest()
         self.assertIn(pass_selection_digest, self.source)
+        clear_load_digest = hashlib.sha256(
+            CLEAR_LOAD_AMENDMENT.read_bytes()
+        ).hexdigest()
+        self.assertIn(clear_load_digest, self.source)
         self.assertIn('--transport-amendment "$transport_amendment"', self.source)
         self.assertIn(
             '--quad-fallback-amendment "$quad_fallback_amendment"',
@@ -74,6 +84,10 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
         )
         self.assertIn(
             '--pass-selection-amendment "$pass_selection_amendment"',
+            self.source,
+        )
+        self.assertIn(
+            '--clear-load-amendment "$clear_load_amendment"',
             self.source,
         )
 

@@ -1,0 +1,74 @@
+{
+  "smallClearFinalColorClearLoadAmendmentSchemaVersion": 1,
+  "authority": "value-blind clear-load replay amendment after the exact small-clear pass was selected but rejected before encoding",
+  "basePreregistration": "Analysis/small_clear_final_color_intervention_preregistration.json",
+  "basePreregistrationSHA256": "8609133e2306ca7ff575fc136d6ae125c00d7de922385de106ecb27d6075d604",
+  "transportAmendment": "Analysis/small_clear_final_color_intervention_transport_amendment.json",
+  "transportAmendmentSHA256": "a86b3adb3e6f50eca0ab71ce7f0bdb5871f381cc4b9e3547230644321768e769",
+  "quadFallbackAmendment": "Analysis/small_clear_final_color_intervention_quad_fallback_amendment.json",
+  "quadFallbackAmendmentSHA256": "2baa14d43ed0954d6c19388814eb9df4a192fb1c0fec015b947350a1098130cb",
+  "passSelectionAmendment": "Analysis/small_clear_final_color_intervention_pass_selection_amendment.json",
+  "passSelectionAmendmentSHA256": "e0f05c35d77794458576c7f9f3726f41fc64ff4a24e3cdac02435cb979337a2a",
+  "fourthFailedRun": {
+    "captureCommit": "3968055ed8a2e48cd810e0757f82c4f4326a043b",
+    "captureDirectory": "local-small-clear-final-color-3968055-v1",
+    "captureExitStatus": 0,
+    "validationExitStatus": 1,
+    "timelineSHA256": "fd223452e1b7492a0719169b8a2e50c14f933526e307d3ee8cdbd58702c7617f",
+    "firstValidatorFailure": "sample 3: exact replay did not execute",
+    "sample3ReplayFailure": "captured glass target or pre-pass copy unavailable",
+    "sample3CapturedPassCount": 4,
+    "selectedPassColor0": {
+      "width": 128,
+      "height": 128,
+      "pixelFormat": 80,
+      "sampleCount": 1,
+      "loadAction": 2,
+      "loadActionSemantic": "clear",
+      "storeAction": 1,
+      "clearColor": [0, 0, 0, 0]
+    },
+    "selectedPassPreColor0Available": false,
+    "selectedCandidateCount": 0,
+    "executedInterventionCount": 0,
+    "answerBearingCandidatePixelsProduced": false,
+    "transportFinding": "prepareRenderPassCopy intentionally retains a pre-pass texture only for load-action-load passes; the exact small-clear pass starts from a declared transparent clear, so requiring a pre-pass texture rejected the pass before reference or intervention encoding"
+  },
+  "amendment": {
+    "candidateSamples": "unchanged exhaustive samples 2 through 31 inclusive",
+    "passAndDrawSelection": "unchanged from the pass-selection and quad-fallback amendments",
+    "clearLoadReplay": "permit a missing captured pre-pass texture only when color attachment zero has MTLLoadAction.clear; preserve the captured clear color and load action and do not synthesize, copy, or inspect an initial texture",
+    "loadPassReplay": "unchanged and still requires the captured pre-pass texture",
+    "selectedCompleteOutput": {
+      "width": 128,
+      "height": 128,
+      "pixelFormat": 80,
+      "bytesPerPixel": 4,
+      "bytesPerIntervention": 65536,
+      "bytesAcrossTwoInterventions": 131072
+    },
+    "interventions": "unchanged finite-constant-half4 and finite-varying-half4 streams",
+    "comparisonToleranceBytes": 0,
+    "acceptance": "both independently read complete 65,536-byte pass outputs must equal the independently read exact-pass reference with zero unequal bytes, unequal pixels, or channel delta"
+  },
+  "unseenAtAmendmentFreeze": {
+    "anyClearLoadInterventionExecuted": false,
+    "anyClearLoadCandidatePixelExists": false,
+    "anyClearLoadComparisonResultExists": false,
+    "fifthCaptureStarted": false
+  },
+  "sourceSHA256": {
+    "Sources/GlassIntrospect/main.swift": "c949c521fccdbe71d0f958dc3823c15532621743cd35e96b8a238c1cb2af77be",
+    "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
+    "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
+    "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
+    "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
+    "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
+    "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208",
+    "Analysis/validate_small_clear_final_color_intervention.py": "1877bb82dd9eaf2d3493c536ccbdf4c42d05a227cbf91e63deca32511754a297",
+    "Analysis/test_validate_small_clear_final_color_intervention.py": "b2498e7c254dd27a7d862006faa1ee630ed0fc00f42b783399b1413e42c2fc37",
+    "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
+    "Analysis/small_clear_final_geometry_result.json": "8600d81d693c316408064a868f100a3ead403e51c68aa994e10a8e154027ae00"
+  },
+  "promotionRule": "All earlier preregistration and amendment constraints remain controlling except for the proven clear-load replay transport and exact selected-pass output size above. Only a validator pass with one executed mutation pair and both complete outputs byte-identical to the reference may classify the exact pipeline's active half4 field as observationally pixel-irrelevant. This cannot establish Tghn background semantics, Tmua producer/composition semantics, physical compositor parity, or complete Walle parity."
+}

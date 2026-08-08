@@ -21,6 +21,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         self.amendment = self.root / "amendment.json"
         self.quad_fallback_amendment = self.root / "quad-fallback-amendment.json"
         self.pass_selection_amendment = self.root / "pass-selection-amendment.json"
+        self.clear_load_amendment = self.root / "clear-load-amendment.json"
         self.preflight = self.root / "preflight.json"
         self.timeline = self.capture / "transition-timeline.json"
         self.render_payload = bytes([0x5A]) * validator.EXPECTED_RENDER_BYTES
@@ -76,6 +77,25 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        self.clear_load_amendment.write_text(
+            json.dumps(
+                {
+                    "smallClearFinalColorClearLoadAmendmentSchemaVersion": 1,
+                    "basePreregistrationSHA256": validator.sha256_file(
+                        self.preregistration
+                    ),
+                    "transportAmendmentSHA256": validator.sha256_file(self.amendment),
+                    "quadFallbackAmendmentSHA256": validator.sha256_file(
+                        self.quad_fallback_amendment
+                    ),
+                    "passSelectionAmendmentSHA256": validator.sha256_file(
+                        self.pass_selection_amendment
+                    ),
+                    "sourceSHA256": {},
+                }
+            ),
+            encoding="utf-8",
+        )
         self.preflight.write_text(
             json.dumps(
                 {
@@ -95,8 +115,8 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
     @staticmethod
     def _snapshot(name: str) -> dict[str, object]:
         return {
-            "width": 1024,
-            "height": 1024,
+            "width": validator.EXPECTED_RENDER_WIDTH,
+            "height": validator.EXPECTED_RENDER_HEIGHT,
             "pixelFormat": 80,
             "rawBytes": validator.EXPECTED_RENDER_BYTES,
             "rawFile": name,
@@ -341,11 +361,12 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             self.amendment,
             self.quad_fallback_amendment,
             self.pass_selection_amendment,
+            self.clear_load_amendment,
             self.preflight,
         )
         self.assertTrue(result["passed"])
         self.assertEqual(result["selectedSampleIndex"], 11)
-        self.assertEqual(result["intervention"]["comparedBytes"], 8_388_608)
+        self.assertEqual(result["intervention"]["comparedBytes"], 131_072)
         self.assertEqual(result["intervention"]["unequalBytes"], 0)
 
     def test_skipping_an_earlier_eligible_candidate_fails(self) -> None:
@@ -364,6 +385,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.amendment,
                 self.quad_fallback_amendment,
                 self.pass_selection_amendment,
+                self.clear_load_amendment,
                 self.preflight,
             )
 
@@ -384,6 +406,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.amendment,
                 self.quad_fallback_amendment,
                 self.pass_selection_amendment,
+                self.clear_load_amendment,
                 self.preflight,
             )
 
@@ -398,6 +421,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.amendment,
                 self.quad_fallback_amendment,
                 self.pass_selection_amendment,
+                self.clear_load_amendment,
                 self.preflight,
             )
 

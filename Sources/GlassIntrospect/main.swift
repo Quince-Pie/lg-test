@@ -10009,7 +10009,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
     private func replayGlassPrefix(
         pass: ReplayPass,
-        preColor0: MTLTexture,
+        preColor0: MTLTexture?,
         queue: MTLCommandQueue,
         commands commandOverride: [ReplayCommand]? = nil,
         replacingGlassPipeline replacement:
@@ -10028,9 +10028,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             phase: "before-prefix-command-buffer",
             candidate: suffix,
             outputDirectory: outputDirectory)
-        guard let commandBuffer = queue.makeCommandBuffer(),
-              let blit = commandBuffer.makeBlitCommandEncoder()
-        else {
+        guard let commandBuffer = queue.makeCommandBuffer() else {
             return [
                 "executed": false,
                 "reason": "glass-prefix command buffer unavailable",
@@ -10097,20 +10095,36 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pass.descriptor.renderTargetArrayLength
         descriptor.defaultRasterSampleCount =
             pass.descriptor.defaultRasterSampleCount
-        blit.copy(
-            from: preColor0,
-            sourceSlice: 0,
-            sourceLevel: 0,
-            sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-            sourceSize: MTLSize(
-                width: preColor0.width,
-                height: preColor0.height,
-                depth: 1),
-            to: target,
-            destinationSlice: 0,
-            destinationLevel: 0,
-            destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
-        blit.endEncoding()
+        if let preColor0 {
+            guard let blit = commandBuffer.makeBlitCommandEncoder()
+            else {
+                return [
+                    "executed": false,
+                    "reason": "glass-prefix pre-pass blit unavailable",
+                ]
+            }
+            blit.copy(
+                from: preColor0,
+                sourceSlice: 0,
+                sourceLevel: 0,
+                sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                sourceSize: MTLSize(
+                    width: preColor0.width,
+                    height: preColor0.height,
+                    depth: 1),
+                to: target,
+                destinationSlice: 0,
+                destinationLevel: 0,
+                destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+            blit.endEncoding()
+        } else if pass.descriptor.colorAttachments[0]?.loadAction
+                    != .clear
+        {
+            return [
+                "executed": false,
+                "reason": "glass-prefix load pass has no pre-pass copy",
+            ]
+        }
         guard let encoder = commandBuffer.makeRenderCommandEncoder(
             descriptor: descriptor)
         else {
@@ -10795,7 +10809,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
     private func replayFinalHighlightVertexTailIntervention(
         pass: ReplayPass,
-        preColor0: MTLTexture,
+        preColor0: MTLTexture?,
         queue: MTLCommandQueue,
         exactReplay: [String: Any],
         capture: String,
@@ -14271,15 +14285,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "capturedPassCount": passes.count,
             ]
         }
+        let preColor0 = pass.preColor0
         guard let originalAttachment =
                 pass.descriptor.colorAttachments[0],
               let originalTarget = originalAttachment.texture,
-              let preColor0 = pass.preColor0,
               originalTarget.textureType == .type2D,
               originalTarget.sampleCount == 1,
+              preColor0 != nil || originalAttachment.loadAction == .clear,
               let queue = originalTarget.device.makeCommandQueue(),
-              let commandBuffer = queue.makeCommandBuffer(),
-              let blit = commandBuffer.makeBlitCommandEncoder()
+              let commandBuffer = queue.makeCommandBuffer()
         else {
             return [
                 "executed": false,
@@ -14351,20 +14365,29 @@ private final class MetalUniformProbe: @unchecked Sendable {
         replayDescriptor.defaultRasterSampleCount =
             pass.descriptor.defaultRasterSampleCount
 
-        blit.copy(
-            from: preColor0,
-            sourceSlice: 0,
-            sourceLevel: 0,
-            sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-            sourceSize: MTLSize(
-                width: preColor0.width,
-                height: preColor0.height,
-                depth: 1),
-            to: replayTarget,
-            destinationSlice: 0,
-            destinationLevel: 0,
-            destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
-        blit.endEncoding()
+        if let preColor0 {
+            guard let blit = commandBuffer.makeBlitCommandEncoder()
+            else {
+                return [
+                    "executed": false,
+                    "reason": "captured pre-pass blit unavailable",
+                ]
+            }
+            blit.copy(
+                from: preColor0,
+                sourceSlice: 0,
+                sourceLevel: 0,
+                sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                sourceSize: MTLSize(
+                    width: preColor0.width,
+                    height: preColor0.height,
+                    depth: 1),
+                to: replayTarget,
+                destinationSlice: 0,
+                destinationLevel: 0,
+                destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+            blit.endEncoding()
+        }
 
         guard let encoder = commandBuffer.makeRenderCommandEncoder(
             descriptor: replayDescriptor)
@@ -14390,11 +14413,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ]
         }
 
-        let preSnapshot = carendererOutputSnapshot(
-            preColor0,
-            commandQueue: queue,
-            capture: "\(capture)-pre-final-pass",
-            outputDirectory: outputDirectory)
+        let preSnapshot: [String: Any]
+        if let preColor0 {
+            preSnapshot = carendererOutputSnapshot(
+                preColor0,
+                commandQueue: queue,
+                capture: "\(capture)-pre-final-pass",
+                outputDirectory: outputDirectory)
+        } else {
+            preSnapshot = [
+                "executed": false,
+                "reason": "clear-load pass has no pre-pass copy",
+            ]
+        }
         let replaySnapshot = carendererOutputSnapshot(
             replayTarget,
             commandQueue: queue,
@@ -14494,7 +14525,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     capture: capture,
                     outputDirectory: outputDirectory)
         }
-        if dynamicHighlightSourceTraceRequested {
+        if dynamicHighlightSourceTraceRequested,
+           let preColor0
+        {
             result["finalHighlightSourceIntervention"] =
                 replayFinalHighlightSourceIntervention(
                     pass: pass,
@@ -14503,6 +14536,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     exactReplay: ["output": replaySnapshot],
                     capture: capture,
                     outputDirectory: outputDirectory)
+        } else if dynamicHighlightSourceTraceRequested {
+            result["finalHighlightSourceIntervention"] = [
+                "executed": false,
+                "reason": "source intervention load pass has no pre-pass copy",
+            ]
         }
         if dynamicInterpolantTraceRequested {
             do {
@@ -14796,6 +14834,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     }
                 if capture == "carenderer-live-tree",
                    customProfileCompleted,
+                   let preColor0,
                    let customProfile =
                     pipelineSet.candidates.first(where: {
                         $0.name

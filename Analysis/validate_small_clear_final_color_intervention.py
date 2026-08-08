@@ -27,7 +27,9 @@ EXPECTED_INTERVENTIONS = (
     "finite-constant-half4",
     "finite-varying-half4",
 )
-EXPECTED_RENDER_BYTES = 1024 * 1024 * 4
+EXPECTED_RENDER_WIDTH = 128
+EXPECTED_RENDER_HEIGHT = 128
+EXPECTED_RENDER_BYTES = EXPECTED_RENDER_WIDTH * EXPECTED_RENDER_HEIGHT * 4
 VERTEX_COUNTS = {6: 4, 24: 16}
 VERTEX_STRIDE = 48
 ATTRIBUTE_OFFSET = 32
@@ -91,8 +93,14 @@ def raw_payload(
     snapshot: JsonObject,
     label: str,
 ) -> bytes:
-    require(snapshot.get("width") == 1024, f"{label} width differs")
-    require(snapshot.get("height") == 1024, f"{label} height differs")
+    require(
+        snapshot.get("width") == EXPECTED_RENDER_WIDTH,
+        f"{label} width differs",
+    )
+    require(
+        snapshot.get("height") == EXPECTED_RENDER_HEIGHT,
+        f"{label} height differs",
+    )
     require(snapshot.get("pixelFormat") == 80, f"{label} format differs")
     require(
         snapshot.get("rawBytes") == EXPECTED_RENDER_BYTES,
@@ -407,6 +415,7 @@ def validate(
     amendment_path: Path,
     quad_fallback_amendment_path: Path,
     pass_selection_amendment_path: Path,
+    clear_load_amendment_path: Path,
     preflight_path: Path,
 ) -> JsonObject:
     preregistration = load_json(preregistration_path)
@@ -458,7 +467,31 @@ def validate(
         == sha256_file(quad_fallback_amendment_path),
         "quad fallback amendment SHA-256 differs",
     )
-    validate_sources(pass_selection)
+    clear_load = load_json(clear_load_amendment_path)
+    require(
+        clear_load.get("smallClearFinalColorClearLoadAmendmentSchemaVersion") == 1,
+        "clear-load amendment schema differs",
+    )
+    require(
+        clear_load.get("basePreregistrationSHA256")
+        == sha256_file(preregistration_path),
+        "clear-load base preregistration SHA-256 differs",
+    )
+    require(
+        clear_load.get("transportAmendmentSHA256") == sha256_file(amendment_path),
+        "clear-load transport amendment SHA-256 differs",
+    )
+    require(
+        clear_load.get("quadFallbackAmendmentSHA256")
+        == sha256_file(quad_fallback_amendment_path),
+        "clear-load quad fallback amendment SHA-256 differs",
+    )
+    require(
+        clear_load.get("passSelectionAmendmentSHA256")
+        == sha256_file(pass_selection_amendment_path),
+        "pass selection amendment SHA-256 differs",
+    )
+    validate_sources(clear_load)
     preflight = load_json(preflight_path)
     require(preflight.get("passed") is True, "Retina preflight did not pass")
     require(preflight.get("backingScaleFactor") == 2, "Retina scale differs")
@@ -537,6 +570,7 @@ def validate(
         "transportAmendmentSHA256": sha256_file(amendment_path),
         "quadFallbackAmendmentSHA256": sha256_file(quad_fallback_amendment_path),
         "passSelectionAmendmentSHA256": sha256_file(pass_selection_amendment_path),
+        "clearLoadAmendmentSHA256": sha256_file(clear_load_amendment_path),
         "candidateSampleIndices": list(CANDIDATE_SAMPLES),
         "selectedSampleIndex": selected,
         "intervention": intervention,
@@ -550,6 +584,7 @@ def main() -> int:
     parser.add_argument("--transport-amendment", required=True, type=Path)
     parser.add_argument("--quad-fallback-amendment", required=True, type=Path)
     parser.add_argument("--pass-selection-amendment", required=True, type=Path)
+    parser.add_argument("--clear-load-amendment", required=True, type=Path)
     parser.add_argument("--preflight", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     arguments = parser.parse_args()
@@ -559,6 +594,7 @@ def main() -> int:
         arguments.transport_amendment,
         arguments.quad_fallback_amendment,
         arguments.pass_selection_amendment,
+        arguments.clear_load_amendment,
         arguments.preflight,
     )
     arguments.output.write_text(
