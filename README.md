@@ -12581,6 +12581,13 @@ and post-capture validation. The SDK-26.5 load-command correction is retained
 because that declared SDK is part of the already established SwiftUI
 presentation behavior.
 
+The first dispatch from commit `6352b8a` correctly failed before capturing an
+Apple state: dense capture was enabled without the probe's required
+allocation-only metadata mode. All eight processes emitted only the same guard
+error, validation was skipped, and no sealed timeline was opened. The amended
+contract sets `LG_TRANSITION_ALLOCATION_ONLY=1`; it changes capture transport,
+not a prediction or acceptance criterion.
+
 The frozen validator is
 `Analysis/validate_combined_transition_geometry_holdout_local_macos_26_6_1.py`.
 It first authenticates each requested geometry independently of its timeline,

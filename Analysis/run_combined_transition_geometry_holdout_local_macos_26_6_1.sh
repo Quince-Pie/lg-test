@@ -73,9 +73,9 @@ if [[ -e "$output_directory" ]]; then
     exit 1
 fi
 
-require_sha256 "$preregistration" 2d8dea3efc988259341ed716b00a4f439d3780bfd029e693e0599eb5e553baeb
-require_sha256 "$validator" a6ba3a5c37e37a8850991f4a3aeedf1daf44bb8bf78adebb09f5197f45af140b
-require_sha256 "$validator_test" 75def84b2c2ec76d191c4d20bb2267410e8ff18acfa7d678a40456f897032886
+require_sha256 "$preregistration" b942bb532449998d8bca2c9be6a61397d73edcd221f244c73ca96d108745c2aa
+require_sha256 "$validator" 891cdebd472a45eab6c1efacc02064322474b1d592f9990f514d89a6ef5a85cf
+require_sha256 "$validator_test" e47d3136e164fc11a4c24bd45229f734aa1ab2a9ff439105d431e59c1534695d
 require_sha256 "$analyzer" 75a2afded65ebf3b44c1c67a93e52d1bb44d5b25ce6a2f9c93af06dde36c3386
 require_sha256 "$analyzer_test" 61cbb7ea201738fdfb9b5bc1c4e4d2f8cbe52a0c45f3c65a525dd2b591c76498
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
@@ -206,7 +206,7 @@ for specification in "${cases[@]}"; do
         LG_TRANSITION_ALLOCATION_DENSE=1
         LG_TRANSITION_ALLOCATION_FIXED_STATE=0
         LG_TRANSITION_ALLOCATION_MESH_CALIBRATION=0
-        LG_TRANSITION_ALLOCATION_ONLY=0
+        LG_TRANSITION_ALLOCATION_ONLY=1
         LG_TRANSITION_ALLOCATION_PATH_ISOLATION=0
         LG_TRANSITION_CONTROLLED_BACKDROP=0
         "LG_TRANSITION_DIRECTION=$direction"

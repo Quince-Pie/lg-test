@@ -29,6 +29,7 @@ class PreregistrationTests(unittest.TestCase):
                 "declaredSDKVersion": "26.5",
                 "dynamicUniformEvidenceMode": "allocation-metadata-v1",
                 "denseStateCapture": True,
+                "allocationOnlyCapture": True,
                 "sampleCountPerTimeline": 33,
             },
             "acceptance": {

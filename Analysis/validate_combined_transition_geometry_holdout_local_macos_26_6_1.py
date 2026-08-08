@@ -250,6 +250,7 @@ def validate_preregistration_value(value: Mapping[str, Any]) -> None:
         and capture.get("declaredSDKVersion") == "26.5"
         and capture.get("dynamicUniformEvidenceMode") == "allocation-metadata-v1"
         and capture.get("denseStateCapture") is True
+        and capture.get("allocationOnlyCapture") is True
         and capture.get("sampleCountPerTimeline") == 33,
         "capture contract differs",
     )
@@ -362,7 +363,7 @@ def validate_case_context(
         "LG_TRANSITION_TIMELINE": "1",
         "LG_TRANSITION_UNIFORMS": "1",
         "LG_TRANSITION_ALLOCATION_DENSE": "1",
-        "LG_TRANSITION_ALLOCATION_ONLY": "0",
+        "LG_TRANSITION_ALLOCATION_ONLY": "1",
         "LG_TRANSITION_CONTROLLED_BACKDROP": "0",
         "LG_TRANSITION_HIGHLIGHT_VERTEX_TAIL_TRACE": "0",
     }
