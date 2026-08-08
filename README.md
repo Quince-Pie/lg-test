@@ -12018,3 +12018,33 @@ A complete pass grants only four-profile numeric dematerialize transfer. It
 does not by itself establish independent optical input generation, physical
 Retina pixel/color/compositor transfer, a zero-unequal-byte Walle frame, or
 formal Liquid Glass parity. It does not authorize a production-shader change.
+
+The frozen matrix passes prospectively from the single source commit
+`4510db6f19883f9b6964588643099b9b7857bee7`. All four direct-Retina cases
+return native-capture, native-clamp, and frozen-validation status zero. Each
+case matches 1,457/1,457 numeric words; the matrix therefore matches all
+5,828/5,828 IEEE-754 binary32 words with zero mismatches and retains all 124
+real structured records. No debugger or GitHub Actions process participates.
+
+The frame relation transfers exactly as preregistered. Every case contains 33
+internally distinct physical WindowServer frames. The matrix contains 132
+frames, exactly 129 distinct hashes, and one duplicate class: the four
+sample-32 absent endpoints with SHA-256
+`f93a15f6884c8eccdf4b94203f748def9512e3137538aea2b99a53ece39b48a8`.
+Every other frame is globally distinct. Independent Linux re-aggregation under
+`nix develop` is byte-identical to the Mac result.
+
+The canonical result is
+`Analysis/transition_uniform_dematerialize_4510db6_holdout_result.json`,
+SHA-256
+`81812b504be06916ea37195a3c5f2c49bf49d93d391735bca22dea7359bb1790`.
+This prospectively establishes the common 47-field numeric law for both
+materialize and dematerialize over clear and regular crossed with light and
+dark in the frozen family. Walle may implement this direction-complete numeric
+path behind immutable tests without changing the production shader.
+
+Three broad product gates remain before formal parity: independently generated
+optical/temporal/mesh/source/mip/color inputs, including the nested resolved-
+color join; physical Retina pixel-format/color/display/compositor transfer;
+and fresh Walle frames with zero unequal bytes. The production shader remains
+unchanged and unauthorized for parity-sensitive edits.
