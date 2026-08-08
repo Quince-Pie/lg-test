@@ -7,6 +7,7 @@ from pathlib import Path
 
 from validate_current_final_compositor_transfer import (
     BGRA_BYTES,
+    FINITE_SOURCE,
     FORCED_COVERAGE_EDITS,
     HEIGHT,
     WIDTH,
@@ -54,6 +55,21 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
             mismatch_metrics(reference, reference)["mismatchedByteCount"],
             0,
         )
+        self.assertEqual(
+            mismatch_metrics(
+                bytes(16),
+                bytes((1, *([0] * 7), 1, *([0] * 7))),
+                bytes_per_pixel=8,
+            )["mismatchedPixelCount"],
+            2,
+        )
+
+    def test_finite_source_is_frozen_and_opaque(self) -> None:
+        self.assertEqual(FINITE_SOURCE, bytes.fromhex("4080c0ff"))
+        self.assertEqual(
+            hashlib.sha256(FINITE_SOURCE).hexdigest(),
+            "cee78a47e0b3ac93fc7ea7b0c1129c572903be96598f1ff558a1c17601add23d",
+        )
 
     def test_forced_coverage_intervention_is_frozen(self) -> None:
         intervention = {
@@ -97,12 +113,27 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
             '"destinationDivisionMode": 0',
             '"positiveControlsPassed": positiveControlsPassed',
             '"candidatesExact": candidatesExact',
+            'fragmentTextureOverrides: [4: finiteSource]',
+            'let finiteSourceData = Data([0x40, 0x80, 0xc0, 0xff])',
+            '"sourcePathSensitive": sourcePathSensitive',
+            '"schemaVersion": 2',
         )
         for text in required:
             with self.subTest(text=text):
                 self.assertIn(text, source)
         self.assertEqual(WIDTH, 1024)
         self.assertEqual(HEIGHT, 1024)
+
+    def test_validator_reads_the_real_retina_preflight_shape(self) -> None:
+        source = (
+            REPOSITORY
+            / "Analysis/validate_current_final_compositor_transfer.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            'preflight.get("physicalPixels") == [3456, 2234]',
+            source,
+        )
+        self.assertNotIn('preflight.get("displayPixelWidth")', source)
 
 
 if __name__ == "__main__":

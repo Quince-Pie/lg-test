@@ -13880,15 +13880,43 @@ dematerialize sample 24, where the same captured pass contains exactly one
 Retina display; GitHub Actions, a debugger, and Nix-store paths in native
 compilation or capture are forbidden.
 
-Each current Apple function is isolated with its captured vertex geometry,
-textures, state, and unmodified function. A frozen uniform intervention makes
-the highlight coverage nonzero, while a deterministic premultiplied BGRA8
-destination varies both color and alpha at every pixel. The destination is
-independently reconstructible and has SHA-256
+The first frozen run at commit
+`b838af32b291561b362bd1dc0243ac0213359978` is rejected. Native capture and
+the physical-Retina preflight exited zero, but the validator exited one. The
+validator incorrectly queried nonexistent `displayPixelWidth` and
+`displayPixelHeight` keys instead of the preflight's real `physicalPixels`
+array. Independently of that validator defect, the trace exposed two
+substantive transport failures: `Iscd` was rejected by a guard that wrongly
+required an RGBA16Float auxiliary attachment, and `Irsd` changed zero bytes in
+all seven matrix cases because its captured one-pixel source left the isolated
+path inactive. The resulting candidate equality was vacuous and promotes no
+evidence. The timeline SHA-256 is
+`52e523f76997426348b6ce83c9f3dcae08e5fe05936b6c6dd1ccc0195e0b1464`.
+The failure result is
+`Analysis/current_final_compositor_transfer_b838af3_v1_failure_result.json`,
+SHA-256
+`1052d3bb83648a5b73ed23a13f5b1356c72e5ac6e797e418a08dcd18413b7f78`.
+
+The frozen v2 amendment changes transport and activity controls only. It
+reads `physicalPixels`, reproduces each function's actual auxiliary-attachment
+topology, and records the exact texture-4 binding at each selected draw. In
+each isolated replay it replaces only that binding immediately before the
+draw with the opaque one-pixel BGRA8 texel `4080c0ff`, SHA-256
+`cee78a47e0b3ac93fc7ea7b0c1129c572903be96598f1ff558a1c17601add23d`.
+The captured texture and Apple function are not mutated. For each function,
+the captured-source and finite-source RGBA16Float alpha-oracle outputs must
+differ by at least one byte and one correctly counted eight-byte pixel before
+the arithmetic result is eligible.
+
+A frozen uniform intervention makes the highlight coverage nonzero, while a
+deterministic premultiplied BGRA8 destination varies both color and alpha at
+every pixel. The destination is independently reconstructible and has
+SHA-256
 `33fdf3748e85aa9ee5f1840480f620611ef757bddbb714b77de08c559c15d737`.
-An Apple RGBA16Float replay with the already validated alpha-oracle matrix
-then exposes the exact binary16 highlight alpha. The gate rejects zero alpha,
-unequal RGB alpha channels, or any output alpha other than one.
+The finite-source Apple RGBA16Float replay with the already validated
+alpha-oracle matrix exposes the exact binary16 highlight alpha. The gate
+rejects zero alpha, unequal RGB alpha channels, or any output alpha other than
+one.
 
 The comparison path does not rebuild either private Apple function. A new
 full-target Metal fragment consumes only that alpha trace, the frozen
@@ -13907,16 +13935,18 @@ requires zero unequal bytes, zero unequal pixels, and maximum channel delta
 zero across all 58,720,256 candidate bytes. No case, arithmetic mode, or
 tolerance may be changed after capture.
 
-The preregistration is
+The v2 preregistration is
 `Analysis/current_final_compositor_transfer_preregistration.json`, SHA-256
-`4c0540c25890e443d764e6eac773bfc7b7b6fdf8288f0061e77a675bb3c304bd`.
-The validator and its five tests have SHA-256 values
-`87c4eb97baea1b69f8533b80b125112c9b96aa0d8b83cbc6ba93512736902b4b`
+`c749b4217111282a679959e199d23763093d519449c1794f8c977e9b6a403f62`.
+The validator and its seven tests have SHA-256 values
+`355f180464c0ed0bc2121f04263a75ed50f40d86615e987a0300131c9b42a174`
 and
-`98c837705d4932494b2708ccbbba3e10714a8420d1557f973bf398285e351fd2`.
+`f8106ee02a77aa61547cb38b52b9056b8a78584f445189ec4519012fc75b0884`.
 The local native runner has SHA-256
-`1055053771b1700f08848386e0be98746af13dabefb3c9cb0b793cb9f84c127c`.
-The Swift probe type-checks natively against Apple's 26.5 SDK.
+`9d2a0da2ebda07d3c7bb0cea97b36a133132aacbaadd54f3be4980a26dabc1c7`.
+The v2 Swift probe SHA-256 is
+`0b621044025c25414b112962007059bb78ef65fed2bb4a820eb2781753efadb6`
+and it type-checks natively against Apple's 26.5 SDK.
 
 The exact ledger before the answer-bearing run is:
 

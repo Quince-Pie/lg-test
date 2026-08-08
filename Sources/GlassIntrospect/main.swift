@@ -10725,6 +10725,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let pipeline: MTLRenderPipelineState
         let uniformBuffer: MTLBuffer
         let uniformOffset: Int
+        let fragmentTextures: [Int: MTLTexture]
     }
 
     private func finalHighlightSelections(
@@ -10733,6 +10734,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var currentPipeline: MTLRenderPipelineState?
         var activeUniformBuffer: MTLBuffer?
         var activeUniformOffset = 0
+        var activeFragmentTextures: [Int: MTLTexture] = [:]
         var selections: [FinalHighlightSelection] = []
 
         for (index, command) in commands.enumerated() {
@@ -10752,6 +10754,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 if bufferIndex == 1 {
                     activeUniformOffset = offset
                 }
+            case .fragmentTexture(let texture, let textureIndex):
+                if let texture {
+                    activeFragmentTextures[textureIndex] = texture
+                } else {
+                    activeFragmentTextures.removeValue(
+                        forKey: textureIndex)
+                }
             default:
                 break
             }
@@ -10767,7 +10776,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 drawIndex: index,
                 pipeline: currentPipeline,
                 uniformBuffer: activeUniformBuffer,
-                uniformOffset: activeUniformOffset))
+                uniformOffset: activeUniformOffset,
+                fragmentTextures: activeFragmentTextures))
         }
         return selections
     }
@@ -13012,8 +13022,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
         guard let capturedDescriptor,
               capturedDescriptor.colorAttachments[0]?.pixelFormat
                 == .bgra8Unorm,
-              capturedDescriptor.colorAttachments[1]?.pixelFormat
-                == .rgba16Float,
               let originalTarget =
                 pass.descriptor.colorAttachments[0]?.texture
         else {
@@ -13023,6 +13031,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "captured final highlight descriptor differs",
             ]
         }
+        let auxiliaryPixelFormat =
+            capturedDescriptor.colorAttachments[1]?.pixelFormat
+            ?? .invalid
+        guard auxiliaryPixelFormat == .invalid
+                || auxiliaryPixelFormat == .rgba16Float
+        else {
+            return [
+                "executed": false,
+                "reason":
+                    "captured final highlight auxiliary format differs",
+                "auxiliaryPixelFormat": auxiliaryPixelFormat.rawValue,
+            ]
+        }
+        let usesAuxiliaryAttachment =
+            auxiliaryPixelFormat == .rgba16Float
 
         let device = originalTarget.device
         guard let uniformClone = device.makeBuffer(
@@ -13787,7 +13810,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             uniformBuffer: MTLBuffer,
             captureAuxiliary: Bool = true,
             captureInterpolantPulls: Bool = false,
-            initialBGRA8: Data? = nil
+            initialBGRA8: Data? = nil,
+            fragmentTextureOverrides: [Int: MTLTexture] = [:]
         ) -> [String: Any] {
             let targetDescriptor = MTLTextureDescriptor
                 .texture2DDescriptor(
@@ -13805,11 +13829,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     mipmapped: false)
             auxiliaryDescriptor.storageMode = .shared
             auxiliaryDescriptor.usage = [.renderTarget, .shaderRead]
+            let auxiliary = usesAuxiliaryAttachment
+                ? device.makeTexture(descriptor: auxiliaryDescriptor)
+                : nil
             guard let target = device.makeTexture(
                     descriptor: targetDescriptor),
-                  let auxiliary = device.makeTexture(
-                    descriptor: auxiliaryDescriptor),
-                  let commandBuffer = queue.makeCommandBuffer()
+                  let commandBuffer = queue.makeCommandBuffer(),
+                  !usesAuxiliaryAttachment || auxiliary != nil
             else {
                 return [
                     "executed": false,
@@ -13968,11 +13994,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
             descriptor.colorAttachments[0]?.texture = target
             descriptor.colorAttachments[0]?.loadAction = .load
             descriptor.colorAttachments[0]?.storeAction = .store
-            descriptor.colorAttachments[1]?.texture = auxiliary
-            descriptor.colorAttachments[1]?.loadAction = .clear
-            descriptor.colorAttachments[1]?.storeAction = .store
-            descriptor.colorAttachments[1]?.clearColor =
-                MTLClearColorMake(0.0, 0.0, 0.0, 0.0)
+            if let auxiliary {
+                descriptor.colorAttachments[1]?.texture = auxiliary
+                descriptor.colorAttachments[1]?.loadAction = .clear
+                descriptor.colorAttachments[1]?.storeAction = .store
+                descriptor.colorAttachments[1]?.clearColor =
+                    MTLClearColorMake(0.0, 0.0, 0.0, 0.0)
+            }
             descriptor.renderTargetArrayLength =
                 pass.descriptor.renderTargetArrayLength
             descriptor.defaultRasterSampleCount =
@@ -13990,6 +14018,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 selection: selection,
                 pipeline: pipeline,
                 uniformBuffer: uniformBuffer)
+            commands.insert(
+                contentsOf: fragmentTextureOverrides.keys.sorted().map {
+                    .fragmentTexture(fragmentTextureOverrides[$0], $0)
+                },
+                at: commands.index(before: commands.endIndex))
             if let pullTraceBuffer {
                 commands.insert(
                     .fragmentBuffer(pullTraceBuffer, 0, 30),
@@ -14064,6 +14097,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
             if captureAuxiliary {
+                guard let auxiliary else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "final highlight auxiliary output is unavailable",
+                    ]
+                }
                 result["auxiliaryOutput"] = carendererOutputSnapshot(
                     auxiliary,
                     commandQueue: queue,
@@ -14118,13 +14158,132 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
 
-            let alphaTrace = render(
-                name: "current-\(role)-forced-alpha-rgba16float",
+            guard let capturedSource = selection.fragmentTextures[4],
+                  capturedSource.textureType == .type2D,
+                  capturedSource.depth == 1,
+                  capturedSource.arrayLength == 1,
+                  capturedSource.mipmapLevelCount == 1,
+                  capturedSource.sampleCount == 1,
+                  capturedSource.pixelFormat == .bgra8Unorm,
+                  capturedSource.width == 1,
+                  capturedSource.height == 1
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor texture-4 topology differs",
+                    "texture4": selection.fragmentTextures[4].map {
+                        textureRecord($0)
+                    } ?? [:],
+                ]
+            }
+            let finiteSourceDescriptor = MTLTextureDescriptor
+                .texture2DDescriptor(
+                    pixelFormat: .bgra8Unorm,
+                    width: 1,
+                    height: 1,
+                    mipmapped: false)
+            finiteSourceDescriptor.storageMode = .shared
+            finiteSourceDescriptor.usage = [.shaderRead]
+            guard let finiteSource = device.makeTexture(
+                    descriptor: finiteSourceDescriptor)
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor finite source allocation failed",
+                ]
+            }
+            let finiteSourceData = Data([0x40, 0x80, 0xc0, 0xff])
+            finiteSourceData.withUnsafeBytes { bytes in
+                finiteSource.replace(
+                    region: MTLRegionMake2D(0, 0, 1, 1),
+                    mipmapLevel: 0,
+                    withBytes: bytes.baseAddress!,
+                    bytesPerRow: 4)
+            }
+            let capturedSourceSnapshot = carendererOutputSnapshot(
+                capturedSource,
+                commandQueue: queue,
+                capture:
+                    "\(capture)-current-\(role)-captured-source-4",
+                outputDirectory: outputDirectory)
+            let finiteSourceSnapshot = carendererOutputSnapshot(
+                finiteSource,
+                commandQueue: queue,
+                capture:
+                    "\(capture)-current-\(role)-finite-source-4",
+                outputDirectory: outputDirectory)
+            guard let capturedSourceFile =
+                    capturedSourceSnapshot["rawFile"] as? String,
+                  let finiteSourceFile =
+                    finiteSourceSnapshot["rawFile"] as? String
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor source readback failed",
+                    "capturedSource": capturedSourceSnapshot,
+                    "finiteSource": finiteSourceSnapshot,
+                ]
+            }
+            let capturedSourceData: Data
+            let finiteSourceReadback: Data
+            do {
+                capturedSourceData = try Data(
+                    contentsOf: outputDirectory.appendingPathComponent(
+                        capturedSourceFile))
+                finiteSourceReadback = try Data(
+                    contentsOf: outputDirectory.appendingPathComponent(
+                        finiteSourceFile))
+            } catch {
+                return [
+                    "executed": false,
+                    "reason": error.localizedDescription,
+                    "stage": "current compositor source readback",
+                ]
+            }
+            guard capturedSourceData.count == 4,
+                  finiteSourceReadback == finiteSourceData,
+                  capturedSourceData != finiteSourceReadback
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor finite source control differs",
+                    "capturedSourceBytes": capturedSourceData.count,
+                    "finiteSourceHex": finiteSourceReadback.map {
+                        String(format: "%02x", $0)
+                    }.joined(),
+                    "capturedAndFiniteSourceDiffer":
+                        capturedSourceData != finiteSourceReadback,
+                ]
+            }
+
+            let capturedSourceAlphaTrace = render(
+                name:
+                    "current-\(role)-captured-source-forced-alpha-"
+                    + "rgba16float",
                 pipeline: floatPipeline,
                 pixelFormat: .rgba16Float,
                 uniformBuffer: alphaUniform,
                 captureAuxiliary: false)
-            guard alphaTrace["executed"] as? Bool == true,
+            let alphaTrace = render(
+                name:
+                    "current-\(role)-finite-source-forced-alpha-"
+                    + "rgba16float",
+                pipeline: floatPipeline,
+                pixelFormat: .rgba16Float,
+                uniformBuffer: alphaUniform,
+                captureAuxiliary: false,
+                fragmentTextureOverrides: [4: finiteSource])
+            guard capturedSourceAlphaTrace["executed"] as? Bool == true,
+                  let capturedAlphaOutput =
+                    capturedSourceAlphaTrace["output"]
+                        as? [String: Any],
+                  let capturedAlphaFile =
+                    capturedAlphaOutput["rawFile"] as? String,
+                  alphaTrace["executed"] as? Bool == true,
                   let alphaOutput = alphaTrace["output"]
                     as? [String: Any],
                   let alphaFile = alphaOutput["rawFile"] as? String
@@ -14132,12 +14291,18 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 return [
                     "executed": false,
                     "reason": "current compositor alpha trace failed",
+                    "capturedSourceAlphaTrace":
+                        capturedSourceAlphaTrace,
                     "alphaTrace": alphaTrace,
                 ]
             }
 
+            let capturedAlphaData: Data
             let alphaData: Data
             do {
+                capturedAlphaData = try Data(
+                    contentsOf: outputDirectory
+                        .appendingPathComponent(capturedAlphaFile))
                 alphaData = try Data(
                     contentsOf: outputDirectory
                         .appendingPathComponent(alphaFile))
@@ -14149,14 +14314,51 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
             let pixelCount = originalTarget.width * originalTarget.height
-            guard alphaData.count == pixelCount * 8 else {
+            guard capturedAlphaData.count == pixelCount * 8,
+                  alphaData.count == pixelCount * 8
+            else {
                 return [
                     "executed": false,
                     "reason": "current compositor alpha byte count differs",
+                    "capturedAlphaBytes": capturedAlphaData.count,
                     "alphaBytes": alphaData.count,
                     "expectedAlphaBytes": pixelCount * 8,
                 ]
             }
+            var sourcePathMismatchedBytes = 0
+            var sourcePathMismatchedPixels = 0
+            var sourcePathMaximumByteDelta = 0
+            var sourcePathFirstMismatchedByte = -1
+            capturedAlphaData.withUnsafeBytes { capturedBytes in
+                alphaData.withUnsafeBytes { finiteBytes in
+                    let captured = capturedBytes.bindMemory(to: UInt8.self)
+                    let finite = finiteBytes.bindMemory(to: UInt8.self)
+                    for pixel in 0..<pixelCount {
+                        let offset = pixel * 8
+                        var pixelDiffers = false
+                        for byte in 0..<8 {
+                            let delta = abs(
+                                Int(captured[offset + byte])
+                                - Int(finite[offset + byte]))
+                            guard delta != 0 else { continue }
+                            sourcePathMismatchedBytes += 1
+                            pixelDiffers = true
+                            sourcePathMaximumByteDelta = max(
+                                sourcePathMaximumByteDelta,
+                                delta)
+                            if sourcePathFirstMismatchedByte < 0 {
+                                sourcePathFirstMismatchedByte = offset + byte
+                            }
+                        }
+                        if pixelDiffers {
+                            sourcePathMismatchedPixels += 1
+                        }
+                    }
+                }
+            }
+            let sourcePathSensitive =
+                sourcePathMismatchedBytes > 0
+                && sourcePathMismatchedPixels > 0
             var nonzeroAlphaPixels = 0
             var alphaChannelMismatchPixels = 0
             var nonUnitOutputAlphaPixels = 0
@@ -14549,7 +14751,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     pixelFormat: .bgra8Unorm,
                     uniformBuffer: caseUniform,
                     captureAuxiliary: false,
-                    initialBGRA8: seed)
+                    initialBGRA8: seed,
+                    fragmentTextureOverrides: [4: finiteSource])
                 let candidate = candidateRender(
                     name:
                         "current-\(role)-candidate-"
@@ -14619,9 +14822,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && comparison["maximumChannelDelta"] as? Int == 0
             }
             return [
-                "schemaVersion": 1,
+                "schemaVersion": 2,
                 "executed":
                     casesExecuted
+                    && sourcePathSensitive
                     && nonzeroAlphaPixels > 0
                     && alphaChannelMismatchPixels == 0
                     && nonUnitOutputAlphaPixels == 0,
@@ -14629,9 +14833,41 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "pipelineLabel": selection.pipeline.label ?? "",
                 "drawIndex": selection.drawIndex,
                 "capturedAppleFunctionUnmodified": true,
+                "capturedAppleResourceMutated": false,
                 "liveAppleFrameMutated": false,
+                "usesAuxiliaryAttachment": usesAuxiliaryAttachment,
                 "forcedCoverageIntervention":
                     interventionRecord(forcedCoverage),
+                "sourceIntervention": [
+                    "schemaVersion": 1,
+                    "bindingIndex": 4,
+                    "method":
+                        "isolated replay binding override immediately "
+                        + "before the selected draw",
+                    "capturedSource": capturedSourceSnapshot,
+                    "finiteSource": finiteSourceSnapshot,
+                    "finiteSourceEncoding": "opaque-bgra8",
+                    "finiteSourceHex": finiteSourceData.map {
+                        String(format: "%02x", $0)
+                    }.joined(),
+                    "capturedAndFiniteSourceDiffer": true,
+                ],
+                "capturedSourceAlphaTrace":
+                    capturedSourceAlphaTrace,
+                "sourcePathSensitivityComparison": [
+                    "compared": true,
+                    "byteCount": alphaData.count,
+                    "bytesPerPixel": 8,
+                    "mismatchedByteCount": sourcePathMismatchedBytes,
+                    "mismatchedPixelCount": sourcePathMismatchedPixels,
+                    "maximumChannelDelta":
+                        sourcePathMaximumByteDelta,
+                    "firstMismatchedByte":
+                        sourcePathFirstMismatchedByte,
+                    "exactByteMatch":
+                        sourcePathMismatchedBytes == 0,
+                ],
+                "sourcePathSensitive": sourcePathSensitive,
                 "alphaOracleHalfWords": alphaOracleWords.map {
                     String(
                         format: "0x%04x",
@@ -15092,12 +15328,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && $0["candidatesExact"] as? Bool == true
             }
         return [
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "executed": executed,
             "selectionPolicy":
                 "exactly one current Iscd and one immediately later "
                 + "current Irsd draw in the frozen sample",
+            "activityPolicy":
+                "replace only texture 4 in each isolated replay with "
+                + "the frozen opaque finite BGRA8 texel 4080c0ff",
             "capturedAppleFunctionsUnmodified": true,
+            "capturedAppleResourcesMutated": false,
             "liveAppleFrameMutated": false,
             "pipelineLabels": labels,
             "recordCount": records.count,

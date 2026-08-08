@@ -17,6 +17,7 @@ PIXELS = WIDTH * HEIGHT
 BGRA_BYTES = PIXELS * 4
 RGBA16_BYTES = PIXELS * 8
 SAMPLE = 24
+FINITE_SOURCE = bytes((0x40, 0x80, 0xC0, 0xFF))
 PIPELINES = {
     "Iscd": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd",
     "Irsd": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd",
@@ -117,11 +118,13 @@ def snapshot_payload(
     label: str,
     pixel_format: int,
     byte_count: int,
+    width: int = WIDTH,
+    height: int = HEIGHT,
 ) -> bytes:
     snapshot = mapping(untyped, f"{label} snapshot")
     expected = {
-        "width": WIDTH,
-        "height": HEIGHT,
+        "width": width,
+        "height": height,
         "pixelFormat": pixel_format,
         "rawBytes": byte_count,
         "rawCapture": True,
@@ -146,6 +149,8 @@ def output_payload(
     label: str,
     pixel_format: int = 80,
     byte_count: int = BGRA_BYTES,
+    width: int = WIDTH,
+    height: int = HEIGHT,
 ) -> bytes:
     wrapper = mapping(untyped, label)
     require(wrapper.get("executed") is True, f"{label} did not execute")
@@ -155,18 +160,29 @@ def output_payload(
         label=label,
         pixel_format=pixel_format,
         byte_count=byte_count,
+        width=width,
+        height=height,
     )
 
 
-def mismatch_metrics(reference: bytes, candidate: bytes) -> JSONObject:
+def mismatch_metrics(
+    reference: bytes,
+    candidate: bytes,
+    *,
+    bytes_per_pixel: int = 4,
+) -> JSONObject:
     require(len(reference) == len(candidate), "comparison byte lengths differ")
+    require(
+        bytes_per_pixel > 0 and len(reference) % bytes_per_pixel == 0,
+        "comparison pixel stride differs",
+    )
     mismatched_bytes = 0
     mismatched_pixels = 0
     maximum_delta = 0
     first = -1
-    for offset in range(0, len(reference), 4):
+    for offset in range(0, len(reference), bytes_per_pixel):
         pixel_differs = False
-        for channel in range(4):
+        for channel in range(bytes_per_pixel):
             index = offset + channel
             delta = abs(reference[index] - candidate[index])
             if delta:
@@ -383,6 +399,104 @@ def validate_alpha_trace(
     return alpha, nonzero
 
 
+def validate_source_intervention(
+    capture_directory: Path,
+    record: Mapping[str, object],
+    *,
+    role: str,
+) -> JSONObject:
+    intervention = mapping(
+        record.get("sourceIntervention"),
+        f"{role} source intervention",
+    )
+    expected = {
+        "schemaVersion": 1,
+        "bindingIndex": 4,
+        "method": (
+            "isolated replay binding override immediately before the selected draw"
+        ),
+        "finiteSourceEncoding": "opaque-bgra8",
+        "finiteSourceHex": FINITE_SOURCE.hex(),
+        "capturedAndFiniteSourceDiffer": True,
+    }
+    for field, value in expected.items():
+        require(
+            intervention.get(field) == value,
+            f"{role} source intervention {field} differs",
+        )
+    captured_source = snapshot_payload(
+        capture_directory,
+        intervention.get("capturedSource"),
+        label=f"{role} captured source",
+        pixel_format=80,
+        byte_count=4,
+        width=1,
+        height=1,
+    )
+    finite_source = snapshot_payload(
+        capture_directory,
+        intervention.get("finiteSource"),
+        label=f"{role} finite source",
+        pixel_format=80,
+        byte_count=4,
+        width=1,
+        height=1,
+    )
+    require(finite_source == FINITE_SOURCE, f"{role} finite source bytes differ")
+    require(
+        captured_source != finite_source,
+        f"{role} captured source equals finite control",
+    )
+
+    captured_alpha = output_payload(
+        capture_directory,
+        record.get("capturedSourceAlphaTrace"),
+        label=f"{role} captured-source alpha trace",
+        pixel_format=115,
+        byte_count=RGBA16_BYTES,
+    )
+    finite_alpha = output_payload(
+        capture_directory,
+        record.get("alphaTrace"),
+        label=f"{role} finite-source alpha trace",
+        pixel_format=115,
+        byte_count=RGBA16_BYTES,
+    )
+    comparison = mismatch_metrics(
+        captured_alpha,
+        finite_alpha,
+        bytes_per_pixel=8,
+    )
+    require(
+        comparison["mismatchedByteCount"] > 0
+        and comparison["mismatchedPixelCount"] > 0,
+        f"{role} texture-4 path-sensitivity control is inactive",
+    )
+    reported = mapping(
+        record.get("sourcePathSensitivityComparison"),
+        f"{role} source path comparison",
+    )
+    require(
+        reported.get("bytesPerPixel") == 8,
+        f"{role} source path pixel stride differs",
+    )
+    validate_reported_comparison(
+        reported,
+        comparison,
+        label=f"{role} source path comparison",
+    )
+    require(
+        record.get("sourcePathSensitive") is True,
+        f"{role} sourcePathSensitive differs",
+    )
+    return {
+        "capturedSourceSHA256": sha256_bytes(captured_source),
+        "finiteSourceSHA256": sha256_bytes(finite_source),
+        "pathSensitivityUnequalBytes": comparison["mismatchedByteCount"],
+        "pathSensitivityUnequalPixels": comparison["mismatchedPixelCount"],
+    }
+
+
 def validate_role(
     capture_directory: Path,
     untyped: object,
@@ -393,12 +507,14 @@ def validate_role(
 ) -> JSONObject:
     record = mapping(untyped, f"{role} record")
     expected_scalars = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "executed": True,
         "role": role,
         "pipelineLabel": PIPELINES[role],
         "capturedAppleFunctionUnmodified": True,
+        "capturedAppleResourceMutated": False,
         "liveAppleFrameMutated": False,
+        "usesAuxiliaryAttachment": role == "Irsd",
         "alphaOracleHalfWords": list(ALPHA_ORACLE_WORDS),
         "matrixCaseCount": len(MATRIX_CASES),
         "casesExecuted": True,
@@ -412,6 +528,11 @@ def validate_role(
     validate_intervention(
         record.get("forcedCoverageIntervention"),
         label=f"{role} forced coverage",
+    )
+    source_summary = validate_source_intervention(
+        capture_directory,
+        record,
+        role=role,
     )
     _, nonzero_alpha = validate_alpha_trace(
         capture_directory,
@@ -561,6 +682,7 @@ def validate_role(
         "positiveControlUnequalBytes": total_activity_bytes,
         "positiveControlUnequalPixels": total_activity_pixels,
         "comparedCandidateBytes": len(MATRIX_CASES) * BGRA_BYTES,
+        "sourceIntervention": source_summary,
         "outputSHA256": output_hashes,
     }
 
@@ -573,8 +695,36 @@ def validate(
     preregistration = load_json(preregistration_path)
     require(
         preregistration.get("currentFinalCompositorTransferPreregistrationSchemaVersion")
-        == 1,
+        == 2,
         "preregistration schema differs",
+    )
+    superseded = mapping(
+        preregistration.get("supersedesFailedRun"),
+        "supersedesFailedRun",
+    )
+    require(
+        superseded.get("captureCommit")
+        == "b838af32b291561b362bd1dc0243ac0213359978"
+        and superseded.get("timelineSHA256")
+        == "52e523f76997426348b6ce83c9f3dcae08e5fe05936b6c6dd1ccc0195e0b1464"
+        and superseded.get("frozenValidatorExitStatus") == 1
+        and superseded.get("promotedEvidence") is False
+        and superseded.get("arithmeticCasesChanged") is False
+        and superseded.get("candidateChanged") is False
+        and superseded.get("toleranceChanged") is False,
+        "failed-run amendment differs",
+    )
+    nonvacuity = mapping(preregistration.get("nonvacuity"), "nonvacuity")
+    require(
+        nonvacuity.get("finiteSourceSHA256")
+        == sha256_bytes(FINITE_SOURCE)
+        and nonvacuity.get("sourcePathSensitivityRequirement")
+        == (
+            "the captured-source and finite-source RGBA16Float alpha-oracle "
+            "outputs must differ by at least one byte and one 8-byte pixel for "
+            "each current function"
+        ),
+        "finite-source preregistration differs",
     )
     validate_sources(preregistration)
     candidate_source_sha256 = preregistration.get("candidateMetalSourceSHA256")
@@ -588,8 +738,7 @@ def validate(
     require(preflight.get("passed") is True, "Retina preflight did not pass")
     require(preflight.get("backingScaleFactor") == 2, "Retina scale differs")
     require(
-        preflight.get("displayPixelWidth") == 3456
-        and preflight.get("displayPixelHeight") == 2234,
+        preflight.get("physicalPixels") == [3456, 2234],
         "physical Retina display differs",
     )
 
@@ -644,13 +793,18 @@ def validate(
         "currentFinalCompositorTransfer",
     )
     expected_transfer = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "executed": True,
         "selectionPolicy": (
             "exactly one current Iscd and one immediately later current Irsd draw "
             "in the frozen sample"
         ),
+        "activityPolicy": (
+            "replace only texture 4 in each isolated replay with the frozen "
+            "opaque finite BGRA8 texel 4080c0ff"
+        ),
         "capturedAppleFunctionsUnmodified": True,
+        "capturedAppleResourcesMutated": False,
         "liveAppleFrameMutated": False,
         "pipelineLabels": list(PIPELINES.values()),
         "recordCount": 2,
@@ -680,7 +834,7 @@ def validate(
         "current Iscd/Irsd draw order differs",
     )
     return {
-        "currentFinalCompositorTransferResultSchemaVersion": 1,
+        "currentFinalCompositorTransferResultSchemaVersion": 2,
         "accepted": True,
         "captureDirectory": capture_directory.name,
         "sampleIndex": SAMPLE,

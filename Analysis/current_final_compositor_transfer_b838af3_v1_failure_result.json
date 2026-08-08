@@ -1,0 +1,37 @@
+{
+  "currentFinalCompositorTransferFailureResultSchemaVersion": 1,
+  "status": "rejected-before-any-nonvacuous-current-function-comparison",
+  "captureCommit": "b838af32b291561b362bd1dc0243ac0213359978",
+  "captureDirectory": "local-current-final-compositor-transfer-b838af3-v1",
+  "timelineSHA256": "52e523f76997426348b6ce83c9f3dcae08e5fe05936b6c6dd1ccc0195e0b1464",
+  "nativeCaptureExitStatus": 0,
+  "frozenValidatorExitStatus": 1,
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "validatorTransportError": "the validator queried nonexistent displayPixelWidth/displayPixelHeight fields instead of the preflight's physicalPixels array",
+  "transportFindings": {
+    "Iscd": {
+      "selected": true,
+      "executed": false,
+      "failure": "the trace guard incorrectly required an RGBA16Float auxiliary color attachment that the current Iscd descriptor does not declare"
+    },
+    "Irsd": {
+      "selected": true,
+      "executed": true,
+      "forcedAlphaNonzeroPixelCount": 0,
+      "matrixCaseCount": 7,
+      "activeMatrixCaseCount": 0,
+      "candidateUnequalByteCount": 0,
+      "interpretation": "candidate equality is vacuous because the Apple draw changed zero destination bytes in every case"
+    }
+  },
+  "promotedEvidence": false,
+  "remainingAppleConstructionQuestions": 1,
+  "nextCorrection": "support the captured Iscd attachment topology and add a preregistered finite texture-4 path-sensitivity intervention before evaluating either current function",
+  "arithmeticCasesChanged": false,
+  "toleranceChanged": false,
+  "productionParity": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}
