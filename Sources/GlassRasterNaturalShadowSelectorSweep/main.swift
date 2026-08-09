@@ -70,16 +70,16 @@ vertex CaptureVertexOutput natural_shadow_selector_vertex(
     uint vertexID [[vertex_id]],
     uint instanceID [[instance_id]])
 {
-    const uint caseIndex = instanceID / (witnessSlotCount)u;
-    const uint witnessSlot = instanceID % (witnessSlotCount)u;
+    const uint caseIndex = instanceID / \(witnessSlotCount)u;
+    const uint witnessSlot = instanceID % \(witnessSlotCount)u;
     const uint2 dimensions = geometry[caseIndex];
     const uint witnessIndex = uint(
-        witnessIndices[(witnessSlotCount)u * caseIndex + witnessSlot]);
+        witnessIndices[\(witnessSlotCount)u * caseIndex + witnessSlot]);
     const float multiplier = as_type<float>(multiplierBits[witnessIndex]);
-    const float width = float(dimensions.x) / float((fixedUnitsPerPixel));
+    const float width = float(dimensions.x) / float(\(fixedUnitsPerPixel));
     const float highRamp = width * multiplier;
-    const int centerXFixed = int(sample.x * (fixedUnitsPerPixel)u + 128u);
-    const int centerYFixed = int((sampleY * fixedUnitsPerPixel + 128));
+    const int centerXFixed = int(sample.x * \(fixedUnitsPerPixel)u + 128u);
+    const int centerYFixed = int(\(sampleY * fixedUnitsPerPixel + 128));
     const int originXFixed = centerXFixed - int(dimensions.x / 2u);
     const int originYFixed = centerYFixed - int(dimensions.y / 2u);
     const uint corner = vertexID % 6u;
@@ -90,13 +90,13 @@ vertex CaptureVertexOutput natural_shadow_selector_vertex(
 
     CaptureVertexOutput output;
     output.position = mvp * float4(
-        float(xFixed) / float((fixedUnitsPerPixel)),
-        float(yFixed) / float((fixedUnitsPerPixel)),
+        float(xFixed) / float(\(fixedUnitsPerPixel)),
+        float(yFixed) / float(\(fixedUnitsPerPixel)),
         0.0f,
         1.0f);
     output.ramp = isRight ? highRamp : -highRamp;
     output.recordIndex =
-        (witnessSlotCount)u * caseIndex + witnessSlot;
+        \(witnessSlotCount)u * caseIndex + witnessSlot;
     output.outputSlot = sample.y;
     return output;
 }
@@ -106,7 +106,7 @@ fragment float natural_shadow_selector_fragment(
     device uint2 *results [[buffer(0)]])
 {
     results[
-        (samplePositionCount)u * input.recordIndex + input.outputSlot
+        \(samplePositionCount)u * input.recordIndex + input.outputSlot
     ] = uint2(
         as_type<uint>(input.ramp.interpolate_at_offset(
             float2(0.0f, 0.5f))),
@@ -211,6 +211,12 @@ private func run(outputDirectory: URL) throws {
     let pipeline = try device.makeRenderPipelineState(
         descriptor: pipelineDescriptor
     )
+    if ProcessInfo.processInfo.environment[
+        "LG_RASTER_COMPILE_ONLY"
+    ] == "1" {
+        diagnostic("native Swift and embedded Metal compilation passed")
+        return
+    }
 
     let targetDescriptor = MTLTextureDescriptor.texture2DDescriptor(
         pixelFormat: .r32Float,
