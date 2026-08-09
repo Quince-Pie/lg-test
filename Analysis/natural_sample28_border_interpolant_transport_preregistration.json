@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "question": "Does the independently constructed eight-primitive sample-28 border axis reproduce native AGX fixed-function interpolation exactly when topology selection is removed from the experiment?",
+  "frozenEvidence": {
+    "captureTimelineSha256": "c028e232c0eb06ade31f826578c7209ea2e19f69b65a65cdc723187bc34adc44",
+    "sampleIndex": 28,
+    "pipelineRole": "current Iscd final highlight",
+    "candidateFrameResidual": {
+      "mismatchedBytes": 7,
+      "mismatchedPixels": 3,
+      "maximumChannelDelta": 1
+    },
+    "activeVertexStream": {
+      "encoding": "16 vertices, eight little-endian binary32 values per vertex: position float4, SDF float2, source float2",
+      "byteCount": 512,
+      "sha256": "fce89df436fd7a0ec9b00d171c40be676023facfaf49e76366b1ec9f0cac3c62",
+      "constructionStatus": "independently generated and already verified byte-for-byte against the active bytes of Apple's retained sample-28 vertex stream"
+    },
+    "indexStream": {
+      "encoding": "24 little-endian uint16 indices forming four independent quads and eight triangles",
+      "byteCount": 48,
+      "sha256": "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572"
+    },
+    "independentAxis": {
+      "encoding": "8 by 1024 RGBA32Uint; one row per primitive",
+      "byteCount": 32768,
+      "sha256": "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+      "capturedCoordinateTableUsed": false,
+      "selector": "authenticated base fractional-selector table with offset zero"
+    }
+  },
+  "nativeProbe": {
+    "platform": "physical Retina M1 Max running macOS 26.6.1 build 25G76",
+    "toolchain": "Apple xcrun swiftc and runtime Metal compilation; executable must contain no Nix-store path",
+    "renderTarget": [1024, 1024],
+    "cullMode": "none",
+    "vertexStage": "diagnostic source vertex stage applying the exact power-of-two 1024-pixel orthographic transform to the frozen active vertex attributes",
+    "fragmentStage": "serialize interpolate_at_center, dfdx, dfdy, and primitive_id without invoking Liquid Glass color arithmetic",
+    "classification": "AGX fixed-function raster diagnostic; not an Apple shader or final-image oracle"
+  },
+  "decision": {
+    "centerExact": "If every rasterized center-interpolant word equals the independent axis reconstruction for the native primitive owner, classify the seven-byte frame residual as downstream derivative, coverage, or attachment arithmetic.",
+    "centerResidual": "If any center word differs, isolate the first primitive, component, coordinate, tile, and selector term before changing the constructor.",
+    "coverageResidual": "If primitive ownership or covered sample centers differ, isolate raster coverage separately from interpolant arithmetic.",
+    "derivativeUse": "Derivative words may discriminate the downstream branch but may not be used as captured product inputs."
+  },
+  "promotionGate": "Any recovered rule must be independently constructed, pass a distinct unseen Retina capture, and make the complete eight-state AMD frame gate byte-identical before production use.",
+  "forbidden": [
+    "captured per-pixel correction surface",
+    "supplying any trace or final image to Walle",
+    "nonzero pixel tolerance",
+    "shader-quality reduction",
+    "choosing an arithmetic mode from final-image fit alone"
+  ]
+}
