@@ -15231,3 +15231,34 @@ zero and post-capture state exclusion is forbidden.  Passing this first gate
 admits the information-rich corpus; it does not yet claim the producer
 arithmetic.  Independent reconstruction of every producer, copy-base, and mip
 byte is the next gate before those real-wallpaper inputs enter ordinary Walle.
+
+The first native capture completed at commit
+`1cd9af46dd2f2dc0cf106b2b82653dc10d713691` with exit status zero, empty
+runtime stderr, and fresh timeline SHA-256
+`aacd810f3b57da6e6c39f82f5b773fb0150665c21ba004d8f109976bf4558cdb`.
+It used the active physical Retina M1 Max directly, with no GitHub Actions,
+debugger, or Nix-store path in the native build or capture.  The frozen
+validator nevertheless failed before reading any answer-bearing raw file:
+the current probe emits dynamic-uniform transport schema 9, while the
+validator's top-level carrier check accidentally required obsolete schema 7.
+
+That red result is retained rather than rewritten.  A subsequent opened
+diagnostic manually bypassed only the schema comparison and ran the unchanged
+frozen per-state validator.  All eight states passed; the corpus contains
+three `downsample_4_frag_lph` states and five `TimgA2Xhfc_Isrc` states.  This
+audit disclosed answer metadata before the correction was frozen, so the
+capture remains an opened discovery calibration and is not called a
+prospective arithmetic holdout.
+
+`Analysis/walle_regular_controlled_backdrop_schema9_correction.json` records
+the failure and the only admitted correction: require schema 9, then delegate
+all byte, address, sequence, branch, mip, nondegeneracy, and zero-tolerance
+checks to the immutable schema-7 validator.  No state or pixel selection,
+threshold, tolerance, or per-state check changes.  The versioned corrected
+validator and its discriminators have SHA-256 values
+`1901f36a7ca2e30b9ad972113bf28d263778b0b7a9ecdf621c8ace8351fbf842`
+and
+`b5685c7e4880a724f2692cc8dbc450cc5a84a430b86f73efa5cc687c5f1687d2`.
+Passing it promotes only the calibration corpus.  Exact producer arithmetic
+must still be frozen and pass an output-blind holdout before production
+parity can be claimed.

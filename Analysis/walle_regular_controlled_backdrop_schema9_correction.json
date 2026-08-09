@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "title": "Regular controlled-backdrop schema-only validator correction",
+  "status": "frozen-mechanical-correction-after-opened-transport-audit",
+  "frozenAtUTC": "2026-08-09T08:36:14Z",
+  "capture": {
+    "commit": "1cd9af46dd2f2dc0cf106b2b82653dc10d713691",
+    "timelineSHA256": "aacd810f3b57da6e6c39f82f5b773fb0150665c21ba004d8f109976bf4558cdb",
+    "nativeCaptureExitStatus": 0,
+    "runtimeStderrBytes": 0,
+    "githubActionsUsed": false,
+    "nativeCaptureDebuggerUsed": false,
+    "nixStorePathInNativeBuildOrCapture": false
+  },
+  "frozenValidatorFailure": {
+    "validatorSHA256": "6b8a34c4e34d95fcbe1348654483e4368673748b2eaca3fa43a6a05ba9b5bd11",
+    "exception": "ValueError: dynamic-uniform schema differs",
+    "expectedDynamicUniformSchemaVersion": 7,
+    "observedDynamicUniformSchemaVersion": 9,
+    "answerBytesReadBeforeFailure": 0
+  },
+  "openedDiagnosticAudit": {
+    "performedBeforeThisCorrectionWasFrozen": true,
+    "method": "invoked the unchanged frozen per-state validator after manually bypassing only its top-level schema comparison",
+    "stateCount": 8,
+    "producerFragmentCounts": {
+      "TimgA2Xhfc_Isrc": 5,
+      "downsample_4_frag_lph": 3
+    },
+    "allFrozenPerStateChecksPassed": true,
+    "disposition": "opened discovery calibration only; no prospective arithmetic or production-parity claim"
+  },
+  "correction": {
+    "field": "dynamicBackgroundUniforms.schemaVersion",
+    "oldValue": 7,
+    "newValue": 9,
+    "stateSelectionChanged": false,
+    "pixelSelectionChanged": false,
+    "acceptanceThresholdChanged": false,
+    "toleranceChanged": false,
+    "frozenPerStateValidatorChanged": false,
+    "correctedValidatorSHA256": "1901f36a7ca2e30b9ad972113bf28d263778b0b7a9ecdf621c8ace8351fbf842",
+    "correctedValidatorTestSHA256": "b5685c7e4880a724f2692cc8dbc450cc5a84a430b86f73efa5cc687c5f1687d2"
+  },
+  "claimBoundary": {
+    "successfulCorrectedValidationPromotes": "the existing capture as an information-rich opened producer/copy/mip calibration corpus",
+    "doesNotPromote": [
+      "producer arithmetic",
+      "ordinary Walle integration",
+      "physical Retina parity",
+      "formal Liquid Glass parity"
+    ]
+  }
+}
