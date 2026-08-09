@@ -14887,3 +14887,82 @@ The corrected current ledger is:
 6. **Quality and tolerance remain absolute.**  The production shader is still
    untouched.  No shader simplification, captured surface, lookup correction,
    or nonzero tolerance is permitted.
+
+### Sample-28 pass-uniform correction and radial-normal arithmetic closure
+
+The prospective nine-pipeline capture from commit `9f68f71` was produced
+directly with Apple's native toolchain on the physical Retina M1 Max.  GitHub
+Actions and Nix-store capture executables were not used.  Its presentation
+preflight retained the active, awake, unlocked, on-console 3456-by-2234 Retina
+display at backing scale 2.  The timeline SHA-256 is
+`3593baa93000e7aee8faacc17819ec8eb64e63323cc55bd7666e92f8606b5f8f`;
+the selected native artifact SHA-256 is
+`7aec1ef0ff733f0a7f03903a0cbabc2f6b20ecd0472379962fc970ee11e7ff89`.
+All nine diagnostic pipelines and all ten frozen tomography interventions
+executed.  Apple's retained private pipeline and the current-system
+specialization remained byte-identical.
+
+That capture falsifies the provisional one-step geometry-offset candidate for
+a concrete reason.  The preceding background pass has SDF half-size words
+`0x43770167,0x43770167`, while the selected final `Iscd` pass owns
+`0x43770168,0x43770168`.  The old diagnostic renderer reused the background
+record.  Supplying those wrong pass bytes reproduces all 148 historical alpha
+mismatches, the maximum 24-half-bit distance, and the same 2,520 active pixels.
+Supplying the final pass's own record makes the numerator, normalized
+coordinate, oval geometry, shape geometry, and distance branch exact without
+an offset or a tuned bias.
+
+With pass ownership corrected, the first independent divergence is exactly
+the radial input Y operation.  Metal fast math evaluates it as
+
+`point.y * (arg.x * fast::recip(arg.y))`,
+
+then forms the squared length as Y-squared plus the materialized X-squared and
+uses the measured fast reciprocal square root.  The standalone diagnostic's
+half curved-distance output also exposes one legal Metal contraction:
+`half(fma(ovalLength, a, -a))`, where `a` is binary32 `0x3f277765` and the
+source constants satisfy `a + b == 1` exactly.  These are operation rules, not
+per-pixel corrections.
+
+The deterministic RX 9070 XT analyzer has SHA-256
+`cccc475dbf1cbc82ecde88fdce7378008e3d7d224e1dcfa50ae7dd74c93df7e1`.
+Its full result has SHA-256
+`dcbc4519f1acdac9fb4a7c36fa17db5cb0edad3a85f0d4539a3fc60ca4930765`;
+the compact retained result is
+`Analysis/natural_sample28_border_highlight_arithmetic_calibration_result.json`,
+SHA-256
+`1cdc054ccc4107bdedc4736659ea9c7415fb028d8161ca5db363fd30691ec60b`.
+At zero tolerance the candidate matches all 41,943,040 words in forty
+interpolant/SDF/normal checkpoints, all 786,432 final SDF words, all 1,048,576
+natural alpha words, and all 10,485,760 alpha words in the ten independent
+tomography cases: 54,263,808 checked words, zero mismatches, maximum bit
+distance zero.  The controls are nonvacuous: the prior radial evaluation has
+633,382 stage mismatches and 47 tomography mismatches, while the wrong-pass
+uniform has the historical 148 alpha mismatches.
+
+This is exact calibration evidence, not yet prospective promotion.  The radial
+rule was selected after this capture was opened.  Schema 3 of
+`Analysis/natural_sample28_border_highlight_arithmetic_preregistration.json`,
+SHA-256
+`56812b3b7c2d2ef6cff8f1b2365bac6a81cbdf19ca1561bb39a89d22e1e90abd`,
+therefore freezes the rule and requires one fresh native Retina holdout with
+different timeline and final-pass inputs.  It must repeat all forty stage
+comparisons, the final SDF, natural alpha, and ten tomography cases with zero
+unequal words.  The subsequent eight-state AMD frame gate also remains
+mandatory.
+
+The corrected ledger is:
+
+1. **Unknowns blocking guarded Walle work: zero.**  Pass ownership and the
+   sample-28 arithmetic rule are independently named and exact in calibration.
+2. **Apple algorithm families still unknown before universal circle-domain
+   parity: one.**  The general policy selecting compact six-index versus
+   24-index final-highlight construction for unseen natural states remains.
+3. **Arithmetic proof obligations: two, not algorithm unknowns.**  Complete
+   the frozen unseen Retina holdout, then the unseen eight-state AMD frame
+   gate.  Neither permits a nonzero tolerance.
+4. **Production parity remains false.**  Walle's protected production shader
+   is still SHA-256
+   `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
+   and was not modified by this analysis.  No quality reduction, captured
+   surface input, or lookup correction is authorized.

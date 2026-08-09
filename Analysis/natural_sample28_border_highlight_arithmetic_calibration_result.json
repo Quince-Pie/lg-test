@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "classification": "exact sample-28 final-highlight arithmetic calibration",
+  "capture": {
+    "sourceCommit": "9f68f71",
+    "host": "physical Retina Apple M1 Max on macOS 26.6.1 build 25G76",
+    "githubActionsUsed": false,
+    "nativeExecutableSha256": "121b8598e4b755da61d9e88cd75af8b13f1ae032fa0524c008798306c35fcb00",
+    "mainSwiftSha256": "e4d5bb3026e197bd85bab30886840b1578b6875cfd1c54f4c54c41d704157688",
+    "timelineSha256": "3593baa93000e7aee8faacc17819ec8eb64e63323cc55bd7666e92f8606b5f8f",
+    "selectedArtifactSha256": "7aec1ef0ff733f0a7f03903a0cbabc2f6b20ecd0472379962fc970ee11e7ff89",
+    "arithmeticRecordSha256": "108c0126673f1494d6cf0f00dea14c2d6981e1c08afaad3d1597c10c6ccbd7a7",
+    "arithmeticPreregistrationSha256": "a9c81c5b58e74cae27fff3cd36b9e942f07581c016b53227d851173d849a1466",
+    "captureSession": {
+      "activeRetinaPhysicalPixels": [3456, 2234],
+      "logicalPoints": [1728, 1117],
+      "backingScaleFactor": 2,
+      "unlockedOnConsole": true
+    },
+    "capturedPrivateVsCurrentSystemSpecializationMismatchedBytes": 0,
+    "diagnosticPipelineCount": 9,
+    "tomographyCaseCount": 10
+  },
+  "analysis": {
+    "host": "AMD Radeon RX 9070 XT",
+    "script": "../analysis/analyze_sample28_border_highlight_arithmetic.py",
+    "scriptSha256": "cccc475dbf1cbc82ecde88fdce7378008e3d7d224e1dcfa50ae7dd74c93df7e1",
+    "referenceShaderSha256": "9c89bd0caba93f17957be62a4140150be3619754c107f4c778fb5b2148ca7127",
+    "referenceRendererSha256": "a5013b828e67bdab2db7b21efca8070d7df53f1895212b56fded38d1365d688d",
+    "fixtureManifestSha256": "7b8e698a5b4dc09ecd4da804f6c7cea8707966ae933cd6f3f196a54ca505187a",
+    "fullResultSha256": "dcbc4519f1acdac9fb4a7c36fa17db5cb0edad3a85f0d4539a3fc60ca4930765",
+    "deterministicRepeat": true,
+    "comparisonTolerance": 0
+  },
+  "passUniformOwnership": {
+    "backgroundHalfSizeBits": ["0x43770167", "0x43770167"],
+    "finalHighlightHalfSizeBits": ["0x43770168", "0x43770168"],
+    "ulpDelta": [1, 1],
+    "wrongPassUniformPositiveControl": {
+      "checkedHalfWords": 1048576,
+      "mismatchedHalfWords": 148,
+      "maximumHalfBitDistance": 24,
+      "appleActivePixels": 2520,
+      "candidateActivePixels": 2520
+    }
+  },
+  "baseline": {
+    "description": "correct final-pass uniform with prior AMD radial division and operation order",
+    "firstDivergentStage": "radial-input-y",
+    "stageCaseCount": 40,
+    "checkedStageWords": 41943040,
+    "mismatchedStageWords": 633382,
+    "naturalAlphaMismatchedHalfWords": 0,
+    "tomographyCheckedHalfWords": 10485760,
+    "tomographyMismatchedHalfWords": 47,
+    "tomographyExactCaseCount": 3
+  },
+  "recoveredRule": {
+    "radialY": "point.y * (arg.x * apple_fast_reciprocal(arg.y))",
+    "radialSquared": "radial.y * radial.y + (radial.x * radial.x)",
+    "radialInverseLength": "apple_fast_rsqrt(radialSquared)",
+    "diagnosticCurvedDistance": "half(fma(ovalLength, 0x1.4eeecap-1, -0x1.4eeecap-1))",
+    "perPixelCorrectionTableUsed": false,
+    "capturedPixelSurfaceUsedAsRendererInput": false
+  },
+  "candidate": {
+    "stageCaseCount": 40,
+    "checkedStageWords": 41943040,
+    "mismatchedStageWords": 0,
+    "checkedSdfWords": 786432,
+    "mismatchedSdfWords": 0,
+    "checkedNaturalAlphaHalfWords": 1048576,
+    "mismatchedNaturalAlphaHalfWords": 0,
+    "tomographyCaseCount": 10,
+    "tomographyCheckedHalfWords": 10485760,
+    "tomographyMismatchedHalfWords": 0,
+    "totalCheckedWords": 54263808,
+    "totalMismatchedWords": 0,
+    "maximumBitDistance": 0
+  },
+  "gate": {
+    "calibrationExact": true,
+    "positiveControlsPassed": true,
+    "prospectiveUnseenRetinaHoldoutRequired": true,
+    "eightStateAmdFrameGateRequired": true,
+    "productionWalleParityEstablished": false,
+    "productionShaderSha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "productionShaderModified": false,
+    "shaderQualityReductionAllowed": false
+  }
+}

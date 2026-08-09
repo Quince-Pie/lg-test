@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "question": "At which final-highlight arithmetic stage does Apple's unmodified Iscd fragment specialization first diverge from Walle after eight-primitive AGX/AMD raster transport is exact?",
   "frozenPriorEvidence": {
     "captureCommit": "47aa8fb27cad780c16869358ec52e61e631cf86d",
@@ -33,13 +33,14 @@
     "captureCommit": "07dd11fe99f26513c6dbf02799966f7e97ef8f82",
     "captureTimelineSha256": "42a00c29c8d0059699344e184a6522fa36aef5a64f2bee9122c5ea687d12a47c",
     "exactInputInterpolantWords": 524288,
-    "firstDivergentStage": "mode-4 geometry numerator point + (circle_scale - half_size)",
+    "status": "superseded after the final-highlight pass-owned SDF record was decoded",
+    "firstDivergentStage": "the provisional replay appeared to diverge at the mode-4 geometry numerator because it incorrectly reused the preceding background pass SDF half-size",
     "measuredCandidate": {
       "rule": "Form the positive circle-scale offset one binary32 step toward zero before adding the interpolated point.",
       "naturalSample28AlphaMismatchedHalfWords": 0,
       "capturedGeometryStageMismatchedWords": 0,
       "capturedOvalStageMismatchedWords": 0,
-      "status": "diagnostic candidate only; not promoted until the prospectively frozen normal-stage probes and unseen-state gates pass"
+      "status": "rejected as a pass-uniform ownership artifact; the one-step offset is neither required nor permitted with the final-highlight pass's own SDF bytes"
     },
     "remainingMeasuredBoundary": {
       "customSdfDistanceMismatchedHalfWords": 0,
@@ -47,6 +48,57 @@
       "customSdfNormalYMismatchedHalfWords": 83,
       "classification": "The distance rule is closed for the measured state; the independent mode-4 shape/composite normal arithmetic still requires instruction-level localization."
     }
+  },
+  "frozenCalibrationEvidence": {
+    "captureCommit": "9f68f71",
+    "captureTimelineSha256": "3593baa93000e7aee8faacc17819ec8eb64e63323cc55bd7666e92f8606b5f8f",
+    "captureArithmeticRecordSha256": "108c0126673f1494d6cf0f00dea14c2d6981e1c08afaad3d1597c10c6ccbd7a7",
+    "analysisResult": {
+      "file": "Analysis/natural_sample28_border_highlight_arithmetic_calibration_result.json",
+      "sha256": "1cdc054ccc4107bdedc4736659ea9c7415fb028d8161ca5db363fd30691ec60b",
+      "fullWalleResultSha256": "dcbc4519f1acdac9fb4a7c36fa17db5cb0edad3a85f0d4539a3fc60ca4930765"
+    },
+    "passUniformOwnership": {
+      "backgroundHalfSizeBits": ["0x43770167", "0x43770167"],
+      "finalHighlightHalfSizeBits": ["0x43770168", "0x43770168"],
+      "ulpDelta": [1, 1],
+      "wrongPassUniformMismatchedHalfWords": 148,
+      "wrongPassUniformMaximumHalfBitDistance": 24
+    },
+    "firstDivergentStageWithCorrectUniform": "radial-input-y",
+    "recoveredCandidate": {
+      "radialY": "point.y * (arg.x * apple_fast_reciprocal(arg.y))",
+      "radialSquared": "radial.y * radial.y + (radial.x * radial.x)",
+      "radialInverseLength": "apple_fast_rsqrt(radialSquared)",
+      "diagnosticCurvedDistance": "half(fma(ovalLength, 0x1.4eeecap-1, -0x1.4eeecap-1))",
+      "perPixelCorrectionTableUsed": false
+    },
+    "zeroToleranceCalibration": {
+      "checkedStageWords": 41943040,
+      "mismatchedStageWords": 0,
+      "checkedSdfWords": 786432,
+      "mismatchedSdfWords": 0,
+      "checkedNaturalAlphaHalfWords": 1048576,
+      "mismatchedNaturalAlphaHalfWords": 0,
+      "tomographyCaseCount": 10,
+      "tomographyCheckedHalfWords": 10485760,
+      "tomographyMismatchedHalfWords": 0,
+      "totalCheckedWords": 54263808,
+      "totalMismatchedWords": 0
+    },
+    "status": "exact calibration evidence; the recovered rule was selected after this capture was opened and therefore still requires the prospective holdout below"
+  },
+  "prospectiveHoldout": {
+    "candidateFrozenBeforeAppleOutput": true,
+    "requiredCapture": "a fresh native physical-Retina sample-28 capture whose timeline and final-highlight uniform/interpolant values differ from calibration",
+    "requiredComparisons": [
+      "all forty independently decoded interpolant/SDF/normal checkpoints",
+      "the three-component final SDF surface",
+      "natural binary16 alpha",
+      "all ten frozen tomography interventions"
+    ],
+    "acceptance": "Every compared word must be identical; the old radial rule and wrong-pass-uniform controls must remain nonexact.",
+    "tolerance": 0
   },
   "capture": {
     "host": "physical Retina Apple M1 Max on macOS 26.6.1 build 25G76",
