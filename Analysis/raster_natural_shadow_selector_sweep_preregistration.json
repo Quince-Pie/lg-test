@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "role": "finite-natural-circle480-shadow-fixed-grid-reciprocal-selector-calibration",
+  "observedAtPreregistration": false,
+  "objective": "Recover one exact AGX reciprocal endpoint for every positive non-square shadow-ring raster extent reachable by the admitted regular-material circle-480 construction, without treating the result as a portable reciprocal law.",
+  "sourceEvidence": {
+    "openedNaturalTimelineSha256": "52e4279fd374efc6a349cb3a5e69fcce0b60e538abc387cd6b75bee3866aa2d3",
+    "openedNaturalStateIndices": [
+      1,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28
+    ],
+    "openedStateSelectorOffsetsFromExactFloor": [
+      -1,
+      0,
+      1
+    ],
+    "openedStateInterpretation": "The exact construction and shader paths are closed, while wrong normalized-selector endpoints produce one-pixel shadow-boundary strips in four of eight states.",
+    "establishedRecoveryRadius": "The earlier general-height selector transfer preregistered and resolved a plus-or-minus-16 reciprocal-ULP window; this sweep reuses that already-opened radius rather than adapting it after capture."
+  },
+  "finiteDomain": {
+    "classification": "complete input-derived calibration lattice for the admitted natural circle-480 regular-material shadow geometry; not arbitrary geometry",
+    "shape": "circle",
+    "diameter": 480,
+    "windowExtent": 1024,
+    "material": "regular",
+    "fixedUnitsPerPixel": 256,
+    "marginFixedLowerInclusive": 0,
+    "marginFixedUpperInclusive": 12288,
+    "subBinPhaseDenominator": 256,
+    "subBinPhaseCount": 257,
+    "positiveQuadsOnly": true,
+    "caseCount": 139261,
+    "minimumWidthFixed": 1,
+    "maximumWidthFixed": 126976,
+    "minimumHeightFixed": 1,
+    "maximumHeightFixed": 126976,
+    "ordering": "ascending widthFixed,heightFixed",
+    "caseGenerator": "Analysis/generate_raster_natural_shadow_selector_cases.py",
+    "caseGeneratorSha256": "244724c3ddf6713c2e81e3beddfd4ffccc274794cfbe898fd910fabdd5ccb1ca",
+    "caseFile": "Analysis/raster_natural_shadow_selector_cases_u32le.bin",
+    "caseFileBytes": 1114088,
+    "caseFileSha256": "94a4e83307b5b5ba0020fb7ff6f4838acde2f959a9d3a8a2d6bf250af1a6893d"
+  },
+  "predeclaredRecovery": {
+    "selectorOffsetsFromExactFloor": [
+      -16,
+      -15,
+      -14,
+      -13,
+      -12,
+      -11,
+      -10,
+      -9,
+      -8,
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "candidateCount": 33,
+    "coefficientArithmetic": "prospectively validated two-stage partial-product, tile-column, composite-constant, and pull model",
+    "comparison": "all 48 captured pull words per case must equal exactly one predeclared selector candidate; zero tolerance",
+    "missingOrAmbiguousInterpretation": "the calibration fails and no selector table is emitted"
+  },
+  "inputOnlyWitnesses": {
+    "generator": "Analysis/generate_raster_natural_shadow_selector_witnesses.py",
+    "generatorSha256": "4e1b327e669196ed3e2f01a421631c721ec96f3e01bbf092b8b978e21f41cff4",
+    "appleOutputUsedForSelection": false,
+    "multiplierFile": "Analysis/raster_natural_shadow_selector_multiplier_bits_u32le.bin",
+    "multiplierCount": 65,
+    "multiplierFileBytes": 260,
+    "multiplierFileSha256": "b5e16e3ecdd55a9b816d2b8cb9dbfbea0a08910fcab362958693a71bf49d8573",
+    "assignmentFile": "Analysis/raster_natural_shadow_selector_witness_indices_u8.bin",
+    "assignmentFileBytes": 1114088,
+    "assignmentFileSha256": "f49b80510bc6de0baadefaf654b44f4a967bdeb7cea17ead7e9ab8017601a18f",
+    "witnessSlotCount": 8,
+    "selectedWitnessCountDistribution": {
+      "1": 139136,
+      "2": 125
+    },
+    "samplePixels": [
+      [
+        512,
+        512
+      ],
+      [
+        527,
+        512
+      ],
+      [
+        543,
+        512
+      ]
+    ],
+    "pullOffsets": [
+      [
+        0.0,
+        0.5
+      ],
+      [
+        0.9375,
+        0.5
+      ]
+    ],
+    "candidateStreamBytes": 882357696,
+    "candidateStreamSha256": "fafc17687af9e87cae8cdfbee285cfef5721186d096021c24946fc4c0a07b5fb",
+    "everyCaseCandidateMultiplicity": 1
+  },
+  "capture": {
+    "rigVersion": "metal-raster-natural-shadow-selector-sweep-1.0.0",
+    "source": "Sources/GlassRasterNaturalShadowSelectorSweep/main.swift",
+    "nativeHost": "quince@10.0.41.19",
+    "nativeToolchainRequired": true,
+    "nixStoreExecutableForbidden": true,
+    "githubActionsRequired": false,
+    "targetSize": [
+      1024,
+      1024
+    ],
+    "instanceCountPerSample": 1114088,
+    "recordCount": 3342264,
+    "recordBytes": 8,
+    "rawBytes": 26738112,
+    "ordering": "case-major,witness-slot-minor,sample-position-minor",
+    "uncoveredRecordSentinel": "0xffffffffffffffff"
+  },
+  "acceptance": {
+    "captureCommitMustEqualFrozenCommit": true,
+    "deviceMustBeAppleM1Max": true,
+    "coverageAtEverySampleMustEqualInstanceCount": true,
+    "missingRecordCount": 0,
+    "finiteRecordCount": 3342264,
+    "matchedCaseCount": 139261,
+    "mismatchedCaseCount": 0,
+    "ambiguousCaseCount": 0,
+    "selectorTolerance": 0,
+    "pixelTolerance": 0
+  },
+  "claimsNotEstablishedByPass": [
+    "A portable reciprocal-selector law outside the finite admitted circle-480 regular-material shadow domain.",
+    "A selector for a half-carrier tie excluded from the admitted natural captures.",
+    "End-to-end Walle frame parity before a separately frozen unseen natural holdout.",
+    "Permission to approximate, lower shader quality, or accept any nonzero image tolerance."
+  ],
+  "afterOpening": {
+    "allowed": [
+      "emit the complete finite selector table when every case resolves uniquely",
+      "report exact-floor and normalized-fallback failures separately",
+      "freeze an input-only lookup keyed by widthFixed,heightFixed",
+      "run a new natural eight-state AMD and Retina holdout from a commit that already contains the frozen table"
+    ],
+    "notAllowed": [
+      "widen the recovery radius and retain preregistered status",
+      "drop missing or ambiguous cases",
+      "describe finite calibration as a universal AGX law",
+      "authorize production parity from calibration data alone"
+    ],
+    "nextGate": "A fresh unseen natural transition must pass the zero-byte AMD whole-frame gate, followed by the physical Retina presentation gate."
+  }
+}

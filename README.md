@@ -14702,3 +14702,67 @@ replay boundary or retain one precisely located private-source unknown.  It
 cannot authorize parity, a captured per-pixel product table, or any quality
 tradeoff.  No result is recorded here until the fresh artifact passes the
 structural validator and the same-render source/transfer analyzer.
+
+### Sample-24 closure and finite natural-shadow selector boundary
+
+The sample-24 classifier closes the eight-byte residual without changing any
+Apple rule.  Its captured background pre-pass matches in all 4,194,304 bytes,
+the final-highlight alpha matches in all 1,048,576 binary16 words, and its
+generated highlight interpolants match in all 2,097,152 uint32 words.  The
+diagnostic C gate had incorrectly supplied a fragment specialization frozen to
+coordinate mode 5 to the final highlight, whose generated axis requires mode
+4.  Replaying the unspecialized measured shader with coordinate mode 4 makes
+the complete sample-24 output exact: zero unequal bytes out of 4,194,304 on the
+RX 9070 XT.  This was a Walle fixture wiring error, not a shader-quality or
+Apple-construction unknown.
+
+A new same-run physical-Retina capture then opened all eight regular/dark/
+dematerialize states at indices 1, 4, 8, 12, 16, 20, 24, and 28.  Its timeline
+SHA-256 is
+`52e4279fd374efc6a349cb3a5e69fcce0b60e538abc387cd6b75bee3866aa2d3`.
+Using the exact dynamic shader and same-run inputs, states 1, 16, and 24 are
+byte-identical.  The other states expose 17,844 unequal bytes in 5,214 pixels
+out of 33,554,432 compared bytes.  The residuals are one-pixel shadow-boundary
+strips: state 4 has 5,685 unequal bytes in 1,449 pixels, state 8 has 81 alpha
+bytes in 81 pixels, state 12 has 5,664 bytes in 1,464 pixels, state 20 has
+5,526 bytes in 1,476 pixels, and state 28 has 888 bytes in 744 pixels.  Maximum
+channel deltas are respectively 120, 1, 124, 126, and 127.  In state 4 the
+independently generated main interpolant matches every one of 232,324 active
+trace pixels.  Substituting one nearby exact reciprocal endpoint per shadow
+quad removes every uniquely covered mismatch.  The remaining product boundary
+is therefore the fixed-function AGX reciprocal selector for non-square natural
+shadow-ring quads; the Apple glass constructor, crop, shader, source, and layer
+transfer are not reopened.
+
+The selector is being measured as a finite calibration rather than inferred
+from the old normalized table.  The input-only constructor walks every margin
+fixed unit from 0 through 12,288 and all 257 sub-bin phases for the admitted
+480-pixel regular circle.  It yields 139,261 distinct positive
+`(widthFixed,heightFixed)` pairs, ordered in
+`Analysis/raster_natural_shadow_selector_cases_u32le.bin`, SHA-256
+`94a4e83307b5b5ba0020fb7ff6f4838acde2f959a9d3a8a2d6bf250af1a6893d`.
+The preregistered recovery window is the already established exact reciprocal
+floor plus or minus 16 selector units.  Three tile phases and an input-only
+65-member ramp pool distinguish all 33 candidates in every case before any
+Apple output is observed.  Of the 139,261 cases, 139,136 require one ramp and
+125 require two; eight frozen slots retain a uniform capture layout.  The
+witness assignment SHA-256 is
+`f49b80510bc6de0baadefaf654b44f4a967bdeb7cea17ead7e9ab8017601a18f`,
+and its 882,357,696-byte logical candidate stream has SHA-256
+`fafc17687af9e87cae8cdfbee285cfef5721186d096021c24946fc4c0a07b5fb`.
+
+No selector-sweep Apple output has been opened at this point.  The native
+M1-Max capture must resolve all 139,261 cases uniquely at zero bit tolerance.
+If it passes, the resulting table is frozen before a new unseen natural
+transition.  That transition must then pass the complete zero-byte AMD frame
+gate and the physical-Retina presentation gate.  The exact current ledger is:
+
+1. **Apple construction and shader unknowns in the admitted natural domain:
+   zero.**  Sample 24 is exact after correcting the mode specialization.
+2. **Blocking whole-animation parity unknowns: one.**  The finite non-square
+   natural-shadow AGX selector remains to be captured and prospectively
+   transferred.
+3. **Proof gates after that calibration: two.**  A fresh unseen AMD frame set
+   and the physical Retina presentation must both be byte-identical.
+4. **Quality tolerance remains zero.**  No production shader simplification,
+   captured image substitution, or nonzero tolerance is authorized.
