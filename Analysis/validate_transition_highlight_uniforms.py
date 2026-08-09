@@ -86,6 +86,37 @@ BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE = {
             False,
         ),
     },
+    24: {
+        **BACKGROUND_ARITHMETIC_TRACES,
+        "private-main-final-color": (
+            "captured-final-color",
+            115,
+            1024 * 1024 * 8,
+            1,
+            True,
+        ),
+        "private-shadow-final-color": (
+            "captured-final-color",
+            115,
+            1024 * 1024 * 8,
+            2,
+            True,
+        ),
+        "custom-shadow-layer": (
+            "shadow-layer",
+            115,
+            1024 * 1024 * 8,
+            2,
+            False,
+        ),
+        "custom-shadow-sample": (
+            "shadow-sample",
+            115,
+            1024 * 1024 * 8,
+            2,
+            False,
+        ),
+    },
 }
 HIGHLIGHT_SDF_DIAGNOSTIC_TRACES = {
     "sdf": (115, 1024 * 1024 * 8),
@@ -613,7 +644,7 @@ def validate_background_private_layer_outputs(
     root: Path,
     sample_index: int,
 ) -> int:
-    if sample_index != 16:
+    if sample_index not in {16, 24}:
         if "backgroundPrivateLayerOutputs" in replay:
             raise ValueError("an unrequested private background layer replay executed")
         return 0

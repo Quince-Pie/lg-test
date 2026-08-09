@@ -17799,7 +17799,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let dynamicBackgroundArithmeticTraceRequested =
             dynamicInterpolantTraceRequested
             && (capture.hasSuffix("-12")
-                || capture.hasSuffix("-16"))
+                || capture.hasSuffix("-16")
+                || capture.hasSuffix("-24"))
         let dynamicHighlightDiagnosticsRequested =
             dynamicHighlightTraceEnabled
             && (capture.hasSuffix("-01")
@@ -17991,7 +17992,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         "color-stages-b",
                         "holding-operands",
                     ])
-                } else if capture.hasSuffix("-16") {
+                } else if capture.hasSuffix("-16")
+                    || capture.hasSuffix("-24")
+                {
                     requestedArithmeticTraceNames = Set(
                         arithmeticTraceSpecifications.compactMap {
                             $0.name == "holding-operands" ? nil : $0.name
@@ -18056,7 +18059,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         ])
                 }
                 if dynamicBackgroundArithmeticTraceRequested,
-                   capture.hasSuffix("-16"),
+                   (capture.hasSuffix("-16")
+                       || capture.hasSuffix("-24")),
                    let shadowCommands = commandsForGlassDraw(
                        pass.commands,
                        ordinal: 2)

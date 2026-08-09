@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "status": "frozen-before-capture",
+  "objective": "Classify the final eight sample-24 Walle background-prefix alpha bytes by comparing Apple's unmodified private main and shadow half sources with independently compiled custom stages from the same physical-Retina render.",
+  "capture": {
+    "dispatch": "local-ssh-native-apple-toolchain",
+    "host": "quince@10.0.41.19",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuild": "25G76",
+    "hardware": "Apple M1 Max",
+    "requiredBackingScaleFactor": 2,
+    "requiredPhysicalPixels": [3456, 2234],
+    "githubActionsAllowed": false,
+    "nixStorePathAllowedInExecutable": false
+  },
+  "profile": {
+    "captureMode": "uniform-smoke",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "dematerialize",
+    "sampleIndex": 24,
+    "geometry": "natural Walle circle-480"
+  },
+  "requiredEvidence": {
+    "privateLayerOutputs": [
+      "private-main-bgra8",
+      "private-shadow-bgra8"
+    ],
+    "mainHalfSources": [
+      "private-main-final-color",
+      "final-color"
+    ],
+    "shadowHalfSources": [
+      "private-shadow-final-color",
+      "custom-shadow-layer"
+    ],
+    "diagnosticStages": [
+      "sdf-float",
+      "sdf-geometry",
+      "sdf-oval",
+      "sdf-normal",
+      "sdf-coverage",
+      "sdf",
+      "color-stages-a",
+      "color-stages-b",
+      "final-color",
+      "custom-shadow-sample"
+    ],
+    "halfSurface": {
+      "width": 1024,
+      "height": 1024,
+      "pixelFormat": "RGBA16Float",
+      "rawBytes": 8388608
+    },
+    "layerOutput": {
+      "width": 1024,
+      "height": 1024,
+      "pixelFormat": "BGRA8Unorm",
+      "rawBytes": 4194304
+    }
+  },
+  "acceptance": {
+    "tolerance": 0,
+    "maximumUnequalHalfWords": 0,
+    "maximumUnequalLayerBytes": 0,
+    "minimumActiveMainPixels": 1,
+    "minimumActiveShadowPixels": 1,
+    "sameRenderPairingRequired": true,
+    "capturedCoordinateOrPixelTableMayBecomeProductInput": false
+  },
+  "decisionRule": {
+    "privateCustomHalfSourcesExact": "Apple source arithmetic is closed at sample 24; any Walle endpoint difference is an implementation replay boundary.",
+    "privateCustomHalfSourcesDiffer": "Report the first unequal diagnostic stage and retain one Apple private-source unknown; do not claim parity.",
+    "transferOrLayerOutputDiffers": "Retain a BGRA8 transfer unknown and do not claim parity.",
+    "missingOrVacuousEvidence": "Fail closed and rerun without interpreting the artifact."
+  },
+  "frozenInputs": {
+    "Sources/GlassIntrospect/main.swift": "2a8ff6330afc8c8426ae8b28242eb70399007dd7953477fa4487904635f3c545",
+    "Analysis/validate_transition_highlight_uniforms.py": "4d72332f62c5bea0e445cd718f3bff0d0b5160112d2c3a69fc8a860fcc04f366"
+  },
+  "claimBoundary": "This probe can classify the sample-24 source and transfer residual. It cannot by itself establish an end-to-end Walle frame, another material profile, another macOS build, or universal arbitrary-uniform emulation."
+}

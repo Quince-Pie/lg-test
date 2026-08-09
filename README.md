@@ -14683,3 +14683,22 @@ The corrected ledger is now:
 4. **Tolerance and quality loss remain forbidden.**  This closure authorizes
    guarded implementation work; it does not authorize approximation, shader
    simplification, or a nonzero comparison tolerance.
+
+### Sample-24 private-source classifier
+
+The first guarded AMD integration reduced the historical 72-byte background
+prefix residual to eight alpha bytes, all in natural sample 24 and all with
+channel delta one.  This is not treated as a tolerance or folded into the
+sample-16 closure.  A separately frozen physical-Retina probe now requests the
+unmodified private main and shadow half sources, their custom-stage peers, the
+isolated BGRA8 layer outputs, and the arithmetic-stage diagnostics from the
+same sample-24 render.  Its zero-tolerance decision rule is frozen in
+`Analysis/background_sample24_private_source_preregistration.json` before the
+capture.  The run uses the native Apple toolchain on `quince@10.0.41.19`; a
+Nix-store executable and GitHub Actions are both excluded.
+
+This classifier can either confirm that the eight bytes are solely a Walle
+replay boundary or retain one precisely located private-source unknown.  It
+cannot authorize parity, a captured per-pixel product table, or any quality
+tradeoff.  No result is recorded here until the fresh artifact passes the
+structural validator and the same-render source/transfer analyzer.
