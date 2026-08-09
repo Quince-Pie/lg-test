@@ -15353,3 +15353,24 @@ reveal/crop composition, and physical-Retina output still require their final
 end-to-end gates.  It also does not justify a backend switch; OpenGL 4.6 and
 Vulkan/SPIR-V remain interchangeable only after identical byte gates and
 measured production latency/VRAM results.
+
+The prospective direct-Retina run completed at commit
+`3dedccad9afecb5635505d035ca2fc8f94442963` on the Apple M1 Max.  All
+16,777,216 raw words were finite and present.  The exact power boundary matched
+its single candidate; the other keys split into 8,259,783 floor choices and
+8,517,432 ceil choices, with zero unmatched or ambiguous observations.  The
+raw 64 MiB stream has SHA-256
+`0a57a1c41fedc2f4959a31f84f45c54c2896808c90bffb3e10adcb882588336d`.
+All 761,872 frozen controls then matched the opened table exactly, including
+zero conflicts across their 278,412 shared normalized keys.
+
+The admitted two-megabyte bitmap is
+`Analysis/raster_p25_selector_ceil_bits.bin`, SHA-256
+`9fbc083dfd9c89fc0bcdc89308acfc4530d408e93789a7dab89ee59ff60a198f`;
+its zlib archive has SHA-256
+`ff38aed451a9438f6ef3677833b864587561930a7bd3a21654a563c96e632078`.
+`Analysis/raster_p25_selector_calibration_3dedcca_result.json` retains the
+accepted zero-tolerance result.  The normalized-P25 reciprocal selector is no
+longer an unknown and is authorized for production use.  Product parity is
+still not claimed until ordinary Walle consumes it and passes the remaining
+resizing/clipping, reveal/crop, and physical-Retina gates.

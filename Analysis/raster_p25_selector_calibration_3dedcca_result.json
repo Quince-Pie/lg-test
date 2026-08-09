@@ -1,0 +1,76 @@
+{
+  "captureCommit": "3dedccad9afecb5635505d035ca2fc8f94442963",
+  "classification": "preregistered exhaustive normalized-P25 fixed-grid reciprocal selector calibration",
+  "domain": {
+    "caseFileSha256": "836faf360db6a9bcdf2beb2f994507afe2ce0276eab3c2d45ae64e6facf8da3e",
+    "keyCount": 16777216,
+    "keyLowerInclusive": 16777216,
+    "keyUpperExclusive": 33554432
+  },
+  "frozenControls": {
+    "caseCount": 761872,
+    "conflictingNormalizedKeyCount": 0,
+    "endpointChoiceCounts": {
+      "0": 373756,
+      "1": 388116
+    },
+    "invalidCandidateCount": 0,
+    "keyChoicePairSha256": "05894bd31f6ebceacd27369f4d984543d32e155484de13c505c9abfee1ce67bf",
+    "matchedCaseCount": 761872,
+    "mismatchExamples": [],
+    "mismatchedCaseCount": 0,
+    "passed": true,
+    "roleCaseCounts": {
+      "natural-shadow": 139261,
+      "small-near-square": 589842,
+      "small-square": 32769
+    },
+    "roleMatchCounts": {
+      "natural-shadow": 139261,
+      "small-near-square": 589842,
+      "small-square": 32769
+    },
+    "uniqueNormalizedKeyCount": 278412
+  },
+  "gate": {
+    "portableNormalizedP25SelectorEstablished": true,
+    "productionParityAuthorized": false,
+    "productionSelectorUseAuthorized": true,
+    "qualityTolerance": 0,
+    "remainingProductionGate": "continuously resizing, clipped reveal/crop geometry and final physical-Retina output"
+  },
+  "input": {
+    "finiteWordCount": 16777216,
+    "missingRecordCount": 0,
+    "rawBytes": 67108864,
+    "rawSha256": "0a57a1c41fedc2f4959a31f84f45c54c2896808c90bffb3e10adcb882588336d"
+  },
+  "measurement": {
+    "calibrationComplete": true,
+    "exhaustiveOpeningPassed": true,
+    "frozenControlsPassed": true
+  },
+  "predeclaredRecovery": {
+    "ambiguousMatchCount": 0,
+    "candidateConstantPairSha256": "4b64afac66d352e71efd7e4536fdb6118c416f869ca34008c2479a00c25268bf",
+    "candidateReciprocalPairSha256": "bd291f0f3e10566e4bbfd1a7b614fb4f1d401b7d608f7bf139d93151f755f450",
+    "candidateStreamsMatchPreregistration": true,
+    "ceilMatchCount": 8517432,
+    "exactPowerBoundaryMatchCount": 1,
+    "failureExamples": [],
+    "floorMatchCount": 8259783,
+    "zeroMatchCount": 0
+  },
+  "rasterP25SelectorValidationSchemaVersion": 1,
+  "selectorBitmap": {
+    "archiveBytes": 417182,
+    "archiveFile": "Analysis/raster_p25_selector_ceil_bits.zlib",
+    "archiveSha256": "ff38aed451a9438f6ef3677833b864587561930a7bd3a21654a563c96e632078",
+    "bitOrdering": "ascending key, least-significant bit first",
+    "bytes": 2097152,
+    "file": "Analysis/raster_p25_selector_ceil_bits.bin",
+    "oneMeaning": "ceil endpoint",
+    "sha256": "9fbc083dfd9c89fc0bcdc89308acfc4530d408e93789a7dab89ee59ff60a198f",
+    "zeroMeaning": "floor endpoint"
+  }
+}
