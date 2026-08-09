@@ -1,0 +1,696 @@
+{
+  "classification": "same-run private/custom half-source and BGRA8 transfer closure",
+  "conclusion": {
+    "exact": true,
+    "guardedWalleIntegrationAuthorized": true,
+    "productionParityClaimed": false,
+    "remainingNaturalBackgroundPixelArithmeticUnknowns": 0,
+    "remainingProductProofGates": 2
+  },
+  "implementation": {
+    "file": "analyze_walle_dynamic_background_layer_transfer.py",
+    "numpy": "2.4.4",
+    "python": "3.14.4",
+    "sha256": "4bb20c80b70a0e64e227739569c2b920657a80a186138ee8eb766f4a52b5c582"
+  },
+  "measuredSemantics": {
+    "blend": "binary16_RNE_FMA(destination, destinationFactor, source)",
+    "destinationConversion": "binary16_RNE(BGRA8_UNORM / 255)",
+    "destinationFactor": "binary16_RNE(binary16(1) - sourceAlpha)",
+    "interLayerBoundary": "store BGRA8 after main, reload it before shadow",
+    "targetConversion": "clamp and binary16-to-UNORM8 round-to-nearest",
+    "tolerance": 0
+  },
+  "positiveControls": {
+    "minimums": {
+      "mainActiveHalfPixels": 200000,
+      "mainChangedBGRA8Pixels": 200000,
+      "mainDistinctHalfTuples": 3000,
+      "shadowActiveHalfPixels": 8000,
+      "shadowChangedBGRA8Pixels": 8000,
+      "shadowDistinctHalfTuples": 1000
+    },
+    "outputActivity": {
+      "mainVsPrePass": {
+        "candidateSHA256": "9e9f81dc03e2387e5c472f3ccc99fe3ef0adc70b6125bb8341534088bb76d089",
+        "comparedBytes": 4194304,
+        "comparedPixels": 1048576,
+        "exact": false,
+        "firstMismatches": [
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 402,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 403,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 404,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 405,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 406,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 407,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 408,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 409,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 410,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 411,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 412,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              2
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 413,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              2
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 414,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              2
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 415,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              2
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 416,
+            "yTopLeft": 268
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              2
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 417,
+            "yTopLeft": 268
+          }
+        ],
+        "maximumChannelDelta": 255,
+        "referenceSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+        "unequalBytes": 767942,
+        "unequalPixels": 204332
+      },
+      "shadowVsPrePass": {
+        "candidateSHA256": "12ae49f82184eae51f35239c55d682466ab96dfefde289ed817a8bba85d7b067",
+        "comparedBytes": 4194304,
+        "comparedPixels": 1048576,
+        "exact": false,
+        "firstMismatches": [
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 495,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 496,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 497,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 498,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 499,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 500,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 501,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 502,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 503,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 504,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 505,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 506,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 507,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 508,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 509,
+            "yTopLeft": 244
+          },
+          {
+            "candidate": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "reference": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "x": 510,
+            "yTopLeft": 244
+          }
+        ],
+        "maximumChannelDelta": 14,
+        "referenceSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+        "unequalBytes": 8106,
+        "unequalPixels": 8106
+      }
+    },
+    "passed": true,
+    "sourceActivity": {
+      "main": {
+        "activePixels": 209550,
+        "distinctTuples": 3147,
+        "distinctWordsByChannel": [
+          890,
+          890,
+          890,
+          2643
+        ]
+      },
+      "shadow": {
+        "activePixels": 12906,
+        "distinctTuples": 1052,
+        "distinctWordsByChannel": [
+          1,
+          1,
+          1,
+          1052
+        ]
+      }
+    }
+  },
+  "source": {
+    "rawFiles": {
+      "capturedCombinedBGRA8": {
+        "file": "transition-background-uniform-16-glass-prefix-reference-bgra8.raw",
+        "sha256": "cd1572eecc294fc677a9822daa36749dd6a339af4c241a187a26894da106aac5"
+      },
+      "capturedMainBGRA8": {
+        "file": "transition-background-uniform-16-private-main-bgra8-bgra8.raw",
+        "sha256": "9e9f81dc03e2387e5c472f3ccc99fe3ef0adc70b6125bb8341534088bb76d089"
+      },
+      "capturedShadowBGRA8": {
+        "file": "transition-background-uniform-16-private-shadow-bgra8-bgra8.raw",
+        "sha256": "12ae49f82184eae51f35239c55d682466ab96dfefde289ed817a8bba85d7b067"
+      },
+      "customMainRGBA16F": {
+        "file": "transition-background-uniform-16-glass-dynamic-main-final-color-numeric-trace-rgba16f.raw",
+        "sha256": "0d1de5b6f49776112ecb91eb6cf078c9aeb233010b1722900fe5ad012919845f"
+      },
+      "customShadowRGBA16F": {
+        "file": "transition-background-uniform-16-glass-dynamic-shadow-custom-shadow-layer-numeric-trace-rgba16f.raw",
+        "sha256": "1b9a520a437750436711559a74f3c7cfbc202f1c2d03a95456ba6f38b8ecbf2a"
+      },
+      "prePassBGRA8": {
+        "file": "transition-background-uniform-16-pre-final-pass-bgra8.raw",
+        "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+      },
+      "privateMainRGBA16F": {
+        "file": "transition-background-uniform-16-glass-dynamic-main-private-main-final-color-numeric-trace-rgba16f.raw",
+        "sha256": "0d1de5b6f49776112ecb91eb6cf078c9aeb233010b1722900fe5ad012919845f"
+      },
+      "privateShadowRGBA16F": {
+        "file": "transition-background-uniform-16-glass-dynamic-shadow-private-shadow-final-color-numeric-trace-rgba16f.raw",
+        "sha256": "1b9a520a437750436711559a74f3c7cfbc202f1c2d03a95456ba6f38b8ecbf2a"
+      }
+    },
+    "sameRunPairingRequired": true,
+    "sampleIndex": 16,
+    "timeline": "artifacts/local-background-edge-private-bgra-01/transition-timeline.json",
+    "timelineSHA256": "f422d711bd916e6d71f03f40597440ea229a1a261d234e6d41490bde7e09d3f4"
+  },
+  "sourceComparisons": {
+    "privateVsCustomMain": {
+      "candidateSHA256": "0d1de5b6f49776112ecb91eb6cf078c9aeb233010b1722900fe5ad012919845f",
+      "comparedBytes": 8388608,
+      "comparedPixels": 1048576,
+      "comparedWords": 4194304,
+      "exact": true,
+      "firstMismatches": [],
+      "referenceSHA256": "0d1de5b6f49776112ecb91eb6cf078c9aeb233010b1722900fe5ad012919845f",
+      "unequalPixels": 0,
+      "unequalWords": 0
+    },
+    "privateVsCustomShadow": {
+      "candidateSHA256": "1b9a520a437750436711559a74f3c7cfbc202f1c2d03a95456ba6f38b8ecbf2a",
+      "comparedBytes": 8388608,
+      "comparedPixels": 1048576,
+      "comparedWords": 4194304,
+      "exact": true,
+      "firstMismatches": [],
+      "referenceSHA256": "1b9a520a437750436711559a74f3c7cfbc202f1c2d03a95456ba6f38b8ecbf2a",
+      "unequalPixels": 0,
+      "unequalWords": 0
+    }
+  },
+  "totalComparedBytes": 29360128,
+  "transferComparisons": {
+    "isolatedMain": {
+      "candidateSHA256": "9e9f81dc03e2387e5c472f3ccc99fe3ef0adc70b6125bb8341534088bb76d089",
+      "comparedBytes": 4194304,
+      "comparedPixels": 1048576,
+      "exact": true,
+      "firstMismatches": [],
+      "maximumChannelDelta": 0,
+      "referenceSHA256": "9e9f81dc03e2387e5c472f3ccc99fe3ef0adc70b6125bb8341534088bb76d089",
+      "unequalBytes": 0,
+      "unequalPixels": 0
+    },
+    "isolatedShadow": {
+      "candidateSHA256": "12ae49f82184eae51f35239c55d682466ab96dfefde289ed817a8bba85d7b067",
+      "comparedBytes": 4194304,
+      "comparedPixels": 1048576,
+      "exact": true,
+      "firstMismatches": [],
+      "maximumChannelDelta": 0,
+      "referenceSHA256": "12ae49f82184eae51f35239c55d682466ab96dfefde289ed817a8bba85d7b067",
+      "unequalBytes": 0,
+      "unequalPixels": 0
+    },
+    "sequentialMainThenShadow": {
+      "candidateSHA256": "cd1572eecc294fc677a9822daa36749dd6a339af4c241a187a26894da106aac5",
+      "comparedBytes": 4194304,
+      "comparedPixels": 1048576,
+      "exact": true,
+      "firstMismatches": [],
+      "maximumChannelDelta": 0,
+      "referenceSHA256": "cd1572eecc294fc677a9822daa36749dd6a339af4c241a187a26894da106aac5",
+      "unequalBytes": 0,
+      "unequalPixels": 0
+    }
+  },
+  "walleDynamicBackgroundLayerTransferSchemaVersion": 1
+}

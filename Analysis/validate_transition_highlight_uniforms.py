@@ -31,15 +31,15 @@ DYNAMIC_PRODUCER_INPUT_FNV1A64 = "7e51eae7957578dd"
 DYNAMIC_PRODUCER_MINIMUM_OUTPUT_PIXELS = 4_096
 HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 12, 32})
 BACKGROUND_ARITHMETIC_TRACES = {
-    "sdf-float": (123, 1024 * 1024 * 16),
-    "sdf-geometry": (123, 1024 * 1024 * 16),
-    "sdf-oval": (123, 1024 * 1024 * 16),
-    "sdf-normal": (123, 1024 * 1024 * 16),
-    "sdf-coverage": (123, 1024 * 1024 * 16),
-    "sdf": (115, 1024 * 1024 * 8),
-    "color-stages-a": (123, 1024 * 1024 * 16),
-    "color-stages-b": (123, 1024 * 1024 * 16),
-    "final-color": (115, 1024 * 1024 * 8),
+    "sdf-float": ("sdf-float", 123, 1024 * 1024 * 16, 1, False),
+    "sdf-geometry": ("sdf-geometry", 123, 1024 * 1024 * 16, 1, False),
+    "sdf-oval": ("sdf-oval", 123, 1024 * 1024 * 16, 1, False),
+    "sdf-normal": ("sdf-normal", 123, 1024 * 1024 * 16, 1, False),
+    "sdf-coverage": ("sdf-coverage", 123, 1024 * 1024 * 16, 1, False),
+    "sdf": ("sdf", 115, 1024 * 1024 * 8, 1, False),
+    "color-stages-a": ("color-stages-a", 123, 1024 * 1024 * 16, 1, False),
+    "color-stages-b": ("color-stages-b", 123, 1024 * 1024 * 16, 1, False),
+    "final-color": ("final-color", 115, 1024 * 1024 * 8, 1, False),
 }
 BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE = {
     12: {
@@ -47,9 +47,45 @@ BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE = {
             name: BACKGROUND_ARITHMETIC_TRACES[name]
             for name in ("color-stages-a", "color-stages-b")
         },
-        "holding-operands": (123, 1024 * 1024 * 16),
+        "holding-operands": (
+            "holding-operands",
+            123,
+            1024 * 1024 * 16,
+            1,
+            False,
+        ),
     },
-    16: BACKGROUND_ARITHMETIC_TRACES,
+    16: {
+        **BACKGROUND_ARITHMETIC_TRACES,
+        "private-main-final-color": (
+            "captured-final-color",
+            115,
+            1024 * 1024 * 8,
+            1,
+            True,
+        ),
+        "private-shadow-final-color": (
+            "captured-final-color",
+            115,
+            1024 * 1024 * 8,
+            2,
+            True,
+        ),
+        "custom-shadow-layer": (
+            "shadow-layer",
+            115,
+            1024 * 1024 * 8,
+            2,
+            False,
+        ),
+        "custom-shadow-sample": (
+            "shadow-sample",
+            115,
+            1024 * 1024 * 8,
+            2,
+            False,
+        ),
+    },
 }
 HIGHLIGHT_SDF_DIAGNOSTIC_TRACES = {
     "sdf": (115, 1024 * 1024 * 8),
@@ -446,12 +482,12 @@ def validate_background_interpolant_trace(
         "interpolant": 123,
         **(
             {
-                name: pixel_format
-                for name, (pixel_format, _) in (
+                metadata[0]: metadata[1]
+                for metadata in (
                     BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE.get(
                         sample_index,
                         {},
-                    ).items()
+                    ).values()
                 )
             }
             if sample_index in BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE
@@ -516,13 +552,19 @@ def validate_background_arithmetic_trace(
         "backgroundArithmeticTrace",
     )
     replays = trace.get("replays")
+    expected_contains_private = any(
+        metadata[4] for metadata in expected_traces.values()
+    )
     if (
-        trace.get("schemaVersion") != 1
+        trace.get("schemaVersion") != 2
         or trace.get("executed") is not True
-        or trace.get("scope") != "selected-dynamic-states-custom-metal-main-only"
-        or trace.get("capturedAppleFunctionUnmodified") is not False
-        or trace.get("customStageInVertex") is not True
-        or trace.get("classification") != "diagnostic custom-Metal arithmetic replay"
+        or trace.get("scope")
+        != "selected-dynamic-states-main-and-shadow-stage-isolation"
+        or trace.get("containsCapturedAppleFunctionUnmodified")
+        is not expected_contains_private
+        or trace.get("containsCustomStageInVertex") is not True
+        or trace.get("classification")
+        != "diagnostic private/custom Metal arithmetic replay"
         or not isinstance(replays, list)
         or len(replays) != len(expected_traces)
     ):
@@ -531,7 +573,8 @@ def validate_background_arithmetic_trace(
     observed = {item.get("name"): item for item in replays if isinstance(item, Mapping)}
     if set(observed) != set(expected_traces):
         raise ValueError("dynamic background arithmetic trace names differ")
-    for name, (pixel_format, byte_count) in expected_traces.items():
+    for name, metadata in expected_traces.items():
+        pipeline_name, pixel_format, byte_count, draw_ordinal, captured = metadata
         wrapper = mapping(observed[name], f"background arithmetic {name}")
         numeric_replay = mapping(
             wrapper.get("replay"),
@@ -542,7 +585,11 @@ def validate_background_arithmetic_trace(
             f"background arithmetic {name} output",
         )
         if (
-            wrapper.get("pixelFormat") != pixel_format
+            wrapper.get("pipelineName") != pipeline_name
+            or wrapper.get("drawOrdinal") != draw_ordinal
+            or wrapper.get("capturedAppleFunctionUnmodified") is not captured
+            or wrapper.get("customStageInVertex") is not (not captured)
+            or wrapper.get("pixelFormat") != pixel_format
             or numeric_replay.get("executed") is not True
             or numeric_replay.get("glassDrawCount") != 1
             or output.get("width") != 1024
@@ -558,6 +605,63 @@ def validate_background_arithmetic_trace(
             name=f"dynamic background arithmetic {name}",
         )
     return len(expected_traces)
+
+
+def validate_background_private_layer_outputs(
+    replay: Mapping[str, Any],
+    *,
+    root: Path,
+    sample_index: int,
+) -> int:
+    if sample_index != 16:
+        if "backgroundPrivateLayerOutputs" in replay:
+            raise ValueError("an unrequested private background layer replay executed")
+        return 0
+
+    layers = mapping(
+        replay.get("backgroundPrivateLayerOutputs"),
+        "backgroundPrivateLayerOutputs",
+    )
+    if (
+        layers.get("schemaVersion") != 1
+        or layers.get("executed") is not True
+        or layers.get("capturedAppleFunctionUnmodified") is not True
+        or layers.get("targetPixelFormat") != 80
+        or layers.get("initialColor") != "captured pre-glass color"
+    ):
+        raise ValueError("private background layer replay differs")
+
+    raw_files: set[str] = set()
+    for name in ("main", "shadow"):
+        layer = mapping(layers.get(name), f"private background {name}")
+        output = mapping(
+            layer.get("output"),
+            f"private background {name} output",
+        )
+        if (
+            layer.get("executed") is not True
+            or layer.get("glassDrawCount") != 1
+            or not isinstance(layer.get("encodedCommandCount"), int)
+            or layer["encodedCommandCount"] <= 0
+            or layer.get("stoppedAfterGlass") is not False
+            or output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != 80
+            or output.get("rawBytes") != 1024 * 1024 * 4
+        ):
+            raise ValueError(f"private background {name} replay differs")
+        validate_raw_file(
+            output,
+            root=root,
+            name=f"private background {name}",
+        )
+        raw_file = output.get("rawFile")
+        if not isinstance(raw_file, str):
+            raise ValueError(f"private background {name} filename is absent")
+        raw_files.add(raw_file)
+    if len(raw_files) != 2:
+        raise ValueError("private background layer outputs are not independent")
+    return 2
 
 
 def validate_raw_render_evidence(
@@ -1212,11 +1316,19 @@ def validate(
         json.loads(path.read_text(encoding="utf-8")),
         "transition report",
     )
+    direction = report.get("direction")
+    if direction not in {"materialize", "dematerialize"}:
+        raise ValueError("transition direction differs")
+    expected_sample_indices = (
+        EXPECTED_SAMPLE_INDICES
+        if direction == "materialize"
+        else EXPECTED_SAMPLE_INDICES[:-1]
+    )
     uniforms = mapping(
         report.get("dynamicBackgroundUniforms"),
         "dynamicBackgroundUniforms",
     )
-    if uniforms.get("schemaVersion") != 7 or uniforms.get("requested") is not requested:
+    if uniforms.get("schemaVersion") != 9 or uniforms.get("requested") is not requested:
         raise ValueError("dynamic uniform highlight schema differs")
     if uniforms.get("presentationLayerReplayed") is not requested:
         raise ValueError("dynamic presentation replay metadata differs")
@@ -1231,6 +1343,7 @@ def validate(
             "interpolantTraces": 0,
             "backgroundInterpolantTraces": 0,
             "backgroundArithmeticTraces": 0,
+            "backgroundPrivateLayerOutputs": 0,
             "intermediateTextures": 0,
             "dynamicBackdropProducerInputs": 0,
             "dynamicBackdropProducerOutputs": 0,
@@ -1239,13 +1352,14 @@ def validate(
     records = uniforms.get("records")
     if (
         uniforms.get("executed") is not True
-        or uniforms.get("sampleIndices") != list(EXPECTED_SAMPLE_INDICES)
-        or uniforms.get("sampleCount") != len(EXPECTED_SAMPLE_INDICES)
-        or uniforms.get("executedSampleCount") != len(EXPECTED_SAMPLE_INDICES)
+        or uniforms.get("sampleIndices") != list(expected_sample_indices)
+        or uniforms.get("sampleCount") != len(expected_sample_indices)
+        or uniforms.get("executedSampleCount") != len(expected_sample_indices)
         or uniforms.get("method")
         != "copied-presentation-background-filter-plus-compatible-"
         "layer-state-on-fresh-static-model-tree-with-controlled-"
         "producer-input"
+        or uniforms.get("evidenceMode") != "controlled-replay-v1"
         or uniforms.get("presentationLayerAssignedToCARenderer") is not False
         or uniforms.get("freshStaticCarrier") is not True
         or uniforms.get("detachedLayerTreeCopies") is not False
@@ -1254,7 +1368,7 @@ def validate(
         or uniforms.get("transitionForegroundFilterReplayedOnCarrier") is not False
         or not isinstance(uniforms.get("modelTargetPath"), list)
         or not isinstance(records, list)
-        or len(records) != len(EXPECTED_SAMPLE_INDICES)
+        or len(records) != len(expected_sample_indices)
     ):
         raise ValueError("dynamic highlight evidence is incomplete")
 
@@ -1263,11 +1377,12 @@ def validate(
     interpolant_trace_count = 0
     background_interpolant_trace_count = 0
     background_arithmetic_trace_count = 0
+    background_private_layer_output_count = 0
     intermediate_texture_count = 0
     dynamic_backdrop_producer_input_count = 0
     dynamic_backdrop_producer_output_count = 0
     for sample_index, untyped_record in zip(
-        EXPECTED_SAMPLE_INDICES,
+        expected_sample_indices,
         records,
         strict=True,
     ):
@@ -1367,10 +1482,19 @@ def validate(
                 root=path.parent,
                 sample_index=sample_index,
             )
+            background_private_layer_output_count += (
+                validate_background_private_layer_outputs(
+                    replay,
+                    root=path.parent,
+                    sample_index=sample_index,
+                )
+            )
         elif "backgroundInterpolantTrace" in replay:
             raise ValueError("an unrequested background interpolant trace executed")
         elif "backgroundArithmeticTrace" in replay:
             raise ValueError("an unrequested background arithmetic trace executed")
+        elif "backgroundPrivateLayerOutputs" in replay:
+            raise ValueError("an unrequested private background layer replay executed")
         trace_expected = (
             highlight_trace and sample_index in HIGHLIGHT_TRACE_SAMPLE_INDICES
         )
@@ -1477,6 +1601,7 @@ def validate(
         "interpolantTraces": interpolant_trace_count,
         "backgroundInterpolantTraces": background_interpolant_trace_count,
         "backgroundArithmeticTraces": background_arithmetic_trace_count,
+        "backgroundPrivateLayerOutputs": (background_private_layer_output_count),
         "intermediateTextures": intermediate_texture_count,
         "dynamicBackdropProducerInputs": (dynamic_backdrop_producer_input_count),
         "dynamicBackdropProducerOutputs": (dynamic_backdrop_producer_output_count),

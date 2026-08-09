@@ -10056,6 +10056,45 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ])
             }
         }
+        if numericTraceNames?.contains("captured-final-color") ?? false {
+            let descriptor = try copyCapturedDescriptor()
+            descriptor.label =
+                "lg.background.captured-private-final-color-half"
+            descriptor.fragmentFunction = capturedFragment
+            for index in 0..<8 {
+                let attachment = descriptor.colorAttachments[index]
+                attachment?.pixelFormat =
+                    index == 0 ? .rgba16Float : .invalid
+                attachment?.isBlendingEnabled = false
+                attachment?.writeMask = index == 0 ? .all : []
+            }
+            do {
+                let pipeline = try device.makeRenderPipelineState(
+                    descriptor: descriptor)
+                tracePipelines.append((
+                    name: "captured-final-color",
+                    pipeline: pipeline,
+                    pixelFormat: .rgba16Float))
+                traceBuildRecords.append([
+                    "name": "captured-final-color",
+                    "built": true,
+                    "pixelFormat":
+                        MTLPixelFormat.rgba16Float.rawValue,
+                    "capturedAppleFunctionUnmodified": true,
+                    "descriptor": pipelineDescriptorRecord(descriptor),
+                ])
+            } catch {
+                traceBuildRecords.append([
+                    "name": "captured-final-color",
+                    "built": false,
+                    "pixelFormat":
+                        MTLPixelFormat.rgba16Float.rawValue,
+                    "capturedAppleFunctionUnmodified": true,
+                    "error": error.localizedDescription,
+                    "descriptor": pipelineDescriptorRecord(descriptor),
+                ])
+            }
+        }
         return IndependentGlassPipelineSet(
             candidates: candidates,
             numericTraces: tracePipelines,
@@ -10116,6 +10155,31 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     return Array(commands.prefix(through: index))
                 }
             }
+        }
+        return nil
+    }
+
+    private func commandsForGlassDraw(
+        _ commands: [ReplayCommand],
+        ordinal: Int
+    ) -> [ReplayCommand]? {
+        guard ordinal > 0 else { return nil }
+        var currentPipelineIsGlass = false
+        var glassDrawCount = 0
+        var result: [ReplayCommand] = []
+        for command in commands {
+            if case .pipeline(let state) = command {
+                currentPipelineIsGlass = isGlassPipeline(state)
+            }
+            if currentPipelineIsGlass && replayCommandIsDraw(command) {
+                glassDrawCount += 1
+                if glassDrawCount == ordinal {
+                    result.append(command)
+                    return result
+                }
+                continue
+            }
+            result.append(command)
         }
         return nil
     }
@@ -17876,18 +17940,49 @@ private final class MetalUniformProbe: @unchecked Sendable {
             do {
                 let arithmeticTraceSpecifications: [(
                     name: String,
-                    pixelFormat: MTLPixelFormat
+                    pipelineName: String,
+                    pixelFormat: MTLPixelFormat,
+                    drawOrdinal: Int,
+                    capturedAppleFunctionUnmodified: Bool
                 )] = [
-                    ("sdf-float", .rgba32Uint),
-                    ("sdf-geometry", .rgba32Uint),
-                    ("sdf-oval", .rgba32Uint),
-                    ("sdf-normal", .rgba32Uint),
-                    ("sdf-coverage", .rgba32Uint),
-                    ("sdf", .rgba16Float),
-                    ("color-stages-a", .rgba32Uint),
-                    ("color-stages-b", .rgba32Uint),
-                    ("holding-operands", .rgba32Uint),
-                    ("final-color", .rgba16Float),
+                    ("sdf-float", "sdf-float", .rgba32Uint, 1, false),
+                    ("sdf-geometry", "sdf-geometry", .rgba32Uint, 1, false),
+                    ("sdf-oval", "sdf-oval", .rgba32Uint, 1, false),
+                    ("sdf-normal", "sdf-normal", .rgba32Uint, 1, false),
+                    ("sdf-coverage", "sdf-coverage", .rgba32Uint, 1, false),
+                    ("sdf", "sdf", .rgba16Float, 1, false),
+                    ("color-stages-a", "color-stages-a", .rgba32Uint, 1, false),
+                    ("color-stages-b", "color-stages-b", .rgba32Uint, 1, false),
+                    ("holding-operands", "holding-operands", .rgba32Uint, 1, false),
+                    ("final-color", "final-color", .rgba16Float, 1, false),
+                    (
+                        "private-main-final-color",
+                        "captured-final-color",
+                        .rgba16Float,
+                        1,
+                        true
+                    ),
+                    (
+                        "private-shadow-final-color",
+                        "captured-final-color",
+                        .rgba16Float,
+                        2,
+                        true
+                    ),
+                    (
+                        "custom-shadow-layer",
+                        "shadow-layer",
+                        .rgba16Float,
+                        2,
+                        false
+                    ),
+                    (
+                        "custom-shadow-sample",
+                        "shadow-sample",
+                        .rgba16Float,
+                        2,
+                        false
+                    ),
                 ]
                 let requestedArithmeticTraceNames: Set<String>
                 if capture.hasSuffix("-12") {
@@ -17907,7 +18002,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 var requestedTraceNames = Set(["interpolant"])
                 if dynamicBackgroundArithmeticTraceRequested {
                     requestedTraceNames.formUnion(
-                        requestedArithmeticTraceNames)
+                        arithmeticTraceSpecifications.compactMap {
+                            requestedArithmeticTraceNames.contains($0.name)
+                                ? $0.pipelineName
+                                : nil
+                        })
                 }
                 let pipelineSet =
                     try makeIndependentGlassPipelines(
@@ -17956,6 +18055,47 @@ private final class MetalUniformProbe: @unchecked Sendable {
                                 "first background glass draw unavailable",
                         ])
                 }
+                if dynamicBackgroundArithmeticTraceRequested,
+                   capture.hasSuffix("-16"),
+                   let shadowCommands = commandsForGlassDraw(
+                       pass.commands,
+                       ordinal: 2)
+                {
+                    let privateMain = replayGlassPrefix(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        commands: mainCommands,
+                        replacingGlassPipeline: nil,
+                        stopAfterGlass: false,
+                        forceColor0Load: true,
+                        capture: capture,
+                        suffix: "private-main-bgra8",
+                        outputDirectory: outputDirectory)
+                    let privateShadow = replayGlassPrefix(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        commands: shadowCommands,
+                        replacingGlassPipeline: nil,
+                        stopAfterGlass: false,
+                        forceColor0Load: true,
+                        capture: capture,
+                        suffix: "private-shadow-bgra8",
+                        outputDirectory: outputDirectory)
+                    result["backgroundPrivateLayerOutputs"] = [
+                        "schemaVersion": 1,
+                        "executed":
+                            privateMain["executed"] as? Bool == true
+                            && privateShadow["executed"] as? Bool == true,
+                        "capturedAppleFunctionUnmodified": true,
+                        "targetPixelFormat":
+                            MTLPixelFormat.bgra8Unorm.rawValue,
+                        "initialColor": "captured pre-glass color",
+                        "main": privateMain,
+                        "shadow": privateShadow,
+                    ]
+                }
                 let mainReplay = replayGlassNumericTrace(
                     pass: pass,
                     queue: queue,
@@ -17995,7 +18135,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     {
                         guard let arithmeticTrace =
                                 pipelineSet.numericTraces.first(where: {
-                                    $0.name == specification.name
+                                    $0.name == specification.pipelineName
                                 }),
                               arithmeticTrace.pixelFormat
                                 == specification.pixelFormat
@@ -18009,29 +18149,62 @@ private final class MetalUniformProbe: @unchecked Sendable {
                                     NSLocalizedDescriptionKey:
                                         "background arithmetic pipeline "
                                         + "unavailable: "
-                                        + specification.name,
+                                        + specification.pipelineName,
+                                ])
+                        }
+                        let replayCommands: [ReplayCommand]
+                        if specification.drawOrdinal == 1 {
+                            replayCommands = mainCommands
+                        } else if specification.drawOrdinal == 2,
+                                  let commands = commandsForGlassDraw(
+                                      pass.commands,
+                                      ordinal: 2)
+                        {
+                            replayCommands = commands
+                        } else {
+                            throw NSError(
+                                domain:
+                                    "GlassIntrospect."
+                                    + "BackgroundArithmetic",
+                                code: 2,
+                                userInfo: [
+                                    NSLocalizedDescriptionKey:
+                                        "background arithmetic draw "
+                                        + "unavailable: "
+                                        + String(
+                                            specification.drawOrdinal),
                                 ])
                         }
                         let replay = replayGlassNumericTrace(
                             pass: pass,
                             queue: queue,
-                            commands: mainCommands,
+                            commands: replayCommands,
                             replacement: arithmeticTrace.pipeline,
                             pixelFormat: arithmeticTrace.pixelFormat,
                             capture: capture,
                             name:
-                                "dynamic-main-"
-                                + arithmeticTrace.name,
+                                "dynamic-"
+                                + (specification.drawOrdinal == 1
+                                    ? "main-" : "shadow-")
+                                + specification.name,
                             outputDirectory: outputDirectory)
                         arithmeticReplays.append([
-                            "name": arithmeticTrace.name,
+                            "name": specification.name,
+                            "pipelineName": arithmeticTrace.name,
+                            "drawOrdinal": specification.drawOrdinal,
                             "pixelFormat":
                                 arithmeticTrace.pixelFormat.rawValue,
+                            "capturedAppleFunctionUnmodified":
+                                specification
+                                    .capturedAppleFunctionUnmodified,
+                            "customStageInVertex":
+                                !specification
+                                    .capturedAppleFunctionUnmodified,
                             "replay": replay,
                         ])
                     }
                     result["backgroundArithmeticTrace"] = [
-                        "schemaVersion": 1,
+                        "schemaVersion": 2,
                         "executed": arithmeticReplays.allSatisfy {
                             replay in
                             guard let value = replay["replay"]
@@ -18042,11 +18215,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             return value["executed"] as? Bool == true
                         },
                         "scope":
-                            "selected-dynamic-states-custom-metal-main-only",
-                        "capturedAppleFunctionUnmodified": false,
-                        "customStageInVertex": true,
+                            "selected-dynamic-states-main-and-shadow-stage-isolation",
+                        "containsCapturedAppleFunctionUnmodified":
+                            arithmeticReplays.contains {
+                                $0["capturedAppleFunctionUnmodified"]
+                                    as? Bool == true
+                            },
+                        "containsCustomStageInVertex":
+                            arithmeticReplays.contains {
+                                $0["customStageInVertex"]
+                                    as? Bool == true
+                            },
                         "classification":
-                            "diagnostic custom-Metal arithmetic replay",
+                            "diagnostic private/custom Metal arithmetic replay",
                         "replays": arithmeticReplays,
                     ]
                 }

@@ -14624,3 +14624,62 @@ The corrected implementation boundary is therefore:
    exact paths behind their measured-domain gates while the sparse background
    residual is isolated; then require fresh AMD and physical-Retina end-to-end
    frames to be byte-identical.  No quality reduction or tolerance is allowed.
+
+### Natural Walle background half-source and BGRA8 transfer closure
+
+The last natural background pixel-arithmetic question is now closed.  The
+physical Retina M1 Max capture replays Apple's unmodified private main and
+shadow fragment functions independently into the original `BGRA8Unorm`
+target.  It also recompiles each unmodified private function without blending
+into `RGBA16Float`, beside the corresponding independent custom-Metal stage.
+All comparisons pair files from the same render because the live half-source
+surface changes between transition captures; a new Apple source surface must
+never be compared to an older Walle fixture.
+
+Within one sample-16 render, the private and custom main sources match in all
+4,194,304 binary16 words, and the private and custom shadow sources match in
+all 4,194,304 binary16 words.  Starting from the captured pre-pass color, the
+previously recovered fixed-function law then reconstructs Apple's isolated
+main output with zero unequal bytes out of 4,194,304 and its isolated shadow
+output with zero unequal bytes out of 4,194,304.  Storing the main result to
+`BGRA8Unorm`, reloading it, and applying the shadow reconstructs the captured
+two-draw prefix with zero unequal bytes out of 4,194,304.  The complete gate
+therefore compares 29,360,128 source-and-transfer bytes with zero differences
+and maximum channel delta zero.  Positive controls are nonvacuous: the main
+half surface has 209,550 active pixels and 3,147 distinct tuples, the shadow
+has 12,906 active pixels and 1,052 distinct tuples, and their independent
+BGRA8 draws change 204,332 and 8,106 destination pixels respectively.
+
+The exact transfer is:
+
+1. convert each destination UNORM8 code to binary16 with round-to-nearest-even;
+2. compute `binary16_RNE(binary16(1) - sourceAlpha)`;
+3. compute `binary16_RNE_FMA(destination, factor, source)`;
+4. clamp and convert binary16 to UNORM8 with round-to-nearest; and
+5. store the main `BGRA8Unorm` result before the shadow draw reloads it.
+
+The capture timeline SHA-256 is
+`f422d711bd916e6d71f03f40597440ea229a1a261d234e6d41490bde7e09d3f4`.
+The accepted analysis is
+`Analysis/walle_dynamic_background_layer_transfer_local_macos_26_6_1_result.json`,
+SHA-256
+`8179615a4fce33c2cd1bea8829bcbcda96ed1ce96e8d911c09c5b88b407accd3`.
+The analyzer is
+`Analysis/analyze_walle_dynamic_background_layer_transfer.py`, SHA-256
+`4bb20c80b70a0e64e227739569c2b920657a80a186138ee8eb766f4a52b5c582`.
+
+The corrected ledger is now:
+
+1. **Natural Apple construction unknowns blocking Walle integration: zero.**
+   The background constructor, crop/scissor, private main and shadow sources,
+   fixed-function transfer, and final highlight are exact in the admitted
+   natural Walle domain.
+2. **The prior 72-byte residual is a Walle implementation/fixture gate, not an
+   unknown Apple rule.**  Walle must apply same-run inputs and the measured
+   inter-layer store/reload boundary, then reduce that gate to zero bytes.
+3. **Product proof gates: two.**  A fresh AMD frame and a physical-Retina frame
+   produced by the integrated Walle path must each be byte-identical before
+   production parity is claimed.
+4. **Tolerance and quality loss remain forbidden.**  This closure authorizes
+   guarded implementation work; it does not authorize approximation, shader
+   simplification, or a nonzero comparison tolerance.
