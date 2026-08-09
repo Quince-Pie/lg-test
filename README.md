@@ -14808,3 +14808,82 @@ The exact current ledger is:
    AMD frame set and the physical Retina presentation must both be byte exact.
 5. **Quality tolerance remains zero.**  No production shader simplification,
    captured image substitution, or nonzero tolerance is authorized.
+
+### Fresh sample-08 closure and eight-primitive sample-28 boundary
+
+The targeted physical-Retina sample-08 capture closed the stale ledger above:
+the independently reconstructed frame is byte-identical at sample 08.  The
+same fresh timeline has SHA-256
+`c028e232c0eb06ade31f826578c7209ea2e19f69b65a65cdc723187bc34adc44`.
+Seven of the eight opened natural states are now byte exact.  The only frame
+residual is sample 28: seven unequal bytes in three pixels, with maximum
+channel delta one.  Its Apple reference SHA-256 is
+`09de86a1fc7e5981f110e72bdfb5a76480010b3a23b10f3740e6570f34ed610b`;
+the independent candidate SHA-256 is
+`850ca3235ec687923a9ae1f76c7dcfc4e0424b3fdfe0c6e7fde9f7e2209c585e`.
+
+That residual is no longer attributable to raster transport.  A frozen native
+Metal microprobe replayed the independently generated 16-vertex, 24-index
+sample-28 border geometry on the physical M1 Max.  Apple and the independent
+axis agree in all 524,288 active SDF center words and all 1,048,576 first-
+derivative words.  Coverage is the exact 512-by-512 square, with 262,144
+active pixels.  A separate RX 9070 XT primitive-ID render agrees with AGX on
+all 262,144 primitive owners and on every per-primitive pixel count.  The
+accepted native result is
+`Analysis/natural_sample28_border_interpolant_transfer_b2e34e8_result.json`,
+SHA-256
+`3d190d439883f2ab56cf8bd87d0ce414785a7012c54f945812c323583d9a151f`.
+
+Commit `47aa8fb27cad780c16869358ec52e61e631cf86d` then froze a prospective
+fragment transport.  On the same physical Retina host, the probe cloned but
+never mutated Apple's selected `Iscd` resources, substituted only the frozen
+geometry, index, and uniform ranges in an isolated replay, and ran both the
+captured private pipeline and the independently reconstructed current-system
+specialization.  Their natural BGRA8 outputs match in all 4,194,304 bytes;
+their alpha-oracle BGRA8 outputs also match in all 4,194,304 bytes.  The
+capture timeline SHA-256 is
+`609485e86b185358b0b762bd95143d3a29f3d1049b3a843997f0cf7b05fa9b0a`.
+
+The exact internal boundary is now 148 of 1,048,576 binary16 alpha words.
+Apple and Walle both activate exactly 2,520 pixels with zero coverage-mask
+differences; the maximum half-word distance is 24.  Only three of those 148
+differences cross the final `BGRA8Unorm` rounding boundary, producing the
+seven-byte whole-frame residual.  A preregistered 49-case sweep changed one
+existing arithmetic field at a time across derivative, division, coverage,
+mix, band, normalization, normalized-coordinate, SDF, and ULP-bias modes.  No
+case is exact.  The compact result is
+`Analysis/natural_sample28_border_highlight_mode_sweep_result.json`, SHA-256
+`eabcb8b33aa7f9358fdceaf5989d9f053b488b2d18a9048b44d3e4eeb056c118`.
+This rejects a missing configuration selection; it does not authorize tuning
+or a per-pixel correction.
+
+`Analysis/natural_sample28_border_highlight_arithmetic_preregistration.json`
+freezes the next and final arithmetic discriminator before capture.  The same
+twelve uniform interventions and five independent SDF stages will be emitted
+for every run.  The earliest zero-tolerance Apple/Walle divergence selects the
+operation family; later differences may not be patched independently.
+
+The corrected current ledger is:
+
+1. **Opened-corpus construction and raster-transport unknowns: zero.**  Crop,
+   resampling, geometry bytes, primitive ownership, SDF centers, first
+   derivatives, private fragment specialization, and fixed-function transfer
+   all have exact evidence for the opened states.
+2. **Blocking sample-28 arithmetic unknowns: one operation family.**  It lies
+   after exact SDF-input interpolation and before final binary16 highlight
+   alpha.  The prospective arithmetic tomography above is designed to name
+   that operation, not merely fit its final pixels.
+3. **General topology-policy unknowns: one.**  The earlier round-trip predicate
+   is insufficient: a retained state satisfying it can still emit the compact
+   six-index `Iscd` draw.  The exact policy selecting six-index versus
+   24-index construction remains to be expressed for unseen natural states,
+   although both emitted topologies themselves are reconstructed exactly.
+4. **Guarded Walle work may proceed now.**  There are zero unknowns blocking
+   implementation behind exact gates; there are two research unknowns blocking
+   a parity claim: the topology selector and the one final half-arithmetic
+   operation.
+5. **Product proof gates remain two.**  A fresh unseen eight-state AMD set and
+   a physical-Retina presentation must both be byte exact after integration.
+6. **Quality and tolerance remain absolute.**  The production shader is still
+   untouched.  No shader simplification, captured surface, lookup correction,
+   or nonzero tolerance is permitted.

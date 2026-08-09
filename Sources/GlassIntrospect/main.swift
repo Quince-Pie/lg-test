@@ -12,6 +12,10 @@ private let naturalSample28BorderFragmentTransportPreregistration =
     "Analysis/natural_sample28_border_fragment_transport_preregistration.json"
 private let naturalSample28BorderFragmentTransportPreregistrationSHA256 =
     "68545eaa26081d2710c386eee3b7554e66f8c17898f1f07a71c6be6e89944103"
+private let naturalSample28BorderHighlightArithmeticPreregistration =
+    "Analysis/natural_sample28_border_highlight_arithmetic_preregistration.json"
+private let naturalSample28BorderHighlightArithmeticPreregistrationSHA256 =
+    "094c0ce70410558c0ffa1f6ce4ab16956ce94e79dc865211e9ad82503d9b2893"
 private let naturalSample28BorderVertexStreamBase64 = """
 VhSAQ9X1P0QAAAAAAACAP7QAgMO0AIDD2BD0vOXsgj8AAAAAAAAAAAAAAAAAAPA/hQoARNX1P0QA
 AAAAAACAPwAAAAC0AIDDixq1vOXsgj84AQAAAAAAAMgCAADIAgAAhAoARNX1P0QAAAAAAACAPwAA
@@ -13543,6 +13547,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         naturalSample28BorderFragmentTransportPreregistration)),
                   transitionSHA256(preregistration)
                     == naturalSample28BorderFragmentTransportPreregistrationSHA256,
+                  let arithmeticPreregistration = try? Data(contentsOf:
+                    URL(fileURLWithPath:
+                        naturalSample28BorderHighlightArithmeticPreregistration)),
+                  transitionSHA256(arithmeticPreregistration)
+                    == naturalSample28BorderHighlightArithmeticPreregistrationSHA256,
                   let vertexPayload = Data(
                     base64Encoded: naturalSample28BorderVertexStreamBase64,
                     options: .ignoreUnknownCharacters),
@@ -13649,6 +13658,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     naturalSample28BorderFragmentTransportPreregistration,
                 "preregistrationSHA256":
                     naturalSample28BorderFragmentTransportPreregistrationSHA256,
+                "arithmeticPreregistrationFile":
+                    naturalSample28BorderHighlightArithmeticPreregistration,
+                "arithmeticPreregistrationSHA256":
+                    naturalSample28BorderHighlightArithmeticPreregistrationSHA256,
                 "vertexStreamBytes": vertexPayload.count,
                 "vertexStreamSHA256": transitionSHA256(vertexPayload),
                 "indexStreamBytes": indexPayload.count,
@@ -18174,7 +18187,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         queue: queue,
                         capture: capture + "-current-Iscd",
                         outputDirectory: outputDirectory,
-                        includeDiagnostics: false,
+                        includeDiagnostics: true,
                         includeInterpolant: true,
                         selectionOverride: currentIscdSelection,
                         currentSystemTrace: true,

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "question": "At which final-highlight arithmetic stage does Apple's unmodified Iscd fragment specialization first diverge from Walle after eight-primitive AGX/AMD raster transport is exact?",
+  "frozenPriorEvidence": {
+    "captureCommit": "47aa8fb27cad780c16869358ec52e61e631cf86d",
+    "captureTimelineSha256": "609485e86b185358b0b762bd95143d3a29f3d1049b3a843997f0cf7b05fa9b0a",
+    "fragmentTransportPreregistrationSha256": "68545eaa26081d2710c386eee3b7554e66f8c17898f1f07a71c6be6e89944103",
+    "appleHalfAlphaSha256": "726e63463c7f1beb6e2d574d1d5f0838545d640f2d65409d81b957e53ba291af",
+    "appleActivePixels": 2520,
+    "walleActivePixels": 2520,
+    "coverageMaskMismatchedPixels": 0,
+    "mismatchedHalfWords": 148,
+    "maximumHalfBitDistance": 24,
+    "frameResidual": {
+      "mismatchedBytes": 7,
+      "mismatchedPixels": 3,
+      "maximumChannelDelta": 1
+    },
+    "oneFieldSweep": {
+      "file": "Analysis/natural_sample28_border_highlight_mode_sweep_result.json",
+      "sha256": "eabcb8b33aa7f9358fdceaf5989d9f053b488b2d18a9048b44d3e4eeb056c118",
+      "caseCount": 49,
+      "exactCaseCount": 0,
+      "classification": "The residual is not an omitted existing arithmetic-mode selection."
+    },
+    "independentDiagnosticImplementation": {
+      "sweepScriptSha256": "26af05db2854c102240282e05bfda3499c89dd8c6e7a1847903a9505cd3c5329",
+      "rendererSha256": "371e1a5bdcb535b016a688d8f77a9868c7094735a2fd22739cc904090cb2685e",
+      "fragmentShaderSha256": "400f7c94b3e6ca50e8980eac25b3cdcaa8288130c291a74bdc6b4f0d97ce7788"
+    }
+  },
+  "capture": {
+    "host": "physical Retina Apple M1 Max on macOS 26.6.1 build 25G76",
+    "sourceSelection": "transition-background-uniform-28 exact Iscd draw selected by full pipeline label",
+    "geometryTransport": "Reuse the previously frozen 16-vertex, 24-index sample-28 transport without modifying Apple's captured pipeline, captured buffers, or live frame.",
+    "appleFunction": "Use both Apple's captured Iscd pipeline and the reconstructed current-system Iscd specialization; their BGRA8 outputs must remain byte-identical.",
+    "pixelFormat": "RGBA16Float for all arithmetic tomography outputs",
+    "uniformInterventions": [
+      "key-only",
+      "fill-only",
+      "positive-normal-x",
+      "negative-normal-x",
+      "positive-normal-y",
+      "negative-normal-y",
+      "normalized-normal-x",
+      "normalized-normal-y",
+      "original-directional",
+      "shifted-scaled-distance",
+      "leading-coverage",
+      "original-coverage"
+    ],
+    "independentSdfStages": [
+      "sdf",
+      "sdf-float",
+      "sdf-geometry",
+      "sdf-oval",
+      "sdf-normal"
+    ],
+    "positiveControls": [
+      "Every requested replay executes.",
+      "Each natural and intervention alpha surface is nonvacuous where its intervention requires activity.",
+      "The transported natural captured pipeline and current-system specialization remain byte-identical.",
+      "The exact eight-primitive geometry and uniform payload hashes remain unchanged."
+    ]
+  },
+  "analysis": {
+    "comparison": "Render the same frozen geometry, axis, uniform bytes, and preregistered uniform interventions through Walle on the RX 9070 XT. Compare every binary16 output word with zero tolerance.",
+    "stageOrder": [
+      "mode-4 SDF",
+      "normalized normal and scaled distance",
+      "derivative feather",
+      "leading and trailing coverage",
+      "directional term",
+      "key/fill half alpha",
+      "weighted final alpha"
+    ],
+    "decisionRule": "The earliest preregistered intervention family with a nonzero Apple/Walle half-word residual identifies the operation family to disassemble or reconstruct. Later mismatches are consequences and may not be patched independently.",
+    "noPostHocSelection": true,
+    "frameTolerance": 0
+  },
+  "promotionGate": {
+    "diagnosticTraceMayBeWalleInput": false,
+    "capturedPixelSurfaceMayBeWalleInput": false,
+    "requiresIndependentArithmeticRule": true,
+    "requiresUnseenRetinaCapture": true,
+    "requiresEightStateAmdZeroByteGate": true,
+    "shaderQualityReductionAllowed": false
+  },
+  "forbidden": [
+    "per-pixel correction tables",
+    "captured image substitution",
+    "nonzero comparison tolerance",
+    "choosing interventions after observing their output",
+    "mutating Apple's live presentation or captured buffers",
+    "shader simplification or quality reduction"
+  ]
+}

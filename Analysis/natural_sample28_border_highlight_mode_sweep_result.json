@@ -1,0 +1,522 @@
+{
+  "schemaVersion": 1,
+  "scope": "sample-28 eight-primitive final-highlight binary16 alpha",
+  "capture": {
+    "captureCommit": "47aa8fb27cad780c16869358ec52e61e631cf86d",
+    "capturedVsSystemAlphaOracleMismatchedBytes": 0,
+    "capturedVsSystemNaturalMismatchedBytes": 0,
+    "indexCount": 24,
+    "preregistrationSha256": "68545eaa26081d2710c386eee3b7554e66f8c17898f1f07a71c6be6e89944103",
+    "timelineSha256": "609485e86b185358b0b762bd95143d3a29f3d1049b3a843997f0cf7b05fa9b0a"
+  },
+  "appleAlpha": {
+    "activePixels": 2520,
+    "checkedHalfWords": 1048576,
+    "file": "transition-background-uniform-28-current-Iscd-final-highlight-alpha-rebuilt-rgba16float-rgba16f.raw",
+    "inactiveRgbIsZero": true,
+    "outputAlphaIsOne": true,
+    "rgbChannelsEqual": true,
+    "sha256": "726e63463c7f1beb6e2d574d1d5f0838545d640f2d65409d81b957e53ba291af"
+  },
+  "fixture": {
+    "backgroundScissor": [
+      314,
+      314,
+      516,
+      516
+    ],
+    "byteCount": 164,
+    "highlightIndexCount": 24,
+    "highlightVertexCount": 16,
+    "modes": {
+      "alphaUlpBias": 0,
+      "band": 0,
+      "coordinate": 1,
+      "coverage": 1,
+      "derivative": 1,
+      "destinationDivision": 0,
+      "floatDivision": 1,
+      "mix": 0,
+      "normalize": 1,
+      "normalizedCoordinate": 0,
+      "sdfArithmetic": 0,
+      "sdfDistanceUlpBias": 0,
+      "sdfSquaredUlpBias": 0,
+      "sourceConstruction": 1,
+      "sourceDivision": 0
+    },
+    "sha256": "127a2b6297a94285216dfdd8d8815bb7a0d5f82bee9ef9f1cf2291351739b64f"
+  },
+  "implementation": {
+    "fragmentShaderBytes": 132105,
+    "fragmentShaderSha256": "400f7c94b3e6ca50e8980eac25b3cdcaa8288130c291a74bdc6b4f0d97ce7788",
+    "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+    "glVendor": "AMD",
+    "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+    "moderngl": "5.12.0",
+    "numpy": "2.5.1",
+    "python": "3.14.6"
+  },
+  "baseline": {
+    "modes": {
+      "alphaUlpBias": 0,
+      "band": 0,
+      "coordinate": 1,
+      "coverage": 1,
+      "derivative": 1,
+      "destinationDivision": 0,
+      "floatDivision": 1,
+      "mix": 0,
+      "normalize": 1,
+      "normalizedCoordinate": 0,
+      "sdfArithmetic": 0,
+      "sdfDistanceUlpBias": 0,
+      "sdfSquaredUlpBias": 0,
+      "sourceConstruction": 1,
+      "sourceDivision": 0
+    },
+    "checkedHalfWords": 1048576,
+    "mismatchedHalfWords": 148,
+    "coverageMaskMismatchedPixels": 0,
+    "appleActivePixels": 2520,
+    "candidateActivePixels": 2520,
+    "maximumHalfBitDistance": 24,
+    "firstMismatches": [
+      {
+        "appleBits": "0x3282",
+        "candidateBits": "0x3280",
+        "signedBitDelta": -2,
+        "x": 556,
+        "yTopLeft": 268
+      },
+      {
+        "appleBits": "0x2ab6",
+        "candidateBits": "0x2ab3",
+        "signedBitDelta": -3,
+        "x": 557,
+        "yTopLeft": 268
+      },
+      {
+        "appleBits": "0x338c",
+        "candidateBits": "0x338a",
+        "signedBitDelta": -2,
+        "x": 570,
+        "yTopLeft": 271
+      },
+      {
+        "appleBits": "0x29c6",
+        "candidateBits": "0x29c2",
+        "signedBitDelta": -4,
+        "x": 571,
+        "yTopLeft": 271
+      },
+      {
+        "appleBits": "0x315f",
+        "candidateBits": "0x315e",
+        "signedBitDelta": -1,
+        "x": 449,
+        "yTopLeft": 272
+      },
+      {
+        "appleBits": "0x37af",
+        "candidateBits": "0x37ae",
+        "signedBitDelta": -1,
+        "x": 449,
+        "yTopLeft": 273
+      },
+      {
+        "appleBits": "0x2d94",
+        "candidateBits": "0x2d8a",
+        "signedBitDelta": -10,
+        "x": 421,
+        "yTopLeft": 281
+      },
+      {
+        "appleBits": "0x3646",
+        "candidateBits": "0x3648",
+        "signedBitDelta": 2,
+        "x": 599,
+        "yTopLeft": 281
+      },
+      {
+        "appleBits": "0x33de",
+        "candidateBits": "0x33e4",
+        "signedBitDelta": 6,
+        "x": 613,
+        "yTopLeft": 287
+      },
+      {
+        "appleBits": "0x37a3",
+        "candidateBits": "0x37a2",
+        "signedBitDelta": -1,
+        "x": 402,
+        "yTopLeft": 290
+      },
+      {
+        "appleBits": "0x30cd",
+        "candidateBits": "0x30ca",
+        "signedBitDelta": -3,
+        "x": 399,
+        "yTopLeft": 291
+      },
+      {
+        "appleBits": "0x383e",
+        "candidateBits": "0x383d",
+        "signedBitDelta": -1,
+        "x": 623,
+        "yTopLeft": 291
+      },
+      {
+        "appleBits": "0x381e",
+        "candidateBits": "0x381d",
+        "signedBitDelta": -1,
+        "x": 399,
+        "yTopLeft": 292
+      },
+      {
+        "appleBits": "0x310b",
+        "candidateBits": "0x310d",
+        "signedBitDelta": 2,
+        "x": 630,
+        "yTopLeft": 294
+      },
+      {
+        "appleBits": "0x3152",
+        "candidateBits": "0x3150",
+        "signedBitDelta": -2,
+        "x": 388,
+        "yTopLeft": 297
+      },
+      {
+        "appleBits": "0x31f1",
+        "candidateBits": "0x31f0",
+        "signedBitDelta": -1,
+        "x": 637,
+        "yTopLeft": 298
+      },
+      {
+        "appleBits": "0x3507",
+        "candidateBits": "0x3506",
+        "signedBitDelta": -1,
+        "x": 385,
+        "yTopLeft": 299
+      },
+      {
+        "appleBits": "0x31cb",
+        "candidateBits": "0x31ca",
+        "signedBitDelta": -1,
+        "x": 636,
+        "yTopLeft": 299
+      },
+      {
+        "appleBits": "0x3219",
+        "candidateBits": "0x3218",
+        "signedBitDelta": -1,
+        "x": 383,
+        "yTopLeft": 300
+      },
+      {
+        "appleBits": "0x37fe",
+        "candidateBits": "0x3800",
+        "signedBitDelta": 2,
+        "x": 383,
+        "yTopLeft": 301
+      },
+      {
+        "appleBits": "0x346e",
+        "candidateBits": "0x346d",
+        "signedBitDelta": -1,
+        "x": 380,
+        "yTopLeft": 302
+      },
+      {
+        "appleBits": "0x3507",
+        "candidateBits": "0x3506",
+        "signedBitDelta": -1,
+        "x": 371,
+        "yTopLeft": 308
+      },
+      {
+        "appleBits": "0x2a29",
+        "candidateBits": "0x2a27",
+        "signedBitDelta": -2,
+        "x": 653,
+        "yTopLeft": 308
+      },
+      {
+        "appleBits": "0x2daf",
+        "candidateBits": "0x2db4",
+        "signedBitDelta": 5,
+        "x": 369,
+        "yTopLeft": 309
+      },
+      {
+        "appleBits": "0x36c8",
+        "candidateBits": "0x36ca",
+        "signedBitDelta": 2,
+        "x": 371,
+        "yTopLeft": 309
+      },
+      {
+        "appleBits": "0x3091",
+        "candidateBits": "0x3090",
+        "signedBitDelta": -1,
+        "x": 657,
+        "yTopLeft": 311
+      },
+      {
+        "appleBits": "0x2636",
+        "candidateBits": "0x264c",
+        "signedBitDelta": 22,
+        "x": 660,
+        "yTopLeft": 313
+      },
+      {
+        "appleBits": "0x2f48",
+        "candidateBits": "0x2f49",
+        "signedBitDelta": 1,
+        "x": 665,
+        "yTopLeft": 317
+      },
+      {
+        "appleBits": "0x2d41",
+        "candidateBits": "0x2d40",
+        "signedBitDelta": -1,
+        "x": 357,
+        "yTopLeft": 318
+      },
+      {
+        "appleBits": "0x3829",
+        "candidateBits": "0x382a",
+        "signedBitDelta": 1,
+        "x": 666,
+        "yTopLeft": 319
+      },
+      {
+        "appleBits": "0x3495",
+        "candidateBits": "0x3496",
+        "signedBitDelta": 1,
+        "x": 355,
+        "yTopLeft": 320
+      },
+      {
+        "appleBits": "0x3616",
+        "candidateBits": "0x3615",
+        "signedBitDelta": -1,
+        "x": 354,
+        "yTopLeft": 321
+      }
+    ]
+  },
+  "sweep": {
+    "method": "one arithmetic field changed at a time",
+    "domains": {
+      "alphaUlpBias": [
+        -4,
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "band": [
+        0,
+        1,
+        2
+      ],
+      "coverage": [
+        0,
+        1,
+        2
+      ],
+      "derivative": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "floatDivision": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "mix": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "normalize": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "normalizedCoordinate": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "sdfArithmetic": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "sdfDistanceUlpBias": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "sdfSquaredUlpBias": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ]
+    },
+    "caseCount": 49,
+    "exactCaseCount": 0,
+    "bestCases": [
+      {
+        "changedField": "normalizedCoordinate",
+        "changedValue": 2,
+        "mismatchedHalfWords": 110,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 106
+      },
+      {
+        "changedField": "normalizedCoordinate",
+        "changedValue": 3,
+        "mismatchedHalfWords": 110,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 106
+      },
+      {
+        "changedField": "coverage",
+        "changedValue": 0,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "derivative",
+        "changedValue": 3,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "floatDivision",
+        "changedValue": 0,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "floatDivision",
+        "changedValue": 2,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "floatDivision",
+        "changedValue": 3,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "floatDivision",
+        "changedValue": 4,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "floatDivision",
+        "changedValue": 5,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "mix",
+        "changedValue": 1,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "mix",
+        "changedValue": 2,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "mix",
+        "changedValue": 3,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "mix",
+        "changedValue": 4,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "normalize",
+        "changedValue": 5,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "normalizedCoordinate",
+        "changedValue": 1,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      },
+      {
+        "changedField": "sdfArithmetic",
+        "changedValue": 1,
+        "mismatchedHalfWords": 148,
+        "coverageMaskMismatchedPixels": 0,
+        "maximumHalfBitDistance": 24
+      }
+    ]
+  },
+  "classification": "coverage exact; 148 binary16 alpha residuals are downstream of raster transport and are not closed by any one-field arithmetic mode",
+  "promotion": {
+    "frameTolerance": 0,
+    "requiresEightStateAmdZeroByteGate": true,
+    "requiresIndependentRule": true,
+    "requiresUnseenRetinaCapture": true,
+    "traceMayBeWalleInput": false
+  }
+}
