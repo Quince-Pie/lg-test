@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "question": "Which exact AGX fixed-function values differ between Apple's active current Iscd border draw and Walle's independent eight-primitive axis constructor in natural sample 28?",
+  "frozenInput": {
+    "captureTimelineSha256": "c028e232c0eb06ade31f826578c7209ea2e19f69b65a65cdc723187bc34adc44",
+    "sampleIndex": 28,
+    "pipeline": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd",
+    "indexCount": 24,
+    "candidateResidual": {
+      "mismatchedBytes": 7,
+      "mismatchedPixels": 3,
+      "maximumChannelDelta": 1
+    },
+    "selectorSweep": {
+      "offsetsInclusive": [-16, 16],
+      "exactCandidateCount": 0,
+      "bestOffset": -5,
+      "bestMismatchedBytes": 1,
+      "promotionRejected": true
+    }
+  },
+  "selectionRule": "Within transition-background-uniform-28, select exactly the current Iscd draw by full pipeline label. Do not select the later Irsd draw used by the existing last-final-draw helper.",
+  "capture": {
+    "vertexFunction": "captured Apple function, unmodified",
+    "fragmentFunction": "diagnostic RGBA32Uint interpolant serializer",
+    "components": ["sdf-x", "sdf-y", "source-x", "source-y"],
+    "comparisonScope": "every rasterized pixel and every serialized component"
+  },
+  "decision": {
+    "exactIndependentConstructor": "If every active Iscd interpolant word equals the independent constructor, classify the remaining frame bytes as downstream derivative/coverage or attachment arithmetic.",
+    "interpolantResidual": "Otherwise isolate the first differing primitive, axis, coordinate, tile, selector, and anchor term before changing the constructor."
+  },
+  "promotionGate": "The diagnostic trace may identify arithmetic but may never be supplied to Walle as a render input. Any corrected constructor must pass a distinct subsequent Retina capture and the complete eight-state zero-tolerance AMD gate.",
+  "forbidden": [
+    "captured per-pixel correction surface",
+    "nonzero pixel tolerance",
+    "shader-quality reduction",
+    "choosing a candidate from final-image fit alone"
+  ]
+}

@@ -17938,6 +17938,34 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     includeInterpolant: true,
                     currentSystemTrace: true)
         }
+        if dynamicInterpolantTraceRequested,
+           capture.hasSuffix("-28")
+        {
+            let currentIscdSelection = finalHighlightSelections(
+                in: pass.commands
+            ).last(where: {
+                $0.pipeline.label
+                    == finalHighlightShapePipelineLabel26_6_1
+            })
+            if let currentIscdSelection {
+                result["currentIscdInterpolantTrace"] =
+                    replayFinalHighlightAlphaTrace(
+                        pass: pass,
+                        queue: queue,
+                        capture: capture + "-current-Iscd",
+                        outputDirectory: outputDirectory,
+                        includeDiagnostics: false,
+                        includeInterpolant: true,
+                        interpolantOnly: true,
+                        selectionOverride: currentIscdSelection)
+            } else {
+                result["currentIscdInterpolantTrace"] = [
+                    "schemaVersion": 1,
+                    "executed": false,
+                    "reason": "current Iscd draw is unavailable",
+                ]
+            }
+        }
         if dynamicInterpolantTraceRequested {
             do {
                 let arithmeticTraceSpecifications: [(
