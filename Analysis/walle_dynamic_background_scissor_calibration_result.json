@@ -1,0 +1,331 @@
+{
+  "cases": [
+    {
+      "filterDOD": [
+        112,
+        112,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        112,
+        96,
+        816,
+        816
+      ],
+      "predictedMetalScissor": [
+        112,
+        96,
+        816,
+        816
+      ],
+      "remaining": 0.9673871994018555,
+      "roiIntegerBounds": [
+        12,
+        12,
+        1000,
+        1000
+      ],
+      "roiRadius": 216.69473266601562,
+      "sampleIndex": 1,
+      "sdfIntegerBounds": [
+        229,
+        229,
+        566,
+        566
+      ]
+    },
+    {
+      "filterDOD": [
+        134,
+        134,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        134,
+        74,
+        816,
+        816
+      ],
+      "predictedMetalScissor": [
+        134,
+        74,
+        816,
+        816
+      ],
+      "remaining": 0.8743295669555664,
+      "roiIntegerBounds": [
+        32,
+        32,
+        960,
+        960
+      ],
+      "roiRadius": 195.84982299804688,
+      "sampleIndex": 4,
+      "sdfIntegerBounds": [
+        228,
+        228,
+        568,
+        568
+      ]
+    },
+    {
+      "filterDOD": [
+        164,
+        164,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        164,
+        59,
+        801,
+        801
+      ],
+      "predictedMetalScissor": [
+        164,
+        59,
+        801,
+        801
+      ],
+      "remaining": 0.7489337921142578,
+      "roiIntegerBounds": [
+        59,
+        59,
+        906,
+        906
+      ],
+      "roiRadius": 167.76116943359375,
+      "sampleIndex": 8,
+      "sdfIntegerBounds": [
+        227,
+        227,
+        570,
+        570
+      ]
+    },
+    {
+      "filterDOD": [
+        194,
+        194,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        194,
+        86,
+        744,
+        744
+      ],
+      "predictedMetalScissor": [
+        194,
+        86,
+        744,
+        744
+      ],
+      "remaining": 0.6236209869384766,
+      "roiIntegerBounds": [
+        86,
+        86,
+        852,
+        852
+      ],
+      "roiRadius": 139.69110107421875,
+      "sampleIndex": 12,
+      "sdfIntegerBounds": [
+        226,
+        226,
+        572,
+        572
+      ]
+    },
+    {
+      "filterDOD": [
+        224,
+        224,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        224,
+        113,
+        687,
+        687
+      ],
+      "predictedMetalScissor": [
+        224,
+        113,
+        687,
+        687
+      ],
+      "remaining": 0.4993009567260742,
+      "roiIntegerBounds": [
+        113,
+        113,
+        798,
+        798
+      ],
+      "roiRadius": 111.84341430664062,
+      "sampleIndex": 16,
+      "sdfIntegerBounds": [
+        225,
+        225,
+        574,
+        574
+      ]
+    },
+    {
+      "filterDOD": [
+        254,
+        254,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        254,
+        140,
+        630,
+        630
+      ],
+      "predictedMetalScissor": [
+        254,
+        140,
+        630,
+        630
+      ],
+      "remaining": 0.37336158752441406,
+      "roiIntegerBounds": [
+        140,
+        140,
+        744,
+        744
+      ],
+      "roiRadius": 83.63299560546875,
+      "sampleIndex": 20,
+      "sdfIntegerBounds": [
+        224,
+        224,
+        576,
+        576
+      ]
+    },
+    {
+      "filterDOD": [
+        284,
+        284,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        284,
+        167,
+        573,
+        573
+      ],
+      "predictedMetalScissor": [
+        284,
+        167,
+        573,
+        573
+      ],
+      "remaining": 0.24988365173339844,
+      "roiIntegerBounds": [
+        167,
+        167,
+        690,
+        690
+      ],
+      "roiRadius": 55.97393798828125,
+      "sampleIndex": 24,
+      "sdfIntegerBounds": [
+        223,
+        223,
+        578,
+        578
+      ]
+    },
+    {
+      "filterDOD": [
+        314,
+        314,
+        816,
+        816
+      ],
+      "observedMetalScissor": [
+        314,
+        193,
+        517,
+        517
+      ],
+      "predictedMetalScissor": [
+        314,
+        193,
+        517,
+        517
+      ],
+      "remaining": 0.1250162124633789,
+      "roiIntegerBounds": [
+        193,
+        193,
+        638,
+        638
+      ],
+      "roiRadius": 28.00363159179687,
+      "sampleIndex": 28,
+      "sdfIntegerBounds": [
+        222,
+        222,
+        580,
+        580
+      ]
+    }
+  ],
+  "classification": "retrospective executing-ROI calibration",
+  "exact": true,
+  "inputs": {
+    "roiTrace": "../artifacts/local-glass-background-roi-20260808-01/glass-background-roi.json",
+    "roiTraceSHA256": "8a49ff0cb2525faa698e04e191f557a18eb9e585d7278390c6dafcf22a211962",
+    "timeline": "../artifacts/local-glass-background-roi-20260808-01/transition-timeline.json",
+    "timelineSHA256": "181bd3e725795a925095ccffa65be8af7958859b24fb0297000e3c4a8a719ecc"
+  },
+  "metrics": {
+    "publicLayerF64": {
+      "componentCount": 96,
+      "mismatchCount": 0
+    },
+    "publicProfileF64": {
+      "componentCount": 16,
+      "mismatchCount": 0
+    },
+    "scissorI32": {
+      "componentCount": 32,
+      "mismatchCount": 0
+    },
+    "traceInputRectF64": {
+      "componentCount": 32,
+      "mismatchCount": 0
+    },
+    "traceOutputRectF64": {
+      "componentCount": 32,
+      "mismatchCount": 0
+    },
+    "traceSDFBoundsI32": {
+      "componentCount": 32,
+      "mismatchCount": 0
+    },
+    "traceTransformF64": {
+      "componentCount": 128,
+      "mismatchCount": 0
+    }
+  },
+  "model": {
+    "filterDOD": "integral translated [-binary32(0.35*D), -binary32(0.35*D), D+2e, D+2e]",
+    "final": "viewport intersection of integral ROI and filter DOD",
+    "roiRadius": "1.4 * max(2 * inputBlurRadius, inputBleedBlurRadius)",
+    "sdfRadiusF32": 42.46388244628906,
+    "sdfRadiusF32Hex": "04db2942"
+  },
+  "novelty": null,
+  "schemaVersion": 1
+}

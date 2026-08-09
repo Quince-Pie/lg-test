@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "objective": "Prospectively test the independently reconstructed natural circle-480 regular/dark/dematerialize background scissor against a fresh physical-M1 Retina timeline at zero tolerance.",
+  "classificationBeforeRun": "frozen prospective public-state scissor-transfer gate",
+  "calibrationEvidence": {
+    "timelineSHA256": "181bd3e725795a925095ccffa65be8af7958859b24fb0297000e3c4a8a719ecc",
+    "executingROITraceSHA256": "8a49ff0cb2525faa698e04e191f557a18eb9e585d7278390c6dafcf22a211962",
+    "result": "Analysis/walle_dynamic_background_scissor_calibration_result.json",
+    "resultSHA256": "4221a5c046c6417d6a4d1764c958eb8b7d4b1e87a430c2ea092156c461ec2876",
+    "status": "retrospective calibration only"
+  },
+  "frozenModel": {
+    "domain": {
+      "operatingSystem": "macOS 26.6.1 build 25G76",
+      "host": "physical Apple M1 Max with active 2x Retina display",
+      "material": "regular",
+      "appearance": "dark",
+      "direction": "dematerialize",
+      "geometry": "circle-480-center",
+      "sampleIndices": [1, 4, 8, 12, 16, 20, 24, 28]
+    },
+    "dynamicLayerState": "exact public remaining-to-carrier/element constructor already frozen by the transition-geometry transfer",
+    "sdfRadiusF32": 42.46388244628906,
+    "sdfRadiusF32LittleEndianHex": "04db2942",
+    "sdfBounds": "finite enclosure of the world-space element rectangle expanded by the promoted binary32 SDF radius",
+    "roiOperationOrder": [
+      "Rect::unapply_transform with translate-plus-Y-flip",
+      "radius = binary64(1.4) * max(binary64(2) * inputBlurRadius, inputBleedBlurRadius)",
+      "origin -= radius; size += binary64(2) * radius",
+      "Rect::apply_transform with add-height-before-negate Y ordering",
+      "finite enclosure"
+    ],
+    "filterDOD": "translate and nearest-integral-enclose [-e,-e,D+2e,D+2e], where e=binary32(0.35*D), D=480, yielding an 816-by-816 square",
+    "finalScissor": "viewport intersection of the integral GlassBackgroundFilter ROI and integral filter DOD",
+    "capturedScissorIsNotAnInput": true
+  },
+  "freshCapture": {
+    "nativeBinary": "/tmp/lg-filter-dod-build-20260808-01/glassintrospect",
+    "nativeBinarySHA256": "ac02adc62f2a62d00d390274b2ebed00304fab8f9493e86e015adf53ac5423d7",
+    "nativeCaptureUsesNixStore": false,
+    "debuggerPermitted": false,
+    "githubActionsPermitted": false,
+    "requiredEnvironment": {
+      "LG_GEOMETRY_POLICY": "0",
+      "LG_GLASS_APPEARANCE": "dark",
+      "LG_GLASS_GEOMETRY": "circle-480-center",
+      "LG_GLASS_MATERIAL": "regular",
+      "LG_TRANSITION_ALLOCATION_CALIBRATION": "0",
+      "LG_TRANSITION_ALLOCATION_DENSE": "0",
+      "LG_TRANSITION_ALLOCATION_FIXED_STATE": "0",
+      "LG_TRANSITION_ALLOCATION_MESH_CALIBRATION": "0",
+      "LG_TRANSITION_ALLOCATION_ONLY": "0",
+      "LG_TRANSITION_ALLOCATION_PATH_ISOLATION": "0",
+      "LG_TRANSITION_CONTROLLED_BACKDROP": "0",
+      "LG_TRANSITION_DIRECTION": "dematerialize",
+      "LG_TRANSITION_HIGHLIGHT_TRACE": "0",
+      "LG_TRANSITION_HIGHLIGHT_VERTEX_TAIL_TRACE": "0",
+      "LG_TRANSITION_MATRIX_BASIS": "0",
+      "LG_TRANSITION_TIMELINE": "1",
+      "LG_TRANSITION_UNIFORMS": "1"
+    }
+  },
+  "acceptance": {
+    "timelineSHA256MustDifferFromCalibration": true,
+    "allEightRemainingBinary32WordsMustDifferFromCalibration": true,
+    "publicLayerF64": {"componentCount": 96, "mismatchCount": 0},
+    "publicProfileF64": {"componentCount": 16, "mismatchCount": 0},
+    "scissorI32": {"componentCount": 32, "mismatchCount": 0},
+    "comparisonTolerance": 0,
+    "caseExclusionPermitted": false
+  },
+  "frozenFiles": {
+    "Analysis/analyze_walle_dynamic_background_scissor.py": "1f90ff0dd745edb1fd37fadd261039045bf4f8aa708fce2dd585effbb9121a5b",
+    "Analysis/test_analyze_walle_dynamic_background_scissor.py": "a684dd6adac08bf250da6e9d7ebedaf2ee821b5674d5e395fc88490a0b4d49b4",
+    "Analysis/test_walle_dynamic_background_scissor_holdout_preregistration.py": "cad3ad6b04575ad70c0f64783b62319e0a1c49d8ebe0d1037f93b04053a58d26",
+    "Analysis/capture_walle_dynamic_background_roi_calibration_local_macos_26_6_1_lldb.py": "25d50171cc3b501e6115bae6a32e3a09cb2fb0c17e73d73fc8756debaa638b98",
+    "Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py": "75a2afded65ebf3b44c1c67a93e52d1bb44d5b25ce6a2f9c93af06dde36c3386",
+    "Analysis/analyze_transition_uniform_profile_calibration.py": "0fe38fbe4a55689af2157524545698bad021b39f3da830cbd86f6540c0370c5b"
+  },
+  "authorityIfAccepted": {
+    "promotes": "natural circle-480 regular/dark/dematerialize public-state background-scissor construction on the measured current-system path",
+    "doesNotPromote": [
+      "the remaining 72-byte background edge residual",
+      "arbitrary-uniform universal emulation",
+      "production shader replacement",
+      "physical-Retina end-to-end Walle parity",
+      "fresh AMD production-frame parity",
+      "Liquid Glass parity"
+    ],
+    "qualityTolerance": 0
+  }
+}
