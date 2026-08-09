@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "question": "Which downstream final-highlight stage accounts for the seven-byte sample-28 frame residual after native AGX center interpolation, first derivatives, coverage, and cross-GPU primitive ownership are exact?",
+  "frozenPriorResult": {
+    "file": "Analysis/natural_sample28_border_interpolant_transfer_b2e34e8_result.json",
+    "sha256": "3d190d439883f2ab56cf8bd87d0ce414785a7012c54f945812c323583d9a151f",
+    "centerSdfWords": 524288,
+    "derivativeSdfWords": 1048576,
+    "mismatchedWords": 0,
+    "activePixels": 262144
+  },
+  "frozenFrameResidual": {
+    "captureTimelineSha256": "c028e232c0eb06ade31f826578c7209ea2e19f69b65a65cdc723187bc34adc44",
+    "sampleIndex": 28,
+    "referenceSha256": "09de86a1fc7e5981f110e72bdfb5a76480010b3a23b10f3740e6570f34ed610b",
+    "candidateSha256": "850ca3235ec687923a9ae1f76c7dcfc4e0424b3fdfe0c6e7fde9f7e2209c585e",
+    "mismatchedBytes": 7,
+    "mismatchedPixels": 3,
+    "maximumChannelDelta": 1
+  },
+  "transportPayload": {
+    "fullVertexStream": {
+      "encoding": "16 vertices at Apple's exact 48-byte Iscd stride",
+      "byteCount": 768,
+      "sha256": "f76a691f54786c761015543c65be8d7cc7ea388480da7c244252a9aed5ae429c"
+    },
+    "indexStream": {
+      "encoding": "24 little-endian uint16 indices",
+      "byteCount": 48,
+      "sha256": "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572"
+    },
+    "fragmentUniformPrefix": {
+      "byteCount": 248,
+      "sha256": "d9d07c4c5e6030f86b8a9e070b01691074152c5b7b8c4a5d775932b33a5a8936"
+    },
+    "provenance": "All three payloads are from the independently reconstructed sample-28 fixture and were already verified against the retained Apple command stream. No final pixel is present."
+  },
+  "capture": {
+    "selection": "In transition-background-uniform-28, select the exact current Iscd draw by full pipeline label even when its natural draw has six indices.",
+    "intervention": "Clone the selected vertex and uniform buffers, replace only the selected ranges with the frozen payload, and replace only the isolated replay draw with the frozen 24-index draw. Never mutate the captured buffer, pipeline, pass, or live Apple frame.",
+    "appleFragment": "Run both the captured Iscd pipeline and the exactly reconstructed current-system Iscd specialization. Their transported BGRA8 outputs must be byte-identical.",
+    "alphaIsolation": "Replace only the already established vibrant matrix with the alpha-oracle matrix and render the reconstructed Apple specialization into RGBA16Float.",
+    "diagnosticStages": [
+      "transported natural BGRA8",
+      "transported alpha-oracle BGRA8",
+      "transported alpha-oracle RGBA16Float"
+    ],
+    "positiveControl": "The transported alpha surface must have nonzero coverage and the expected 512 by 512 raster extent."
+  },
+  "decision": {
+    "alphaResidual": "If Apple and Walle first differ in binary16 alpha, isolate SDF, scaled-distance, derivative-width, and coverage half words at the three frozen pixels before changing arithmetic.",
+    "alphaExact": "If binary16 alpha is exact, classify the seven bytes as vibrant compositor or BGRA8 attachment conversion and isolate that boundary next.",
+    "systemMismatch": "If captured Iscd and the reconstructed current-system specialization differ, reject the transport before interpreting any alpha result."
+  },
+  "promotionGate": "A diagnostic trace may identify the operation but may never be supplied to Walle. A corrected independent rule must pass a distinct unseen Retina capture and the complete zero-byte eight-state AMD frame gate.",
+  "forbidden": [
+    "captured pixel correction surface",
+    "using a trace or reference image as Walle input",
+    "nonzero tolerance",
+    "shader-quality reduction",
+    "mutating live Apple presentation state"
+  ]
+}

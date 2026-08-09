@@ -8,6 +8,37 @@ import ObjectiveC.runtime
 import QuartzCore
 import SwiftUI
 
+private let naturalSample28BorderFragmentTransportPreregistration =
+    "Analysis/natural_sample28_border_fragment_transport_preregistration.json"
+private let naturalSample28BorderFragmentTransportPreregistrationSHA256 =
+    "68545eaa26081d2710c386eee3b7554e66f8c17898f1f07a71c6be6e89944103"
+private let naturalSample28BorderVertexStreamBase64 = """
+VhSAQ9X1P0QAAAAAAACAP7QAgMO0AIDD2BD0vOXsgj8AAAAAAAAAAAAAAAAAAPA/hQoARNX1P0QA
+AAAAAACAPwAAAAC0AIDDixq1vOXsgj84AQAAAAAAAMgCAADIAgAAhAoARNX1P0QAAAAAAACAPwAA
+AAC0AIDDWTsdP+Xsgj84ZgAAAAAAAAAAAAAAAAAA3gpARNX1P0QAAAAAAACAP7QAgEO0AIDDCzMf
+P+Xsgj8AAABwr+6AQAAAAAAAAPA/VhSAQ/bq/0MAAAAAAACAP7QAgMMAAAAA2BD0vOXsgj8eAAAQ
+AAIAIAAAAAAAAAAAhQoARPbq/0MAAAAAAACAPwAAAAAAAAAAixq1vOXsgj8AAAAAAAAAAAAAAAAA
+AAAAhAoARPbq/0MAAAAAAACAPwAAAAAAAAAAWTsdP+Xsgj8AAAAAAAAAAAAAAAAAAAAA3gpARPbq
+/0MAAAAAAACAP7QAgEMAAAAACzMfP+Xsgj8AAAAAAAAAAAAAAAAAAAAAVhSAQ/jq/0MAAAAAAACA
+P7QAgMMAAAAA2BD0vDjrxT4AAAAAAAAAAAAAAAAAAAAAhQoARPjq/0MAAAAAAACAPwAAAAAAAAAA
+ixq1vDjrxT4AAAAAAAAAAH54lkShVghBhAoARPjq/0MAAAAAAACAPwAAAAAAAAAAWTsdPzjrxT4A
+AAAAAAAAAAEAAAAAAAAA3gpARPjq/0MAAAAAAACAP7QAgEMAAAAACzMfPzjrxT7QclVtAQAAAPjS
+I5MBAAAAVhSAQ4fUf0MAAAAAAACAP7QAgMO0AIBD2BD0vD+1vD5oiHHJCgAAAOCLAMgKAAAAhQoA
+RIfUf0MAAAAAAACAPwAAAAC0AIBDixq1vD+1vD4lMDJ4AAAAAJyg44gBAAAAhAoARIfUf0MAAAAA
+AACAPwAAAAC0AIBDWTsdPz+1vD4AAAAAAAAAAAAAAAAAAAAA3gpARIfUf0MAAAAAAACAP7QAgEO0
+AIBDCzMfPz+1vD4AAAAA/////wAAAAAAAAAA
+"""
+private let naturalSample28BorderIndexStreamBase64 = """
+AAABAAUABQAEAAAAAwAHAAYABgACAAMACgALAA8ADwAOAAoACQANAAwADAAIAAkA
+"""
+private let naturalSample28BorderUniformPrefixBase64 = """
+aAF3Q2gBd0MAAIBAAAAAPwAAgD8AAAAAAAAAAAAAgD8AAIA/AACAP2cBd0MAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATEGctZ21AAC5vEg/uLwAAJyv
+oa/DQQAAAAAAAAAAADzNMM0wzTAAAAA8AAAAAAAAvqN8qpA7DCblO7OphZwAAMOipTuenAAAy6Kv
+qfc7AACpO4ipYpwAAJCiazt7nAAAl6KEqbo7AAAAmf4962n0PAA8hLsAAKi5qLkAPIS7AACoOag5
+mjkAAAA8ADwAPAA8ADwAPAA8ADw=
+"""
+
 private let independentGlassShaderSource = """
 #include <metal_stdlib>
 using namespace metal;
@@ -13219,7 +13250,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         selection: FinalHighlightSelection,
         pipeline: MTLRenderPipelineState,
         uniformBuffer: MTLBuffer,
-        vertexBufferOverride: MTLBuffer? = nil
+        vertexBufferOverride: MTLBuffer? = nil,
+        drawOverride: ReplayCommand? = nil
     ) -> [ReplayCommand] {
         var result: [ReplayCommand] = []
         for command in commands[...selection.drawIndex] {
@@ -13253,7 +13285,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 1))
         }
         result.append(.pipeline(pipeline))
-        result.append(commands[selection.drawIndex])
+        result.append(drawOverride ?? commands[selection.drawIndex])
         return result
     }
 
@@ -13431,7 +13463,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         compositorReference: [String: Any]? = nil,
         selectionOverride: FinalHighlightSelection? = nil,
         currentCompositorTransfer: Bool = false,
-        currentSystemTrace: Bool = false
+        currentSystemTrace: Bool = false,
+        transportSample28Border: Bool = false
     ) -> [String: Any] {
         guard let selection = selectionOverride
                 ?? finalHighlightSelection(in: pass.commands)
@@ -13453,6 +13486,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]?.copy() as? MTLRenderPipelineDescriptor
         lock.unlock()
         guard let capturedDescriptor,
+              let capturedVertexDescriptor =
+                capturedDescriptor.vertexDescriptor,
               capturedDescriptor.colorAttachments[0]?.pixelFormat
                 == .bgra8Unorm,
               let originalTarget =
@@ -13495,6 +13530,137 @@ private final class MetalUniformProbe: @unchecked Sendable {
             selection.uniformBuffer.contents(),
             selection.uniformBuffer.length)
 
+        var transportedVertexBuffer: MTLBuffer?
+        var transportedDrawCommand: ReplayCommand?
+        var transportedNaturalUniform: MTLBuffer?
+        var transportedInputRecord: [String: Any]?
+        if transportSample28Border {
+            guard selection.pipeline.label
+                    == finalHighlightShapePipelineLabel26_6_1,
+                  selection.vertexBuffer.storageMode != .private,
+                  let preregistration = try? Data(contentsOf:
+                    URL(fileURLWithPath:
+                        naturalSample28BorderFragmentTransportPreregistration)),
+                  transitionSHA256(preregistration)
+                    == naturalSample28BorderFragmentTransportPreregistrationSHA256,
+                  let vertexPayload = Data(
+                    base64Encoded: naturalSample28BorderVertexStreamBase64,
+                    options: .ignoreUnknownCharacters),
+                  vertexPayload.count == 768,
+                  transitionSHA256(vertexPayload)
+                    == "f76a691f54786c761015543c65be8d7cc7ea388480da7c244252a9aed5ae429c",
+                  let indexPayload = Data(
+                    base64Encoded: naturalSample28BorderIndexStreamBase64,
+                    options: .ignoreUnknownCharacters),
+                  indexPayload.count == 48,
+                  transitionSHA256(indexPayload)
+                    == "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572",
+                  let uniformPayload = Data(
+                    base64Encoded: naturalSample28BorderUniformPrefixBase64,
+                    options: .ignoreUnknownCharacters),
+                  uniformPayload.count == 248,
+                  transitionSHA256(uniformPayload)
+                    == "d9d07c4c5e6030f86b8a9e070b01691074152c5b7b8c4a5d775932b33a5a8936",
+                  selection.vertexOffset >= 0,
+                  selection.vertexOffset + vertexPayload.count
+                    <= selection.vertexBuffer.length,
+                  selection.uniformOffset >= 0,
+                  selection.uniformOffset + uniformPayload.count
+                    <= uniformClone.length,
+                  capturedVertexDescriptor.layouts[1].stride
+                    == 48,
+                  capturedVertexDescriptor.layouts[1].stepFunction
+                    == .perVertex,
+                  capturedVertexDescriptor.attributes[0].format
+                    == .float4,
+                  capturedVertexDescriptor.attributes[0].offset
+                    == 0,
+                  capturedVertexDescriptor.attributes[1].format
+                    == .float2,
+                  capturedVertexDescriptor.attributes[1].offset
+                    == 16,
+                  capturedVertexDescriptor.attributes[2].format
+                    == .float2,
+                  capturedVertexDescriptor.attributes[2].offset
+                    == 24,
+                  capturedVertexDescriptor.attributes[3].format
+                    == .half4,
+                  capturedVertexDescriptor.attributes[3].offset
+                    == 32,
+                  let vertexClone = device.makeBuffer(
+                    length: selection.vertexBuffer.length,
+                    options: .storageModeShared),
+                  let indexBuffer = indexPayload.withUnsafeBytes({ bytes in
+                    bytes.baseAddress.map {
+                        device.makeBuffer(
+                            bytes: $0,
+                            length: bytes.count,
+                            options: .storageModeShared)
+                    } ?? nil
+                  }),
+                  let naturalUniform = device.makeBuffer(
+                    length: uniformClone.length,
+                    options: .storageModeShared)
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "sample-28 border fragment transport inputs differ",
+                ]
+            }
+            memcpy(
+                vertexClone.contents(),
+                selection.vertexBuffer.contents(),
+                selection.vertexBuffer.length)
+            vertexPayload.withUnsafeBytes { bytes in
+                memcpy(
+                    vertexClone.contents().advanced(
+                        by: selection.vertexOffset),
+                    bytes.baseAddress!,
+                    bytes.count)
+            }
+            uniformPayload.withUnsafeBytes { bytes in
+                memcpy(
+                    uniformClone.contents().advanced(
+                        by: selection.uniformOffset),
+                    bytes.baseAddress!,
+                    bytes.count)
+            }
+            memcpy(
+                naturalUniform.contents(),
+                uniformClone.contents(),
+                uniformClone.length)
+            transportedVertexBuffer = vertexClone
+            transportedDrawCommand = .drawIndexedPrimitives(
+                .triangle,
+                24,
+                .uint16,
+                indexBuffer,
+                0)
+            transportedNaturalUniform = naturalUniform
+            transportedInputRecord = [
+                "schemaVersion": 1,
+                "classification":
+                    "frozen-geometry diagnostic transport",
+                "liveAppleFrameMutated": false,
+                "capturedApplePipelineMutated": false,
+                "capturedBuffersMutated": false,
+                "preregistrationFile":
+                    naturalSample28BorderFragmentTransportPreregistration,
+                "preregistrationSHA256":
+                    naturalSample28BorderFragmentTransportPreregistrationSHA256,
+                "vertexStreamBytes": vertexPayload.count,
+                "vertexStreamSHA256": transitionSHA256(vertexPayload),
+                "indexStreamBytes": indexPayload.count,
+                "indexStreamSHA256": transitionSHA256(indexPayload),
+                "uniformPrefixBytes": uniformPayload.count,
+                "uniformPrefixSHA256": transitionSHA256(uniformPayload),
+                "vertexCount": 16,
+                "vertexStride": 48,
+                "indexCount": 24,
+            ]
+        }
+
         let matrixOffset = selection.uniformOffset + 0x60
         let matrixEnd = matrixOffset + 6 * 4 * MemoryLayout<UInt16>.size
         guard matrixOffset >= 0,
@@ -13506,7 +13672,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ]
         }
         let originalMatrix = Data(
-            bytes: selection.uniformBuffer.contents().advanced(
+            bytes: uniformClone.contents().advanced(
                 by: matrixOffset),
             count: matrixEnd - matrixOffset)
         let alphaOracleWords: [UInt16] = [
@@ -14292,7 +14458,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             captureInterpolantPulls: Bool = false,
             initialBGRA8: Data? = nil,
             fragmentTextureOverrides: [Int: MTLTexture] = [:],
-            vertexBufferOverride: MTLBuffer? = nil
+            vertexBufferOverride: MTLBuffer? = nil,
+            drawOverride: ReplayCommand? = nil
         ) -> [String: Any] {
             let targetDescriptor = MTLTextureDescriptor
                 .texture2DDescriptor(
@@ -14499,7 +14666,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 selection: selection,
                 pipeline: pipeline,
                 uniformBuffer: uniformBuffer,
-                vertexBufferOverride: vertexBufferOverride)
+                vertexBufferOverride:
+                    vertexBufferOverride ?? transportedVertexBuffer,
+                drawOverride:
+                    drawOverride ?? transportedDrawCommand)
             commands.insert(
                 contentsOf: fragmentTextureOverrides.keys.sorted().map {
                     .fragmentTexture(fragmentTextureOverrides[$0], $0)
@@ -15752,6 +15922,37 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pixelFormat: .rgba16Float,
             uniformBuffer: uniformClone,
             captureAuxiliary: captureAuxiliaryDiagnostics)
+        var transportedNaturalTrace: [String: Any]?
+        if let transportedNaturalUniform {
+            let capturedNatural = render(
+                name: "transported-natural-captured-bgra8",
+                pipeline: selection.pipeline,
+                pixelFormat: .bgra8Unorm,
+                uniformBuffer: transportedNaturalUniform,
+                captureAuxiliary: false)
+            let rebuiltNatural = render(
+                name: "transported-natural-rebuilt-bgra8",
+                pipeline: rebuiltPipeline,
+                pixelFormat: .bgra8Unorm,
+                uniformBuffer: transportedNaturalUniform,
+                captureAuxiliary: false)
+            let naturalComparison = compareReplaySnapshots(
+                reference: capturedNatural,
+                candidate: rebuiltNatural,
+                outputDirectory: outputDirectory)
+            transportedNaturalTrace = [
+                "schemaVersion": 1,
+                "executed":
+                    capturedNatural["executed"] as? Bool == true
+                    && rebuiltNatural["executed"] as? Bool == true
+                    && naturalComparison["compared"] as? Bool == true,
+                "capturedApplePipelineUnmodified": true,
+                "systemSpecializationUnmodified": true,
+                "capturedBGRA8": capturedNatural,
+                "systemSpecializedBGRA8": rebuiltNatural,
+                "capturedVsSystemSpecialization": naturalComparison,
+            ]
+        }
         if (compositorInput == nil) != (compositorReference == nil) {
             return [
                 "executed": false,
@@ -15940,6 +16141,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         )
         let compositorExecuted =
             compositorTrace?["executed"] as? Bool ?? true
+        let transportedNaturalExecuted =
+            transportedNaturalTrace?["executed"] as? Bool ?? true
         let comparison = compareReplaySnapshots(
             reference: capturedBGRA,
             candidate: rebuiltBGRA,
@@ -15951,7 +16154,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 && rebuiltBGRA["executed"] as? Bool == true
                 && exactHalf["executed"] as? Bool == true
                 && diagnosticsExecuted
-                && compositorExecuted,
+                && compositorExecuted
+                && transportedNaturalExecuted,
             "diagnosticScope":
                 includeDiagnostics
                 ? "full"
@@ -15988,6 +16192,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "capturedVsRebuiltBGRA8": comparison,
             "exactHalfAlpha": exactHalf,
         ]
+        if let transportedInputRecord,
+           let transportedNaturalTrace
+        {
+            result["sample28BorderFragmentTransport"] = [
+                "schemaVersion": 1,
+                "executed": transportedNaturalExecuted,
+                "inputs": transportedInputRecord,
+                "natural": transportedNaturalTrace,
+                "alphaOracle": [
+                    "capturedBGRA8": capturedBGRA,
+                    "systemSpecializedBGRA8": rebuiltBGRA,
+                    "systemSpecializedRGBA16Float": exactHalf,
+                    "capturedVsSystemSpecialization": comparison,
+                ],
+            ]
+        }
         if let currentSystemSpecialization {
             result["currentSystemSpecialization"] =
                 currentSystemSpecialization
@@ -17957,7 +18177,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         includeDiagnostics: false,
                         includeInterpolant: true,
                         selectionOverride: currentIscdSelection,
-                        currentSystemTrace: true)
+                        currentSystemTrace: true,
+                        transportSample28Border: true)
             } else {
                 result["currentIscdInterpolantTrace"] = [
                     "schemaVersion": 1,

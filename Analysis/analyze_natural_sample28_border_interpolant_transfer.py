@@ -169,6 +169,14 @@ def finite_word_count(words: np.ndarray) -> int:
     return int(np.count_nonzero((words & 0x7F80_0000) != 0x7F80_0000))
 
 
+def subtract_float32_bits(high: np.ndarray, low: np.ndarray) -> np.ndarray:
+    return np.subtract(
+        high.view(np.float32),
+        low.view(np.float32),
+        dtype=np.float32,
+    ).view(np.uint32)
+
+
 def compare(
     root: Path,
     *,
@@ -217,6 +225,46 @@ def compare(
     actual = center[active_y, active_x, :2]
     unequal = actual != expected
     unequal_pixels = np.any(unequal, axis=1)
+
+    lane_x0 = active_x & ~1
+    lane_x1 = lane_x0 + 1
+    lane_y0 = active_y & ~1
+    lane_y1 = lane_y0 + 1
+    primitive_x0 = primitive[active_y, lane_x0].astype(np.intp)
+    primitive_x1 = primitive[active_y, lane_x1].astype(np.intp)
+    primitive_y0 = primitive[lane_y0, active_x].astype(np.intp)
+    primitive_y1 = primitive[lane_y1, active_x].astype(np.intp)
+    if any(
+        np.any(values >= PRIMITIVE_COUNT)
+        for values in (primitive_x0, primitive_x1, primitive_y0, primitive_y1)
+    ):
+        raise ValueError("derivative helper lane leaves the frozen coverage square")
+    expected_derivative_x = np.empty_like(expected)
+    expected_derivative_y = np.empty_like(expected)
+    expected_derivative_x[:, 0] = subtract_float32_bits(
+        axis[primitive_x1, lane_x1, 0],
+        axis[primitive_x0, lane_x0, 0],
+    )
+    expected_derivative_x[:, 1] = subtract_float32_bits(
+        axis[primitive_x1, active_y, 1],
+        axis[primitive_x0, active_y, 1],
+    )
+    expected_derivative_y[:, 0] = subtract_float32_bits(
+        axis[primitive_y1, active_x, 0],
+        axis[primitive_y0, active_x, 0],
+    )
+    expected_derivative_y[:, 1] = subtract_float32_bits(
+        axis[primitive_y1, lane_y1, 1],
+        axis[primitive_y0, lane_y0, 1],
+    )
+    actual_derivative_x = derivative_x[active_y, active_x, :2]
+    actual_derivative_y = derivative_y[active_y, active_x, :2]
+    derivative_unequal_x = actual_derivative_x != expected_derivative_x
+    derivative_unequal_y = actual_derivative_y != expected_derivative_y
+    derivative_unequal = np.concatenate(
+        (derivative_unequal_x, derivative_unequal_y), axis=1
+    )
+    derivative_unequal_pixels = np.any(derivative_unequal, axis=1)
     primitive_counts = Counter(map(int, active_primitive))
     unequal_by_primitive = Counter(map(int, active_primitive[unequal_pixels]))
 
@@ -258,16 +306,17 @@ def compare(
     )
     coverage_exact = not np.any(coverage_mismatch)
     center_exact = not np.any(unequal)
+    derivative_exact = not np.any(derivative_unequal)
     classification = (
-        "center-exact; residual is downstream of center interpolation"
-        if center_exact and coverage_exact
-        else "center-interpolant-or-coverage-residual"
+        "center-and-first-derivative-exact; residual is downstream of SDF interpolation"
+        if center_exact and derivative_exact and coverage_exact
+        else "sdf-interpolant-derivative-or-coverage-residual"
     )
     evidence = manifest["borderInterpolantTransfer"]
     return {
         "schemaVersion": SCHEMA_VERSION,
         "executed": True,
-        "accepted": center_exact and coverage_exact,
+        "accepted": center_exact and derivative_exact and coverage_exact,
         "classification": classification,
         "captureCommit": expected_commit,
         "captureManifestSha256": sha256_path(root / "manifest.json"),
@@ -301,6 +350,23 @@ def compare(
             },
             "exact": center_exact,
             "firstMismatches": first_mismatches,
+        },
+        "derivativeSdf": {
+            "laneRule": "top-left parity-zero 2x2; each lane uses its native primitive owner",
+            "checkedWords": int(derivative_unequal.size),
+            "mismatchedWords": int(np.count_nonzero(derivative_unequal)),
+            "mismatchedPixels": int(np.count_nonzero(derivative_unequal_pixels)),
+            "mismatchedWordsByOperationAndComponent": {
+                "dfdx": [
+                    int(value)
+                    for value in np.count_nonzero(derivative_unequal_x, axis=0)
+                ],
+                "dfdy": [
+                    int(value)
+                    for value in np.count_nonzero(derivative_unequal_y, axis=0)
+                ],
+            },
+            "exact": derivative_exact,
         },
         "controls": {
             "activeSourceWords": int(source.size),

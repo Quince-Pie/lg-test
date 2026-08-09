@@ -1,0 +1,90 @@
+{
+  "accepted": true,
+  "captureCommit": "b2e34e834ca2edb6e236b6f9c3edfdc85f448c9b",
+  "captureManifestSha256": "deb12692cda19fd4cbfd65a2300de1bd42d27b987f2e3a5d5147b3aee326a40c",
+  "captureTimelineSha256": "c028e232c0eb06ade31f826578c7209ea2e19f69b65a65cdc723187bc34adc44",
+  "centerSdf": {
+    "checkedWords": 524288,
+    "exact": true,
+    "firstMismatches": [],
+    "mismatchedPixels": 0,
+    "mismatchedPixelsByPrimitive": {},
+    "mismatchedWords": 0,
+    "mismatchedWordsByComponent": [
+      0,
+      0
+    ]
+  },
+  "classification": "center-and-first-derivative-exact; residual is downstream of SDF interpolation",
+  "controls": {
+    "activeDerivativeWords": 2097152,
+    "activeSourceWords": 524288,
+    "finiteDerivativeWords": 2097152,
+    "finiteSourceWords": 524288,
+    "nonzeroSourceWords": 524288
+  },
+  "coverage": {
+    "activePixels": 262144,
+    "exact": true,
+    "expectedBoundsTopLeft": [
+      256,
+      256,
+      768,
+      768
+    ],
+    "expectedPixels": 262144,
+    "manifestPrimitivePixelCounts": [
+      32896,
+      32640,
+      32640,
+      32896,
+      32896,
+      32640,
+      32640,
+      32896
+    ],
+    "mismatchedPixels": 0,
+    "primitivePixelCounts": {
+      "0": 32896,
+      "1": 32640,
+      "2": 32640,
+      "3": 32896,
+      "4": 32896,
+      "5": 32640,
+      "6": 32640,
+      "7": 32896
+    }
+  },
+  "derivativeSdf": {
+    "checkedWords": 1048576,
+    "exact": true,
+    "laneRule": "top-left parity-zero 2x2; each lane uses its native primitive owner",
+    "mismatchedPixels": 0,
+    "mismatchedWords": 0,
+    "mismatchedWordsByOperationAndComponent": {
+      "dfdx": [
+        0,
+        0
+      ],
+      "dfdy": [
+        0,
+        0
+      ]
+    }
+  },
+  "executed": true,
+  "frozenInputs": {
+    "independentAxisSha256": "e73c03674f15f0301581d48c67419bb1324e2b417735817a7ed489024d03faf1",
+    "indexPayloadSha256": "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572",
+    "preregistrationSha256": "b90598ad886cf2b2ad6034e6008b23928c6d46252012466597ceb01ec1768d96",
+    "vertexPayloadSha256": "fce89df436fd7a0ec9b00d171c40be676023facfaf49e76366b1ec9f0cac3c62"
+  },
+  "promotion": {
+    "frameTolerance": 0,
+    "requiresEightStateAmdZeroByteGate": true,
+    "requiresIndependentRule": true,
+    "requiresUnseenRetinaCapture": true,
+    "traceMayBeWalleInput": false
+  },
+  "schemaVersion": 1
+}
