@@ -15145,3 +15145,27 @@ authorizes guarded Walle integration.  It does not by itself establish
 production parity: Walle must still pass a fresh zero-unequal-byte production
 frame and physical Retina presentation gate.  Shader-quality reduction and
 nonzero tolerances remain forbidden.
+
+The first capture after that freeze passed without a retry.  Detached commit
+`fd24b42dd40e4cdb4f77303b7978aa987725507c` ran directly on the active
+physical Retina M1 Max and produced fresh timeline SHA-256
+`d0584a6b95147630018c9477ca542311e71ea95361d2e669962f1444deafb1ce`.
+The native build and capture used neither GitHub Actions, a debugger, nor a
+Nix-store path; post-capture validation ran under the repository's Nix Python
+3.14 environment.
+
+The retained state has equal extent `494.0108947753906`.  Both binary32
+half-extents are `0x43770165`; both round-trip radii are `0x43770164`, exactly
+one ULP lower.  The frozen directional candidate therefore predicts compact,
+the old inequality rule predicts border, and Apple emits exactly four
+vertices and six indices with `Iscd` and no `Irsd`.  Apple's captured-pass
+replay has zero unequal bytes.  The independent local rerun reproduced the
+Mac validation byte for byte.
+
+The immutable compact result is
+`Analysis/walle_current_final_topology_selector_fd24b42_result.json`, SHA-256
+`a4553d0a36c3e18496ea3e1d28a6a55bfac876ea9b04468a85189c9c37947206`.
+This prospectively promotes the directional selector and reduces remaining
+Walle algorithm unknowns to zero.  Production parity is still deliberately
+false until the integrated Walle process passes its fresh full-frame and
+physical Retina presentation gates.
