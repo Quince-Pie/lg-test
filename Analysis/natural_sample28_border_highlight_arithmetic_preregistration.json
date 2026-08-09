@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "question": "At which final-highlight arithmetic stage does Apple's unmodified Iscd fragment specialization first diverge from Walle after eight-primitive AGX/AMD raster transport is exact?",
   "frozenPriorEvidence": {
     "captureCommit": "47aa8fb27cad780c16869358ec52e61e631cf86d",
@@ -29,6 +29,25 @@
       "fragmentShaderSha256": "400f7c94b3e6ca50e8980eac25b3cdcaa8288130c291a74bdc6b4f0d97ce7788"
     }
   },
+  "frozenFollowupEvidence": {
+    "captureCommit": "07dd11fe99f26513c6dbf02799966f7e97ef8f82",
+    "captureTimelineSha256": "42a00c29c8d0059699344e184a6522fa36aef5a64f2bee9122c5ea687d12a47c",
+    "exactInputInterpolantWords": 524288,
+    "firstDivergentStage": "mode-4 geometry numerator point + (circle_scale - half_size)",
+    "measuredCandidate": {
+      "rule": "Form the positive circle-scale offset one binary32 step toward zero before adding the interpolated point.",
+      "naturalSample28AlphaMismatchedHalfWords": 0,
+      "capturedGeometryStageMismatchedWords": 0,
+      "capturedOvalStageMismatchedWords": 0,
+      "status": "diagnostic candidate only; not promoted until the prospectively frozen normal-stage probes and unseen-state gates pass"
+    },
+    "remainingMeasuredBoundary": {
+      "customSdfDistanceMismatchedHalfWords": 0,
+      "customSdfNormalXMismatchedHalfWords": 84,
+      "customSdfNormalYMismatchedHalfWords": 83,
+      "classification": "The distance rule is closed for the measured state; the independent mode-4 shape/composite normal arithmetic still requires instruction-level localization."
+    }
+  },
   "capture": {
     "host": "physical Retina Apple M1 Max on macOS 26.6.1 build 25G76",
     "sourceSelection": "transition-background-uniform-28 exact Iscd draw selected by full pipeline label",
@@ -54,7 +73,11 @@
       "sdf-float",
       "sdf-geometry",
       "sdf-oval",
-      "sdf-normal"
+      "sdf-normal",
+      "sdf-shape-geometry",
+      "sdf-shape-normal",
+      "sdf-radial-normal",
+      "sdf-composite-normal"
     ],
     "positiveControls": [
       "Every requested replay executes.",
@@ -66,6 +89,9 @@
   "analysis": {
     "comparison": "Render the same frozen geometry, axis, uniform bytes, and preregistered uniform interventions through Walle on the RX 9070 XT. Compare every binary16 output word with zero tolerance.",
     "stageOrder": [
+      "mode-4 geometry numerator and normalized coordinate",
+      "mode-4 adjusted delta and shape normal",
+      "mode-4 radial normal, half mix, and half renormalization",
       "mode-4 SDF",
       "normalized normal and scaled distance",
       "derivative feather",

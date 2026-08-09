@@ -15,7 +15,7 @@ private let naturalSample28BorderFragmentTransportPreregistrationSHA256 =
 private let naturalSample28BorderHighlightArithmeticPreregistration =
     "Analysis/natural_sample28_border_highlight_arithmetic_preregistration.json"
 private let naturalSample28BorderHighlightArithmeticPreregistrationSHA256 =
-    "094c0ce70410558c0ffa1f6ce4ab16956ce94e79dc865211e9ad82503d9b2893"
+    "a9c81c5b58e74cae27fff3cd36b9e942f07581c016b53227d851173d849a1466"
 private let naturalSample28BorderVertexStreamBase64 = """
 VhSAQ9X1P0QAAAAAAACAP7QAgMO0AIDD2BD0vOXsgj8AAAAAAAAAAAAAAAAAAPA/hQoARNX1P0QA
 AAAAAACAPwAAAAC0AIDDixq1vOXsgj84AQAAAAAAAMgCAADIAgAAhAoARNX1P0QAAAAAAACAPwAA
@@ -1395,6 +1395,140 @@ fragment uint4 glass_fragment_sdf_normal_trace(
         as_type<uint>(inverse_length),
         as_type<uint>(normal.x),
         as_type<uint>(normal.y));
+}
+
+fragment uint4 glass_fragment_sdf_shape_geometry_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const float radius = fabs(uniforms.sdf.arg2.z);
+    const float circle_scale =
+        radius * replay_float_constant(0x3fc3ab4b);
+    const float adjusted_radius = mix(
+        circle_scale,
+        radius,
+        max(uniforms.sdf.arg2.x, uniforms.sdf.arg2.y));
+    const float2 point = fabs(input.sdf_uv);
+    const float2 adjusted_delta =
+        point - uniforms.sdf.arg.xy + adjusted_radius;
+    const float2 positive_delta = max(float2(0.0), adjusted_delta);
+    const float positive_squared = dot(positive_delta, positive_delta);
+    const float inverse_length = fast::rsqrt(positive_squared);
+    return uint4(
+        as_type<uint>(adjusted_delta.x),
+        as_type<uint>(adjusted_delta.y),
+        as_type<uint>(positive_squared),
+        as_type<uint>(inverse_length));
+}
+
+fragment uint4 glass_fragment_sdf_shape_normal_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const float radius = fabs(uniforms.sdf.arg2.z);
+    const float circle_scale =
+        radius * replay_float_constant(0x3fc3ab4b);
+    const float adjusted_radius = mix(
+        circle_scale,
+        radius,
+        max(uniforms.sdf.arg2.x, uniforms.sdf.arg2.y));
+    const float2 point = fabs(input.sdf_uv);
+    const float2 adjusted_delta =
+        point - uniforms.sdf.arg.xy + adjusted_radius;
+    const float2 positive_delta = max(float2(0.0), adjusted_delta);
+    const float inverse_length =
+        fast::rsqrt(dot(positive_delta, positive_delta));
+    const float2 curved_normal_float =
+        positive_delta * inverse_length;
+    const half2 curved_normal = half2(curved_normal_float);
+    const half2 axis_normal = adjusted_delta.x > adjusted_delta.y
+        ? half2(1.0, 0.0)
+        : half2(0.0, 1.0);
+    const half2 shape_normal =
+        curved_normal.x + curved_normal.y > half(0.0)
+            ? curved_normal
+            : axis_normal;
+    return uint4(
+        as_type<uint>(curved_normal_float.x),
+        as_type<uint>(curved_normal_float.y),
+        replay_pack_half_pair(curved_normal.x, curved_normal.y),
+        replay_pack_half_pair(shape_normal.x, shape_normal.y));
+}
+
+fragment uint4 glass_fragment_sdf_radial_normal_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const float2 point = input.sdf_uv;
+    const float2 radial_input = float2(
+        point.x,
+        uniforms.sdf.arg.x * point.y / uniforms.sdf.arg.y);
+    const float radial_squared = dot(radial_input, radial_input);
+    const float inverse_length = fast::rsqrt(radial_squared);
+    const half2 radial_normal =
+        half2(radial_input * inverse_length);
+    return uint4(
+        as_type<uint>(radial_input.y),
+        as_type<uint>(radial_squared),
+        as_type<uint>(inverse_length),
+        replay_pack_half_pair(radial_normal.x, radial_normal.y));
+}
+
+fragment uint4 glass_fragment_sdf_composite_normal_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const half3 shape = replay_supercircle_sdf(
+        fabs(input.sdf_uv),
+        uniforms.sdf.arg.xy,
+        uniforms.sdf.arg2.z,
+        uniforms.sdf.arg2.xy);
+    const half2 signs = half2(
+        input.sdf_uv.x >= 0.0 ? 1.0 : -1.0,
+        input.sdf_uv.y >= 0.0 ? 1.0 : -1.0);
+    const half2 shape_normal = shape.yz * signs;
+    const float2 radial_input = float2(
+        input.sdf_uv.x,
+        uniforms.sdf.arg.x * input.sdf_uv.y / uniforms.sdf.arg.y);
+    const float radial_inverse_length =
+        fast::rsqrt(dot(radial_input, radial_input));
+    const half2 radial_normal =
+        half2(radial_input * radial_inverse_length);
+    half2 normal = mix(
+        shape_normal,
+        radial_normal,
+        half(uniforms.sdf.arg.w));
+    const half2 mixed_normal = normal;
+    normal *= rsqrt(dot(normal, normal));
+    return uint4(
+        replay_pack_half_pair(shape_normal.x, shape_normal.y),
+        replay_pack_half_pair(radial_normal.x, radial_normal.y),
+        replay_pack_half_pair(mixed_normal.x, mixed_normal.y),
+        replay_pack_half_pair(normal.x, normal.y));
 }
 
 fragment uint4 glass_fragment_sdf_coverage_trace(
@@ -14254,7 +14388,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                       let sdfOvalTrace = sdfLibrary.makeFunction(
                         name: "glass_fragment_sdf_oval_trace"),
                       let sdfNormalTrace = sdfLibrary.makeFunction(
-                        name: "glass_fragment_sdf_normal_trace")
+                        name: "glass_fragment_sdf_normal_trace"),
+                      let sdfShapeGeometryTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_shape_geometry_trace"),
+                      let sdfShapeNormalTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_shape_normal_trace"),
+                      let sdfRadialNormalTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_radial_normal_trace"),
+                      let sdfCompositeNormalTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_composite_normal_trace")
                 else {
                     return [
                         "executed": false,
@@ -14272,6 +14414,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     ("sdf-geometry", sdfGeometryTrace, .rgba32Uint),
                     ("sdf-oval", sdfOvalTrace, .rgba32Uint),
                     ("sdf-normal", sdfNormalTrace, .rgba32Uint),
+                    (
+                        "sdf-shape-geometry",
+                        sdfShapeGeometryTrace,
+                        .rgba32Uint
+                    ),
+                    (
+                        "sdf-shape-normal",
+                        sdfShapeNormalTrace,
+                        .rgba32Uint
+                    ),
+                    (
+                        "sdf-radial-normal",
+                        sdfRadialNormalTrace,
+                        .rgba32Uint
+                    ),
+                    (
+                        "sdf-composite-normal",
+                        sdfCompositeNormalTrace,
+                        .rgba32Uint
+                    ),
                 ]
                 var candidates: [(
                     name: String,
@@ -15887,7 +16049,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
             : []
         let highlightSDFDiagnosticsExecuted = !includeDiagnostics || (
-            highlightSDFDiagnosticReplays.count == 5
+            highlightSDFDiagnosticReplays.count == 9
             && highlightSDFDiagnosticReplays.allSatisfy {
                 $0["executed"] as? Bool == true
             }
