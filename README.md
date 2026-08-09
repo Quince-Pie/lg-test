@@ -15054,3 +15054,41 @@ The current boundary is therefore:
    must still pass before claiming end-to-end product parity.
 5. **Quality remains immutable.**  The protected shader SHA-256 above is
    unchanged, and every acceptance threshold remains zero.
+
+### Accepted prospective eight-state full-frame result
+
+The first capture after the freeze above was produced directly from detached
+commit `c0e4ae9b1c6f2082e5ce1f5451fe3495acfdf7a6` on the physical Retina M1
+Max.  The preflight again authenticated the active, awake, unlocked,
+on-console 3456-by-2234 display at 2x.  The native capture exited zero, all
+eight exact-pass replays were exact, runtime stderr was empty, and the new
+timeline SHA-256 is
+`9343c8d2e2edb3748869c35dac1f0e6c381bd58426d86d4d6f84ae4556eaeade`.
+It is absent from every opened-corpus allowlist.  The capture context records
+GitHub Actions, debugger use, and Nix-store participation as zero.
+
+The frozen generator reconstructed every renderer input from public state and
+authenticated constructors.  On the RX 9070 XT, every prospective frame is
+bit-identical: 33,554,432 checked RGBA8 bytes, zero unequal bytes, zero
+unequal pixels, and maximum channel delta zero.  Seven states emitted the
+4-vertex/6-index highlight.  Unseen sample 28 emitted the real
+16-vertex/24-index back-facing border topology, so this one holdout exercised
+both retained renderer paths rather than accepting an observed zero image.
+
+The compact accepted result is
+`Analysis/walle_dynamic_full_frame_holdout_c0e4ae9_result.json`, SHA-256
+`9565f8da68823ff45c8f91a397f498618f7ff52450426e453cafe4f838c0d559`.
+The deterministic full report has SHA-256
+`6de36fd13b40f235ae6cd8ee0c1faadf0d3608da6767e771b3d2d2e90d6d6996`.
+The generator, gate, and renderer-source SHA-256 values remain exactly the
+preregistered values.  Walle's protected production shader remains
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+This prospectively promotes the frozen natural eight-state full-frame
+constructor at zero tolerance.  There is now no Apple-arithmetic or
+verification unknown blocking guarded Walle integration.  One universal
+algorithm-family question remains: express the policy selecting six-index
+versus 24-index construction for arbitrary natural states outside the frozen
+trajectory.  Production-process rendering and physical Retina presentation
+of Walle-produced pixels remain separate product gates and are not claimed by
+this result.

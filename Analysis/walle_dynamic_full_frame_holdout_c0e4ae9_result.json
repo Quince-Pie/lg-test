@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "title": "Prospective Walle eight-state full-frame Liquid Glass holdout result",
+  "status": "accepted-prospective-eight-state-full-frame-exact",
+  "generatedAtUTC": "2026-08-09T07:39:28Z",
+  "preregistration": {
+    "path": "Analysis/walle_dynamic_full_frame_holdout_preregistration.json",
+    "sha256": "28592672c0ce68859ec9388218cfdcc22853257cd4d5fba67eaa87f08cd4aa4a",
+    "frozenBeforeCapture": true
+  },
+  "capture": {
+    "commit": "c0e4ae9b1c6f2082e5ce1f5451fe3495acfdf7a6",
+    "timelineSHA256": "9343c8d2e2edb3748869c35dac1f0e6c381bd58426d86d4d6f84ae4556eaeade",
+    "contextSHA256": "b6ded2dacab1933a0129fbc1cef755500e2bc18e5bd34cbd7ae2b30ebb3b2a47",
+    "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "failedSamples": 0,
+    "nativeRetina": true,
+    "githubActionsUsed": false,
+    "nativeCaptureDebuggerUsed": false,
+    "nixStorePathInNativeBuildOrCapture": false
+  },
+  "candidate": {
+    "fullReportSHA256": "6de36fd13b40f235ae6cd8ee0c1faadf0d3608da6767e771b3d2d2e90d6d6996",
+    "fixtureGeneratorSHA256": "fd2279e05014847b88471617f3e9a09de1176055d3c973a9f490ba1f54e18daf",
+    "fullFrameGateSHA256": "74353002fcfbb1e720588f15b824b8857c40aa04803485c8a7f7f5016ab664a1",
+    "rendererSourceSHA256": "babe4ea8c3945bfd2a01037847e5669d5b296fbd7adc56d26a88d63e85848955",
+    "vertexShaderSHA256": "99d6942f6b39b52460c23b4e52c498f2d98a03cb6ffc32d87ef6e94c43e7a958",
+    "fragmentShaderSHA256": "2422332165e5b95c6bc2ca57f54175969dbfa096a6963270ff7f7cad994f11d4",
+    "floatIntrinsicTableSHA256": "fff71cc0d4428677ca5bc58b91212a7166b701e4efe504c3d71cab70846d0449",
+    "protectedProductionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "capturedRenderInputCount": 0,
+    "capturedFinalOutputUsedForComparisonOnly": true,
+    "renderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)"
+  },
+  "cases": [
+    {
+      "sampleIndex": 1,
+      "remainingFloat32Bits": "0x3f777ca0",
+      "highlightVertexCount": 4,
+      "highlightIndexCount": 6,
+      "highlightBackFacing": false,
+      "referenceSHA256": "49bea9c42e4822ab414d737d84d487d4ade2f0f9257b63bea66ee3fe781af01b",
+      "candidateSHA256": "49bea9c42e4822ab414d737d84d487d4ade2f0f9257b63bea66ee3fe781af01b"
+    },
+    {
+      "sampleIndex": 4,
+      "remainingFloat32Bits": "0x3f5ffe30",
+      "highlightVertexCount": 4,
+      "highlightIndexCount": 6,
+      "highlightBackFacing": false,
+      "referenceSHA256": "4099cdacddae37ab301ac2bd84b3e61c5d8800b7e8e9206648360399671f970e",
+      "candidateSHA256": "4099cdacddae37ab301ac2bd84b3e61c5d8800b7e8e9206648360399671f970e"
+    },
+    {
+      "sampleIndex": 8,
+      "remainingFloat32Bits": "0x3f3fa230",
+      "highlightVertexCount": 4,
+      "highlightIndexCount": 6,
+      "highlightBackFacing": false,
+      "referenceSHA256": "17e033781454d5a39ce397c6fe3e8c9f64f34bca43a75a5082f12714894a9921",
+      "candidateSHA256": "17e033781454d5a39ce397c6fe3e8c9f64f34bca43a75a5082f12714894a9921"
+    },
+    {
+      "sampleIndex": 12,
+      "remainingFloat32Bits": "0x3f1fab80",
+      "highlightVertexCount": 4,
+      "highlightIndexCount": 6,
+      "highlightBackFacing": false,
+      "referenceSHA256": "0231df48746ec35f785f60b0799c675a907f0fc79e69237fb5b43a9f2e9ab0d5",
+      "candidateSHA256": "0231df48746ec35f785f60b0799c675a907f0fc79e69237fb5b43a9f2e9ab0d5"
+    },
+    {
+      "sampleIndex": 16,
+      "remainingFloat32Bits": "0x3eff2f80",
+      "highlightVertexCount": 4,
+      "highlightIndexCount": 6,
+      "highlightBackFacing": false,
+      "referenceSHA256": "617328f3f1267d4e9272d39455bde9dd642258e70e0d8a0b701b1e65f8a3cb97",
+      "candidateSHA256": "617328f3f1267d4e9272d39455bde9dd642258e70e0d8a0b701b1e65f8a3cb97"
+    },
+    {
+      "sampleIndex": 20,
+      "remainingFloat32Bits": "0x3ebff980",
+      "highlightVertexCount": 4,
+      "highlightIndexCount": 6,
+      "highlightBackFacing": false,
+      "referenceSHA256": "c9098dd98bae9ae7926051dc5d44d112d27bbaecfb45068c934976ea809a8ca3",
+      "candidateSHA256": "c9098dd98bae9ae7926051dc5d44d112d27bbaecfb45068c934976ea809a8ca3"
+    },
+    {
+      "sampleIndex": 24,
+      "remainingFloat32Bits": "0x3e7f4380",
+      "highlightVertexCount": 4,
+      "highlightIndexCount": 6,
+      "highlightBackFacing": false,
+      "referenceSHA256": "cdc09dc3c052270b20405f6c10a69b60f3c2aef04d08261be87fdecab1c9c391",
+      "candidateSHA256": "cdc09dc3c052270b20405f6c10a69b60f3c2aef04d08261be87fdecab1c9c391"
+    },
+    {
+      "sampleIndex": 28,
+      "remainingFloat32Bits": "0x3dffa900",
+      "highlightVertexCount": 16,
+      "highlightIndexCount": 24,
+      "highlightBackFacing": true,
+      "referenceSHA256": "5cd56994a45cee4fda1f4e3b0e8f7e3da79b7945450bf0a31bc779751735f205",
+      "candidateSHA256": "5cd56994a45cee4fda1f4e3b0e8f7e3da79b7945450bf0a31bc779751735f205"
+    }
+  ],
+  "totals": {
+    "caseCount": 8,
+    "checkedBytes": 33554432,
+    "mismatchedBytes": 0,
+    "mismatchedPixels": 0,
+    "maximumChannelDelta": 0,
+    "sixIndexTopologyCount": 7,
+    "twentyFourIndexTopologyCount": 1,
+    "tolerance": 0
+  },
+  "claims": {
+    "prospectiveEightStateFullFrameExact": true,
+    "frozenNaturalTrajectoryPromoted": true,
+    "universalTopologySelectorEstablished": false,
+    "productionWalleProcessParityEstablished": false,
+    "physicalRetinaWalleOutputParityEstablished": false,
+    "qualityRegression": false
+  }
+}
