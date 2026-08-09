@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "title": "Natural sample-08 alpha-edge stage isolation",
+  "status": "preregistered-before-targeted-Apple-capture",
+  "platform": {
+    "architecture": "arm64",
+    "device": "M1 Max Retina Mac",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76"
+  },
+  "case": {
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "dematerialize",
+    "geometry": "circle-480-center",
+    "sampleIndex": 8,
+    "requestedProgress": 0.25
+  },
+  "openedEndpointObservation": {
+    "backgroundPrefixComparedBytes": 4194304,
+    "mismatchedBytes": 81,
+    "mismatchedPixels": 81,
+    "channels": [
+      "alpha"
+    ],
+    "candidateMinusAppleDeltaSet": [
+      -1
+    ],
+    "rgbExact": true,
+    "candidateCenterInterpolantsExact": true
+  },
+  "targetedTraces": [
+    "sdf-float",
+    "sdf-geometry",
+    "sdf-oval",
+    "sdf-normal",
+    "sdf-coverage",
+    "sdf",
+    "color-stages-a",
+    "color-stages-b",
+    "final-color",
+    "private-main-final-color",
+    "private-shadow-final-color",
+    "custom-shadow-layer",
+    "custom-shadow-sample",
+    "private-main-bgra8",
+    "private-shadow-bgra8"
+  ],
+  "decisionRule": [
+    {
+      "condition": "Apple custom sdf-coverage differs first at endpoint-residual main pixels",
+      "classification": "helper-lane derivative or coverage arithmetic"
+    },
+    {
+      "condition": "custom sdf-coverage agrees but an original private final-color differs from the corresponding custom final-color",
+      "classification": "private AGX half-arithmetic specialization"
+    },
+    {
+      "condition": "original private and custom final-color agree but isolated BGRA8 output differs from the predicted conversion",
+      "classification": "BGRA8Unorm attachment or fixed-function blend conversion"
+    }
+  ],
+  "acceptance": {
+    "traceToleranceWords": 0,
+    "endpointToleranceBytes": 0,
+    "qualityRegressionAllowed": false,
+    "capturedImageSubstitutionAllowed": false
+  }
+}

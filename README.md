@@ -14751,18 +14751,60 @@ witness assignment SHA-256 is
 and its 882,357,696-byte logical candidate stream has SHA-256
 `fafc17687af9e87cae8cdfbee285cfef5721186d096021c24946fc4c0a07b5fb`.
 
-No selector-sweep Apple output has been opened at this point.  The native
-M1-Max capture must resolve all 139,261 cases uniquely at zero bit tolerance.
-If it passes, the resulting table is frozen before a new unseen natural
-transition.  That transition must then pass the complete zero-byte AMD frame
-gate and the physical-Retina presentation gate.  The exact current ledger is:
+Commit `67de65950d584024c7a89be045b587fdaac993d9` froze those inputs before the
+native M1-Max capture.  The 26,738,112-byte raw stream, SHA-256
+`ac60fa74f65714d674bba81aa1647769303c3146e3b8208ee48deadcfd92c4ec`,
+contains all 3,342,264 requested records and 6,684,528 finite words with zero
+missing records.  Independent replay resolves exactly one of the 33
+predeclared candidates in all 139,261 cases: zero mismatched and zero
+ambiguous.  The recovered offsets from exact floor are `-1: 2,768`,
+`0: 72,377`, `+1: 63,468`, and `+2: 648`.  Exact floor therefore fails 66,884
+cases, while the old normalized fallback fails 100,443; neither can replace
+the measured finite table.
 
-1. **Apple construction and shader unknowns in the admitted natural domain:
-   zero.**  Sample 24 is exact after correcting the mode specialization.
-2. **Blocking whole-animation parity unknowns: one.**  The finite non-square
-   natural-shadow AGX selector remains to be captured and prospectively
-   transferred.
-3. **Proof gates after that calibration: two.**  A fresh unseen AMD frame set
-   and the physical Retina presentation must both be byte-identical.
-4. **Quality tolerance remains zero.**  No production shader simplification,
+The frozen selector archive is
+`Analysis/raster_natural_shadow_selectors_u32le.zlib`, 458,951 bytes with
+SHA-256
+`b063a9a84afb062a8f54e006dac387f0c65c09cfc003405d7fa69218969e922d`.
+Its 557,044-byte raw uint32 payload has SHA-256
+`90edc4baf626f8a6b90aa3a874465f3a004d9c8a8cbeac282663d24161aa8ef8`.
+The signed offset control is
+`Analysis/raster_natural_shadow_selector_offsets_i8.bin`, SHA-256
+`21f74aa27e917dc16bab102d1a60edd4530c5489888ecba5ae65f6db2ed001c4`.
+The compact accepted result is
+`Analysis/raster_natural_shadow_selector_calibration_67de659_result.json`.
+This closes the measured selector question as finite-domain calibration; it
+does not claim a portable AGX reciprocal law.
+
+Applying the table to the independently reconstructed Walle fixture also
+exposed a separate raster requirement: derivative helper lanes need one pixel
+of calibrated interpolation halo outside the visible primitive.  With that
+halo, seven of the eight opened whole-frame states are byte exact.  Sample 08
+has exact RGB and 81 remaining background-prefix alpha bytes in 81 pixels;
+every candidate byte is exactly one below Apple.  A full-precision blend
+countermodel leaves the same pixels unchanged, so this is not evidence for a
+lower-quality approximation or a broad color-model defect.
+
+`Analysis/natural_sample08_alpha_edge_preregistration.json` freezes one
+targeted local-Retina capture before its Apple traces are opened.  Sample 08
+will emit SDF/coverage, color-stage, original-private final-color, custom
+shadow, and isolated BGRA8 layer outputs.  The preregistered decision rule
+separates helper-lane derivative arithmetic, private AGX half arithmetic, and
+attachment conversion without post-hoc probe selection.
+
+The exact current ledger is:
+
+1. **Apple construction, crop/resampling, SDF center arithmetic, transfer,
+   and admitted natural selector unknowns: zero.**  Sample 24 is exact, and
+   every reachable positive circle-480 regular-shadow extent has one exact
+   measured endpoint.
+2. **Blocking opened-corpus arithmetic unknowns: one.**  It is the sample-08
+   alpha-only partial-coverage edge above; it affects 81 of 4,194,304 prefix
+   bytes and must still be reduced to zero.
+3. **Walle implementation may proceed behind the zero-byte gate now.**  The
+   remaining edge does not make geometry, allocation, selector, or the visual
+   shader model uncertain.
+4. **Prospective proof obligations after closure: two.**  A new unseen natural
+   AMD frame set and the physical Retina presentation must both be byte exact.
+5. **Quality tolerance remains zero.**  No production shader simplification,
    captured image substitution, or nonzero tolerance is authorized.

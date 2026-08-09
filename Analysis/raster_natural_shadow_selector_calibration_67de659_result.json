@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "classification": "accepted preregistered finite natural circle-480 regular-material shadow selector calibration; not a portable reciprocal law",
+  "capture": {
+    "commit": "67de65950d584024c7a89be045b587fdaac993d9",
+    "host": "quince@10.0.41.19",
+    "device": "Apple M1 Max",
+    "os": "macOS 26.6.1 (25G76)",
+    "nativeAppleToolchain": true,
+    "nixStoreExecutable": false,
+    "githubActions": false,
+    "manifestSha256": "457327183bc3e8ff3f4183a6d8c1872564ed771ed7e908053c09e941679a1c56",
+    "rawBytes": 26738112,
+    "rawSha256": "ac60fa74f65714d674bba81aa1647769303c3146e3b8208ee48deadcfd92c4ec",
+    "recordCount": 3342264,
+    "finiteWordCount": 6684528,
+    "missingRecordCount": 0
+  },
+  "predeclaredRecovery": {
+    "selectorOffsetsFromExactFloorLower": -16,
+    "selectorOffsetsFromExactFloorUpper": 16,
+    "candidateCount": 33,
+    "candidateStreamSha256": "fafc17687af9e87cae8cdfbee285cfef5721186d096021c24946fc4c0a07b5fb",
+    "caseCount": 139261,
+    "matchedCaseCount": 139261,
+    "mismatchedCaseCount": 0,
+    "ambiguousCaseCount": 0,
+    "selectorOffsetCounts": {
+      "-1": 2768,
+      "0": 72377,
+      "1": 63468,
+      "2": 648
+    }
+  },
+  "controls": {
+    "exactFloorMatchCount": 72377,
+    "exactFloorMismatchCount": 66884,
+    "normalizedFallbackMatchCount": 38818,
+    "normalizedFallbackMismatchCount": 100443
+  },
+  "selectors": {
+    "file": "Analysis/raster_natural_shadow_selectors_u32le.zlib",
+    "compressedBytes": 458951,
+    "compressedSha256": "b063a9a84afb062a8f54e006dac387f0c65c09cfc003405d7fa69218969e922d",
+    "rawBytes": 557044,
+    "rawSha256": "90edc4baf626f8a6b90aa3a874465f3a004d9c8a8cbeac282663d24161aa8ef8",
+    "dtype": "little-endian uint32",
+    "ordering": "ascending widthFixed,heightFixed",
+    "offsetFile": "Analysis/raster_natural_shadow_selector_offsets_i8.bin",
+    "offsetBytes": 139261,
+    "offsetSha256": "21f74aa27e917dc16bab102d1a60edd4530c5489888ecba5ae65f6db2ed001c4"
+  },
+  "gate": {
+    "calibrationComplete": true,
+    "portableClosedFormEstablished": false,
+    "prospectiveNaturalHoldoutPassed": false,
+    "productionParityAuthorized": false,
+    "qualityTolerance": 0
+  },
+  "nextGate": "Freeze this finite selector table, then evaluate a newly captured natural transition with zero unequal AMD frame bytes before the physical Retina presentation gate."
+}
