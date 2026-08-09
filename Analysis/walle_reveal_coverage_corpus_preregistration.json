@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "title": "Physical-Retina SwiftUI circle-reveal coverage discovery corpus",
+  "status": "frozen-before-first-coverage-capture",
+  "frozenAtUTC": "2026-08-09T11:28:54Z",
+  "priorEvidence": {
+    "rejectedV1ManifestSHA256": "05c9faddf218d45d88169cd655b9a442c43bbbc74aaf0350ca41eab33a73fc03",
+    "rejectedV1FrozenValidationSHA256": "42fbb8e5754a10358da79817d305e27d12375516fb45b0a714a9d052667a4e48",
+    "openedV1FailureResultSHA256": "01f4f214cca586c5681eb7cbc7c478ed361c7e669a2a297d3a4ff8b2c2afb45e",
+    "openedFacts": [
+      "all 51 canonical frames are identical across cold-forward, warm-reverse, and cold-repeat traversals",
+      "the source-PNG comparison is confounded by Color LCD to sRGB canonicalization",
+      "same-surface endpoint comparison leaves 44,612 neither-endpoint pixels per traversal",
+      "38,441 of those pixels lie within 1.5 physical pixels of the circle edge",
+      "the effective physical radius is floor(diameterPixels) / 2",
+      "one deterministic 6,171-pixel off-edge region at state 11 requires raw-source separation"
+    ]
+  },
+  "capture": {
+    "architecture": "arm64",
+    "device": "Apple M1 Max with built-in Liquid Retina XDR display",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuild": "25G76",
+    "nativeSDKVersion": "26.5",
+    "backingScaleFactor": 2,
+    "windowPoints": [1024, 1024],
+    "transitionOriginNormalized": [0.25, 0.3],
+    "sweepFrameCount": 65,
+    "traversals": [
+      "forward-cold",
+      "reverse-warm",
+      "forward-cold-repeat"
+    ],
+    "outgoingSource": "opaque sRGB black",
+    "incomingSource": "opaque sRGB white",
+    "githubActionsPermitted": false,
+    "nativeCaptureDebuggerPermitted": false,
+    "nixStorePathInNativeBuildOrCapturePermitted": false
+  },
+  "rawSourceSampling": {
+    "encoding": "versioned little-endian BGRA8 source-provider samples before canonical Color LCD to sRGB conversion",
+    "fixedBlock": "top-left 384 by 384 physical pixels",
+    "radialBlocks": "64 input-selected 16 by 16 physical-pixel patches centered on equally spaced angles of floor(diameterPixels)/2",
+    "selectionMayReadOutputValues": false,
+    "expectedBlocksPerFrame": 65,
+    "expectedRawSampleFiles": 195
+  },
+  "postCaptureDiscriminators": [
+    "encoded-light versus linear-light black-to-white coverage",
+    "unsnapped versus integer-diameter/half-pixel radius",
+    "analytic gradient versus fine-quad finite-derivative feather",
+    "analytic SDF ramp versus exact pixel-area coverage",
+    "analytic SDF ramp versus fixed multisample patterns",
+    "raw Color LCD source bytes versus canonical sRGB conversion",
+    "state-11 top-left source/compositor tile behavior"
+  ],
+  "frozenSources": {
+    "Sources/GlassCapture/main.swift": "f2cf57c4724639be712955006db512184489aa58a745f2f8aedf5e788c109f0e",
+    "Analysis/validate_walle_reveal_coverage_corpus.py": "19afaaae06afbe69a5834d5c0d3c5e2a535db0a1303ce8d5a032c3fc0db11189",
+    "Analysis/test_validate_walle_reveal_coverage_corpus.py": "0e162d610ed2ed2d1d3069c33c8513ffdc690feb6435aff0e1c6bfd4e9ce5757",
+    "Analysis/analyze_walle_reveal_composition_v1.py": "e7b8922cd90371f2c64074ec154170eb2f7caef664d308c35813ace6f20b07c6",
+    "Analysis/walle_reveal_composition_d67fb35_v1_failure_result.json": "01f4f214cca586c5681eb7cbc7c478ed361c7e669a2a297d3a4ff8b2c2afb45e"
+  },
+  "procedure": [
+    "Commit and publish this preregistration, capture source, corpus validator, tests, and native runner before opening any black-to-white Apple output.",
+    "Build GlassCapture with Apple Command Line Tools only in a clean committed checkout.",
+    "Run directly in the active, awake, unlocked, on-console 2x Retina session without GitHub Actions, a debugger, or a Nix-store path in the native build or capture environment.",
+    "Capture 65 exact states in all three traversals with the diagnostic black-to-white source pair and retain the frozen raw source-provider sample blocks.",
+    "Only after native capture exits, use the repository Nix environment for corpus validation and arithmetic analysis."
+  ],
+  "acceptance": {
+    "requiredTraversalCount": 3,
+    "requiredFrameCount": 195,
+    "requiredRawSampleFileCount": 195,
+    "requiredCanonicalRepeatMismatches": 0,
+    "requiredRawSampleRepeatMismatches": 0,
+    "minimumDistinctRawBGRAWords": 16,
+    "comparisonTolerance": 0,
+    "postCaptureFrameExclusionPermitted": false,
+    "postCaptureRawSampleExclusionPermitted": false,
+    "qualityRegressionPermitted": false
+  },
+  "claimBoundary": {
+    "successfulGatePromotes": "a complete deterministic physical-Retina discovery corpus for solving the reveal edge and ColorSync split",
+    "successfulGateDoesNotPromote": [
+      "any coverage formula",
+      "any color-compositing formula",
+      "ordinary Walle integration",
+      "production parity"
+    ]
+  },
+  "result": null
+}

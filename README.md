@@ -15419,3 +15419,72 @@ frozen size, position, and radius sweep. The exact glass passes must then be
 composed over those bytes inside ordinary Walle, followed by a fresh
 production-process frame gate and physical-Retina presentation gate. The
 protected production shader remains unchanged.
+
+### Rejected binary reveal edge and raw coverage discriminator
+
+The first direct-Retina run at commit
+`d67fb35` completed all 51 requested 2048-by-2048 frames with zero unstable
+states.  Its manifest SHA-256 is
+`05c9faddf218d45d88169cd655b9a442c43bbbc74aaf0350ca41eab33a73fc03`.
+The frozen validator correctly rejected the no-antialias candidate: across
+855,638,016 checked bytes it reported 99,763,404 unequal bytes, 85,358,220
+unequal pixels, and 85,358,091 pixels equal to neither original source PNG.
+That result is not weakened or relabeled as a pass.
+
+Opening the rejection exposed two independent effects.  The own-window source
+is `Color LCD` BGRA8 and is converted to canonical sRGB when saved, so the
+original source PNG is not the byte representation seen at the comparison
+surface.  Using the captured progress-zero and progress-one frames as
+same-surface endpoints removes that transport error.  All 17 states are then
+bit-identical across cold-forward, warm-reverse, and cold-repeat.  Each
+traversal has 44,612 neither-endpoint pixels: 38,441 lie within 1.5 physical
+pixels of the circle edge, while a deterministic 6,171-pixel state-11 region
+lies in the top-left source/compositor tile away from the edge.
+
+The opened geometry also resolves one discrete rule.  SwiftUI uses
+`floor(diameterPixels)` for the physical diameter, hence
+`floor(diameterPixels) / 2` for the effective radius.  With that correction,
+an SDF coverage ramp divided by the absolute-gradient feather has correlation
+above 0.995 with the encoded-space coverage estimate in eleven of fifteen
+non-endpoint states.  Exact quarter-progress states 4, 8, and 12 separate the
+remaining coverage/color hypotheses, and state 11 separately exposes the raw
+source tile behavior.  Correlation is discovery evidence, not a pixel-parity
+criterion.
+
+The immutable retrospective analyzer and compact rejected result are
+`Analysis/analyze_walle_reveal_composition_v1.py`, SHA-256
+`e7b8922cd90371f2c64074ec154170eb2f7caef664d308c35813ace6f20b07c6`,
+and `Analysis/walle_reveal_composition_d67fb35_v1_failure_result.json`,
+SHA-256
+`01f4f214cca586c5681eb7cbc7c478ed361c7e669a2a297d3a4ff8b2c2afb45e`.
+They promote no formula and authorize no tolerance.
+
+`Analysis/walle_reveal_coverage_corpus_preregistration.json`, SHA-256
+`2094b1e0355be2c774f048b58073d2573f0c12238d67e20842b42c1632307d64`,
+freezes the separating capture before opening its output.  The diagnostic-only
+`--reveal-coverage-probe` retains the same SwiftUI mask but substitutes opaque
+black and white sources, raises the exact sweep to 65 states, and records both
+the canonical frame and input-selected raw `Color LCD` BGRA samples.  Each raw
+file contains a fixed 384-by-384 top-left block plus 64 equally spaced
+16-by-16 radial patches.  No output value selects a pixel.  The three
+traversals therefore contain 195 full frames and 195 compact raw sample files
+without expanding the normal `--dynamic-modes all` matrix.
+
+The corpus validator and tests have SHA-256 values
+`19afaaae06afbe69a5834d5c0d3c5e2a535db0a1303ce8d5a032c3fc0db11189`
+and
+`0e162d610ed2ed2d1d3069c33c8513ffdc690feb6435aff0e1c6bfd4e9ce5757`.
+The direct-Mac runner is
+`Analysis/run_walle_reveal_coverage_corpus_local_macos_26_6_1.sh`, SHA-256
+`096a207bc6e3c979c744ec1a3c1b193368cb2d3972d03c2f826a6717a6686e2d`.
+It rejects GitHub Actions, a debugger, a dirty checkout, a non-Retina session,
+and any Nix-store path in native build or capture; Nix is admitted only after
+the native process exits.
+
+Passing this gate promotes only a deterministic discovery corpus.  The opened
+raw bytes must still select an exact coverage and color-composition formula,
+that formula must pass a fresh output-blind holdout at zero tolerance, and
+ordinary Walle must then consume it in the already exact core-OpenGL renderer.
+Production parity remains false until both the fresh AMD process-frame gate
+and physical-Retina presentation gate report zero unequal bytes.  Shader
+quality reduction remains forbidden.

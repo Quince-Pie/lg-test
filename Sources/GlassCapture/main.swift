@@ -36,6 +36,7 @@ struct Config {
     var dynamicModes = DynamicMode.defaultCaptureModes
     var transitionOriginX = 0.25
     var transitionOriginY = 0.30
+    var revealCoverageProbe = false
 
     static func parse() -> Config {
         var c = Config()
@@ -110,6 +111,8 @@ struct Config {
                 }
                 c.transitionOriginX = x
                 c.transitionOriginY = y
+            case "--reveal-coverage-probe":
+                c.revealCoverageProbe = true
             default:
                 fatalError("unknown argument: \(a)")
             }
@@ -119,6 +122,14 @@ struct Config {
         precondition(c.dynamicFrames >= 3, "dynamic capture needs at least three frames")
         precondition(c.dynamicDuration > 0, "dynamic duration must be positive")
         precondition(!c.dynamicModes.isEmpty, "at least one dynamic mode is required")
+        if c.revealCoverageProbe {
+            precondition(
+                c.suite == .dynamic
+                    && c.dynamicModes == [.wallpaperReveal]
+                    && c.exactSweeps,
+                "the reveal coverage probe requires the isolated dynamic "
+                    + "wallpaper-reveal exact sweep")
+        }
         return c
     }
 }
@@ -1095,6 +1106,22 @@ func incomingDynamicBackground() -> Background {
     }
 }
 
+func revealCoverageBackgrounds() -> (outgoing: Background, incoming: Background) {
+    let outgoing = Background(
+        name: "reveal-coverage-black",
+        family: .dynamic
+    ) { _, _, _, _ in
+        (0, 0, 0)
+    }
+    let incoming = Background(
+        name: "reveal-coverage-white",
+        family: .dynamic
+    ) { _, _, _, _ in
+        (255, 255, 255)
+    }
+    return (outgoing, incoming)
+}
+
 func renderBackground(_ bg: Background, width: Int, height: Int) -> CGImage {
     var rgba = [UInt8](repeating: 255, count: width * height * 4)
     for y in 0..<height {
@@ -1183,6 +1210,89 @@ func canonicalRGBA8(_ image: CGImage) -> CanonicalImage? {
         return nil
     }
     return CanonicalImage(image: canonical, pixels: pixels)
+}
+
+func sourceBGRA8(_ image: CGImage) -> Data? {
+    guard image.bitsPerComponent == 8,
+          image.bitsPerPixel == 32,
+          image.bytesPerRow == image.width * 4,
+          image.alphaInfo == .premultipliedFirst,
+          image.bitmapInfo.contains(.byteOrder32Little),
+          let provider = image.dataProvider,
+          let providerData = provider.data
+    else {
+        return nil
+    }
+    let data = providerData as Data
+    guard data.count == image.bytesPerRow * image.height else {
+        return nil
+    }
+    return data
+}
+
+func appendLittleEndian<T: FixedWidthInteger>(_ value: T, to data: inout Data) {
+    var encoded = value.littleEndian
+    withUnsafeBytes(of: &encoded) { bytes in
+        data.append(contentsOf: bytes)
+    }
+}
+
+func writeSourceBGRA8Samples(
+    _ image: CGImage,
+    centerX: Double,
+    centerY: Double,
+    radius: Double,
+    to url: URL
+) throws {
+    guard let source = sourceBGRA8(image) else {
+        throw RigError.imageConversion
+    }
+    var samples = Data("LGRSMP01".utf8)
+    appendLittleEndian(UInt32(1), to: &samples)
+    appendLittleEndian(UInt32(image.width), to: &samples)
+    appendLittleEndian(UInt32(image.height), to: &samples)
+    appendLittleEndian(UInt32(image.bytesPerRow), to: &samples)
+    appendLittleEndian(centerX.bitPattern, to: &samples)
+    appendLittleEndian(centerY.bitPattern, to: &samples)
+    appendLittleEndian(radius.bitPattern, to: &samples)
+    appendLittleEndian(UInt32(65), to: &samples)
+
+    func appendBlock(x: Int, y: Int, width: Int, height: Int) {
+        appendLittleEndian(Int32(x), to: &samples)
+        appendLittleEndian(Int32(y), to: &samples)
+        appendLittleEndian(UInt32(width), to: &samples)
+        appendLittleEndian(UInt32(height), to: &samples)
+        source.withUnsafeBytes { bytes in
+            guard let base = bytes.baseAddress else { return }
+            for row in y..<(y + height) {
+                let offset = row * image.bytesPerRow + x * 4
+                samples.append(
+                    base.advanced(by: offset).assumingMemoryBound(to: UInt8.self),
+                    count: width * 4)
+            }
+        }
+    }
+
+    appendBlock(
+        x: 0,
+        y: 0,
+        width: min(384, image.width),
+        height: min(384, image.height))
+    let patchWidth = min(16, image.width)
+    let patchHeight = min(16, image.height)
+    for index in 0..<64 {
+        let angle = 2 * Double.pi * Double(index) / 64
+        let sampleX = Int((centerX + cos(angle) * radius - 0.5).rounded())
+        let sampleY = Int((centerY + sin(angle) * radius - 0.5).rounded())
+        let x = max(0, min(image.width - patchWidth, sampleX - patchWidth / 2))
+        let y = max(0, min(image.height - patchHeight, sampleY - patchHeight / 2))
+        appendBlock(
+            x: x,
+            y: y,
+            width: patchWidth,
+            height: patchHeight)
+    }
+    try samples.write(to: url, options: .atomic)
 }
 
 func describeImage(_ image: CGImage) -> ImageRecord {
@@ -4261,8 +4371,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if config.suite.includesDynamic {
-            let bg = dynamicBackground()
-            let incomingBG = incomingDynamicBackground()
+            let sourcePair = config.revealCoverageProbe
+                ? revealCoverageBackgrounds()
+                : (
+                    outgoing: dynamicBackground(),
+                    incoming: incomingDynamicBackground()
+                )
+            let bg = sourcePair.outgoing
+            let incomingBG = sourcePair.incoming
             let image = renderBackground(bg, width: pw, height: ph)
             let incomingImage = renderBackground(
                 incomingBG, width: pw, height: ph)
@@ -4694,7 +4810,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // for fitting; comparing them with the live sequences also exposes
             // any genuinely velocity-dependent rendering.
             if config.exactSweeps {
-                let sweepFrameCount = 17
+                let sweepFrameCount = config.revealCoverageProbe ? 65 : 17
                 let confirmationSeconds = 0.10
                 let confirmationNanoseconds = UInt64(
                     confirmationSeconds * 1_000_000_000)
@@ -4808,6 +4924,45 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     let url =
                                         sequenceDir.appendingPathComponent(name)
                                     try writePNG(cropped.image, to: url)
+                                    if config.revealCoverageProbe {
+                                        guard crop.x == 0, crop.y == 0,
+                                              crop.width == result.frame.source.width,
+                                              crop.height == result.frame.source.height
+                                        else {
+                                            throw RigError.invalidCrop(crop)
+                                        }
+                                        let centerX = Double(config.width)
+                                            * config.transitionOriginX
+                                            * Double(scale)
+                                        let centerY = Double(config.height)
+                                            * config.transitionOriginY
+                                            * Double(scale)
+                                        let right = Double(config.width)
+                                            * Double(scale) - centerX
+                                        let bottom = Double(config.height)
+                                            * Double(scale) - centerY
+                                        let farthestRadius = [
+                                            hypot(centerX, centerY),
+                                            hypot(right, centerY),
+                                            hypot(centerX, bottom),
+                                            hypot(right, bottom),
+                                        ].max() ?? hypot(
+                                            Double(config.width) * Double(scale),
+                                            Double(config.height) * Double(scale))
+                                        let unsnappedRadius = farthestRadius
+                                            * 1.03 * progress
+                                        let effectiveRadius = floor(
+                                            2 * unsnappedRadius) / 2
+                                        let rawName = String(name.dropLast(4))
+                                            + ".source-samples"
+                                        try writeSourceBGRA8Samples(
+                                            result.frame.source,
+                                            centerX: centerX,
+                                            centerY: centerY,
+                                            radius: effectiveRadius,
+                                            to: sequenceDir.appendingPathComponent(
+                                                rawName))
+                                    }
                                     records.append(SweepFrameRecord(
                                         file:
                                             "sweeps/\(sequenceID)/\(name)",

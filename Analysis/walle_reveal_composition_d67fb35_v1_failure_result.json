@@ -1,0 +1,298 @@
+{
+  "capture": {
+    "frozenStatus": "rejected",
+    "frozenTotals": {
+      "checkedBytes": 855638016,
+      "mismatchedBytes": 99763404,
+      "mismatchedPixels": 85358220,
+      "neitherSourcePixels": 85358091
+    },
+    "frozenValidationSHA256": "42fbb8e5754a10358da79817d305e27d12375516fb45b0a714a9d052667a4e48",
+    "manifestSHA256": "05c9faddf218d45d88169cd655b9a442c43bbbc74aaf0350ca41eab33a73fc03"
+  },
+  "claimBoundary": {
+    "doesNotAuthorize": [
+      "a nonzero comparison tolerance",
+      "post-hoc acceptance of the rejected v1 candidate",
+      "ordinary Walle integration",
+      "production parity"
+    ],
+    "promotes": []
+  },
+  "endpointStability": {
+    "0": {
+      "frames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      },
+      "repeatFrames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      },
+      "reverseFrames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      }
+    },
+    "16": {
+      "frames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      },
+      "repeatFrames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      },
+      "reverseFrames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      }
+    }
+  },
+  "openedFinding": {
+    "allTraversals": {
+      "edgeSupportPixels": 115323,
+      "neitherEndpointPixels": 133836,
+      "offEdgePixels": 18513
+    },
+    "comparisonSources": "same-surface captured endpoints",
+    "effectiveRadiusRule": "floor(diameterPixels) / 2",
+    "frames": [
+      {
+        "edgeSupportPixels": 1064,
+        "effectiveRadiusPixels": 135.0,
+        "encodedAlphaVsSdfCorrelation": 0.995113231014881,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.024913254899609043,
+        "firstOffEdge": null,
+        "index": 1,
+        "informativePixels": 1988,
+        "neitherEndpointPixels": 1064,
+        "offEdgePixels": 0,
+        "progress": 0.0625,
+        "unsnappedRadiusPixels": 135.25653161307957
+      },
+      {
+        "edgeSupportPixels": 2129,
+        "effectiveRadiusPixels": 270.5,
+        "encodedAlphaVsSdfCorrelation": 0.9966302870511635,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.02089686347393479,
+        "firstOffEdge": null,
+        "index": 2,
+        "informativePixels": 4495,
+        "neitherEndpointPixels": 2129,
+        "offEdgePixels": 0,
+        "progress": 0.125,
+        "unsnappedRadiusPixels": 270.51306322615915
+      },
+      {
+        "edgeSupportPixels": 3167,
+        "effectiveRadiusPixels": 405.5,
+        "encodedAlphaVsSdfCorrelation": 0.9959411326423422,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.022450712910403237,
+        "firstOffEdge": null,
+        "index": 3,
+        "informativePixels": 4877,
+        "neitherEndpointPixels": 3167,
+        "offEdgePixels": 0,
+        "progress": 0.1875,
+        "unsnappedRadiusPixels": 405.7695948392387
+      },
+      {
+        "edgeSupportPixels": 3822,
+        "effectiveRadiusPixels": 541.0,
+        "encodedAlphaVsSdfCorrelation": 0.9381317355325666,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.09391396826873923,
+        "firstOffEdge": null,
+        "index": 4,
+        "informativePixels": 6919,
+        "neitherEndpointPixels": 3822,
+        "offEdgePixels": 0,
+        "progress": 0.25,
+        "unsnappedRadiusPixels": 541.0261264523183
+      },
+      {
+        "edgeSupportPixels": 3444,
+        "effectiveRadiusPixels": 676.0,
+        "encodedAlphaVsSdfCorrelation": 0.9965962385044811,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.0211437674235389,
+        "firstOffEdge": null,
+        "index": 5,
+        "informativePixels": 6974,
+        "neitherEndpointPixels": 3444,
+        "offEdgePixels": 0,
+        "progress": 0.3125,
+        "unsnappedRadiusPixels": 676.2826580653979
+      },
+      {
+        "edgeSupportPixels": 3143,
+        "effectiveRadiusPixels": 811.5,
+        "encodedAlphaVsSdfCorrelation": 0.9966262165958065,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.022210682291410683,
+        "firstOffEdge": null,
+        "index": 6,
+        "informativePixels": 6807,
+        "neitherEndpointPixels": 3143,
+        "offEdgePixels": 0,
+        "progress": 0.375,
+        "unsnappedRadiusPixels": 811.5391896784774
+      },
+      {
+        "edgeSupportPixels": 3340,
+        "effectiveRadiusPixels": 946.5,
+        "encodedAlphaVsSdfCorrelation": 0.9970391608471674,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.02049942259693229,
+        "firstOffEdge": null,
+        "index": 7,
+        "informativePixels": 6378,
+        "neitherEndpointPixels": 3340,
+        "offEdgePixels": 0,
+        "progress": 0.4375,
+        "unsnappedRadiusPixels": 946.795721291557
+      },
+      {
+        "edgeSupportPixels": 3521,
+        "effectiveRadiusPixels": 1082.0,
+        "encodedAlphaVsSdfCorrelation": 0.956724528057555,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.08564628244245362,
+        "firstOffEdge": null,
+        "index": 8,
+        "informativePixels": 6682,
+        "neitherEndpointPixels": 3521,
+        "offEdgePixels": 0,
+        "progress": 0.5,
+        "unsnappedRadiusPixels": 1082.0522529046366
+      },
+      {
+        "edgeSupportPixels": 3763,
+        "effectiveRadiusPixels": 1217.0,
+        "encodedAlphaVsSdfCorrelation": 0.9972171638562205,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.01980703611264326,
+        "firstOffEdge": null,
+        "index": 9,
+        "informativePixels": 8072,
+        "neitherEndpointPixels": 3763,
+        "offEdgePixels": 0,
+        "progress": 0.5625,
+        "unsnappedRadiusPixels": 1217.308784517716
+      },
+      {
+        "edgeSupportPixels": 4018,
+        "effectiveRadiusPixels": 1352.5,
+        "encodedAlphaVsSdfCorrelation": 0.9976568176091566,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.01843126571882413,
+        "firstOffEdge": null,
+        "index": 10,
+        "informativePixels": 9137,
+        "neitherEndpointPixels": 4018,
+        "offEdgePixels": 0,
+        "progress": 0.625,
+        "unsnappedRadiusPixels": 1352.5653161307957
+      },
+      {
+        "edgeSupportPixels": 3367,
+        "effectiveRadiusPixels": 1487.5,
+        "encodedAlphaVsSdfCorrelation": 0.997840042928327,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.01576651211665242,
+        "firstOffEdge": {
+          "actual": [
+            167,
+            111,
+            156,
+            255
+          ],
+          "incomingEndpoint": [
+            168,
+            110,
+            156,
+            255
+          ],
+          "outgoingEndpoint": [
+            113,
+            176,
+            154,
+            255
+          ],
+          "signedDistancePixels": -784.5210102712884,
+          "x": 169,
+          "y": 0
+        },
+        "index": 11,
+        "informativePixels": 7563,
+        "neitherEndpointPixels": 9538,
+        "offEdgePixels": 6171,
+        "progress": 0.6875,
+        "unsnappedRadiusPixels": 1487.8218477438754
+      },
+      {
+        "edgeSupportPixels": 1762,
+        "effectiveRadiusPixels": 1623.0,
+        "encodedAlphaVsSdfCorrelation": 0.9718022997392431,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.08338781606675336,
+        "firstOffEdge": null,
+        "index": 12,
+        "informativePixels": 3360,
+        "neitherEndpointPixels": 1762,
+        "offEdgePixels": 0,
+        "progress": 0.75,
+        "unsnappedRadiusPixels": 1623.0783793569549
+      },
+      {
+        "edgeSupportPixels": 1077,
+        "effectiveRadiusPixels": 1758.0,
+        "encodedAlphaVsSdfCorrelation": 0.9981721314595997,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.02320003892843006,
+        "firstOffEdge": null,
+        "index": 13,
+        "informativePixels": 1875,
+        "neitherEndpointPixels": 1077,
+        "offEdgePixels": 0,
+        "progress": 0.8125,
+        "unsnappedRadiusPixels": 1758.3349109700343
+      },
+      {
+        "edgeSupportPixels": 616,
+        "effectiveRadiusPixels": 1893.5,
+        "encodedAlphaVsSdfCorrelation": 0.9986349408869201,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.018302755790118065,
+        "firstOffEdge": null,
+        "index": 14,
+        "informativePixels": 1334,
+        "neitherEndpointPixels": 616,
+        "offEdgePixels": 0,
+        "progress": 0.875,
+        "unsnappedRadiusPixels": 1893.591442583114
+      },
+      {
+        "edgeSupportPixels": 208,
+        "effectiveRadiusPixels": 2028.5,
+        "encodedAlphaVsSdfCorrelation": 0.99818836905622,
+        "encodedAlphaVsSdfMeanAbsoluteError": 0.02374382056070782,
+        "firstOffEdge": null,
+        "index": 15,
+        "informativePixels": 392,
+        "neitherEndpointPixels": 208,
+        "offEdgePixels": 0,
+        "progress": 0.9375,
+        "unsnappedRadiusPixels": 2028.8479741961937
+      }
+    ],
+    "perTraversal": {
+      "edgeSupportPixels": 38441,
+      "neitherEndpointPixels": 44612,
+      "offEdgePixels": 6171
+    },
+    "physicalDiameterRule": "floor(diameterPixels)",
+    "traversalIdentity": {
+      "repeatFrames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      },
+      "reverseFrames": {
+        "mismatchedBytesVsForward": 0,
+        "mismatchedPixelsVsForward": 0
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "status": "rejected-frozen-binary-candidate-opened-discovery"
+}
