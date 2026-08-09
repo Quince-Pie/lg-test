@@ -15316,3 +15316,40 @@ gate and the physical Retina presentation gate.  Core OpenGL remains the
 admitted exact backend; Vulkan/SPIR-V remains available only if one of those
 measured gates proves a core-GL boundary insufficient.  The protected shader
 is unchanged.
+
+### Exhaustive normalized-P25 raster-selector contract
+
+The finite square, near-square, and natural-shadow calibrations leave one
+production risk: a continuously resizing or clipped Walle circle can present
+a normalized fixed-grid determinant that none of those finite sweeps sampled.
+The 761,872 retained measurements collapse to 278,412 normalized-P25 keys with
+zero conflicting endpoint choices, but that agreement alone cannot authorize
+interpolation across the unsampled keys.
+
+`Analysis/generate_raster_p25_selector_cases.py` therefore constructs one
+bounded fixed-grid rectangle for every key in `[2^24,2^25)`.  All 16,777,216
+representatives were generated without Apple output; their 134,217,728-byte
+stream has SHA-256
+`836faf360db6a9bcdf2beb2f994507afe2ce0276eab3c2d45ae64e6facf8da3e`.
+Every determinant is inside its half-up normalization bin, with maximum
+absolute error 428 against the bin center and a strict limit of 511.
+
+The input-only centered-ramp preflight is frozen in
+`Analysis/raster_p25_selector_witness_preflight.json`.  For every non-boundary
+key, the predicted AGX factorized tile constant differs between the floor and
+ceil endpoints of `2^49/key`; all 16,777,215 pairs are distinguishable at the
+single preregistered pull.  The exact power boundary is represented explicitly
+as selector `2^24` at the next reciprocal exponent.  The prospective contract
+is `Analysis/raster_p25_selector_sweep_preregistration.json`.
+
+`Sources/GlassRasterP25SelectorSweep/main.swift` streams 256 batches on the
+direct Retina M1 Max.  It retains one raw binary32 word per key (64 MiB) while
+bounding the live result buffer to 256 KiB.  The validator must open every
+non-boundary observation against exactly one frozen candidate, match the exact
+power boundary, and reproduce all 761,872 earlier measurements with zero
+tolerance.  Only then may it materialize the two-megabyte floor/ceil bitmap.
+This selector gate is not itself a Walle parity claim: resizing/clipping,
+reveal/crop composition, and physical-Retina output still require their final
+end-to-end gates.  It also does not justify a backend switch; OpenGL 4.6 and
+Vulkan/SPIR-V remain interchangeable only after identical byte gates and
+measured production latency/VRAM results.

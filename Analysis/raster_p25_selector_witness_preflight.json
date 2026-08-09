@@ -1,0 +1,38 @@
+{
+  "capture": {
+    "batchCaseCount": 65536,
+    "ordering": "ascending normalized-P25 key",
+    "rawBytes": 67108864,
+    "recordBytes": 4,
+    "recordCount": 16777216
+  },
+  "capturedAppleOutputUsed": false,
+  "classification": "input-only exhaustive centered-witness preflight; no Apple output observed",
+  "domain": {
+    "candidateReciprocalPairSha256": "bd291f0f3e10566e4bbfd1a7b614fb4f1d401b7d608f7bf139d93151f755f450",
+    "caseFileSha256": "836faf360db6a9bcdf2beb2f994507afe2ce0276eab3c2d45ae64e6facf8da3e",
+    "keyCount": 16777216,
+    "keyLowerInclusive": 16777216,
+    "keyUpperExclusive": 33554432,
+    "reciprocalCandidates": "floor and ceil of 2^49/key, with the exact power boundary represented as 2^24 at the next reciprocal exponent"
+  },
+  "rasterP25SelectorWitnessSchemaVersion": 1,
+  "witness": {
+    "candidateConstantDistinctCount": 16777215,
+    "candidateConstantPairSha256": "4b64afac66d352e71efd7e4536fdb6118c416f869ca34008c2479a00c25268bf",
+    "endpointMultiplierBits": "0x3f000000",
+    "endpointRamp": "[-width/2,+width/2] in exact binary32",
+    "everyNonBoundaryCandidateMultiplicity": 1,
+    "exactPowerBoundaryCount": 1,
+    "lowerCandidateConstantSha256": "065559ce918ca366d90c186abd8577229510640d9aee4acc1ab77e33c47c7d7d",
+    "pullOffset": [
+      0.0,
+      0.5
+    ],
+    "samplePixel": [
+      512,
+      512
+    ],
+    "upperCandidateConstantSha256": "9af548e9179da8f7ce9ed52c7306ed39e5d901572a5c21a8ef5e27540e664cdd"
+  }
+}

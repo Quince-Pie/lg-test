@@ -1,0 +1,88 @@
+{
+  "capture": {
+    "batchCaseCount": 65536,
+    "caseFile": "Analysis/raster_p25_selector_cases_u32le.bin",
+    "caseFileBytes": 134217728,
+    "caseFileSha256": "836faf360db6a9bcdf2beb2f994507afe2ce0276eab3c2d45ae64e6facf8da3e",
+    "fixedUnitsPerPixel": 256,
+    "ordering": "ascending normalized-P25 key",
+    "pullOffset": [
+      0.0,
+      0.5
+    ],
+    "rawBytes": 67108864,
+    "recordBytes": 4,
+    "recordCount": 16777216,
+    "rigVersion": "metal-raster-p25-selector-sweep-1.0.0",
+    "samplePixel": [
+      512,
+      512
+    ],
+    "targetSize": [
+      1024,
+      1024
+    ]
+  },
+  "finiteDomain": {
+    "caseCount": 16777216,
+    "caseGenerator": "Analysis/generate_raster_p25_selector_cases.py",
+    "caseGeneratorSha256": "c60bb59c0ce94552b0c448f57f906621ffe7f7e1b28b3e727057bbe7682590f2",
+    "determinantRepresentative": "widthFixed*heightFixed",
+    "keyLowerInclusive": 16777216,
+    "keyUpperExclusive": 33554432,
+    "maximumRepresentativeDeterminantError": 428,
+    "normalization": "round-half-up(determinant/2^10)",
+    "representativeDeterminantErrorLimit": 511
+  },
+  "frozenControls": {
+    "naturalShadow": {
+      "caseCount": 139261,
+      "caseFileSha256": "94a4e83307b5b5ba0020fb7ff6f4838acde2f959a9d3a8a2d6bf250af1a6893d",
+      "selectorArchiveSha256": "b063a9a84afb062a8f54e006dac387f0c65c09cfc003405d7fa69218969e922d",
+      "selectorRawSha256": "90edc4baf626f8a6b90aa3a874465f3a004d9c8a8cbeac282663d24161aa8ef8"
+    },
+    "smallNearSquare": {
+      "caseCount": 589842,
+      "selectorArchiveSha256": "7d0f0743a894c47518139456d5e7d9d805526126f760650239babde35388bba6",
+      "selectorRawSha256": "424fd9e815520c1f6f77840a6b976bf41d2907aecb1d4c82d1ea43fbc152633f"
+    },
+    "smallSquare": {
+      "caseCount": 32769,
+      "selectorArchiveSha256": "4a701a9868484ec6580026b6328ac99ec38d14d1d4747cd2066964e46498989e",
+      "selectorRawSha256": "9cb148ec4996e77243c397c97f01163ea0a08502239adc8aeecd3e8e64fe6d10"
+    },
+    "totalCaseCount": 761872
+  },
+  "hypothesis": {
+    "candidateReciprocals": "floor and ceil of 2^49/key; exact powers use 2^24 at the next reciprocal exponent and a rounded key of 2^25 is the deterministic 2^24 endpoint",
+    "selectorKey": "25-bit half-up-normalized unsimplified fixed-grid determinant",
+    "sufficiencyClaim": "all fixed-grid determinants sharing a normalized-P25 key select the same reciprocal endpoint"
+  },
+  "observedAtPreregistration": false,
+  "predeclaredOpening": {
+    "acceptance": [
+      "the exact power boundary matches its single candidate",
+      "every other observation matches exactly one frozen candidate constant",
+      "all 761872 frozen measured controls agree with the opened P25 endpoint bitmap"
+    ],
+    "materialization": "one little-endian bit per ascending P25 key; zero=floor and one=ceil",
+    "qualityTolerance": 0,
+    "rejection": [
+      "any missing or non-finite record",
+      "any zero-match or two-match non-boundary observation",
+      "any disagreement with a frozen measured control"
+    ]
+  },
+  "question": "Does one binary endpoint bit per normalized-P25 determinant key reproduce Apple's fixed-function reciprocal selector across the complete key domain?",
+  "role": "prospective-exhaustive-normalized-p25-fixed-grid-reciprocal-selector-calibration",
+  "schemaVersion": 1,
+  "witnessPreflight": {
+    "candidateConstantDistinctCount": 16777215,
+    "candidateConstantPairSha256": "4b64afac66d352e71efd7e4536fdb6118c416f869ca34008c2479a00c25268bf",
+    "everyNonBoundaryCandidateMultiplicity": 1,
+    "file": "Analysis/raster_p25_selector_witness_preflight.json",
+    "generator": "Analysis/generate_raster_p25_selector_witnesses.py",
+    "generatorSha256": "5d8b4fa592520c8a3c110b6313e5825075fa8aaef61a8bd302130b5e31931760",
+    "sha256": "b3674247ebc7c92f024f1b09dbd50cecee10851b6d672f7d63c6031823464ebd"
+  }
+}
