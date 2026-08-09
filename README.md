@@ -15169,3 +15169,65 @@ This prospectively promotes the directional selector and reduces remaining
 Walle algorithm unknowns to zero.  Production parity is still deliberately
 false until the integrated Walle process passes its fresh full-frame and
 physical Retina presentation gates.
+
+### Core-OpenGL integration boundary and regular controlled backdrop
+
+The guarded Walle implementation now constructs the admitted dynamic frame
+entirely in C23 from public state.  Its independent frame constructor matches
+11,988/11,988 retained bytes across eight states.  A separate C23 port of the
+Apple/AGX raster setup and interpolation arithmetic matches 693,248/693,248
+retained bytes under GCC, Clang, and ASan/UBSan.  A persistent desktop-core
+OpenGL renderer then renders all eight states in one context and matches all
+33,554,432 final bytes, with zero unequal pixels and maximum channel delta
+zero.  These are Walle-side implementation gates; captured pixels remain only
+the terminal oracle.
+
+This result resolves the backend question over that admitted domain.  Desktop
+core OpenGL 4.5 is both sufficient and required by the current exact path.  A
+wholesale translation of the legacy GLES shader is not accepted: the existing
+core-equivalence gate observes a one-code regular-material difference.  Vulkan
+or SPIR-V does not supply additional numerical precision by itself and would
+introduce a new raster, interpolation, and floating-point-contraction transfer
+boundary.  Walle therefore uses the proven core-OpenGL path for exact work and
+will move an individual boundary to Vulkan only if a zero-tolerance image gate
+or measured performance gate proves that necessary.  The protected legacy
+shader remains byte-identical at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+The eight-state final-frame gate above intentionally inherited Apple's
+transparent detached-CARenderer backdrop.  It proves the glass, shadow, and
+final-highlight arithmetic, but cannot certify Walle's real wallpaper bytes.
+The retained controlled-backdrop corpus covers the direct-image producer only;
+regular Walle states also execute `downsample_4_frag_lph`.  Treating that
+missing branch as if it were already closed would be an image-quality claim
+without evidence.
+
+`Analysis/walle_regular_controlled_backdrop_preregistration.json`, SHA-256
+`bfe48f11d63b990a245b1f8959e03c0baebb9d26a7f7ba27fa805cba77262436`,
+freezes the new calibration before its first answer-bearing capture.  It uses
+regular/dark `circle-480-center` dematerialization at samples 1, 4, 8, 12, 16,
+20, 24, and 28.  The existing opaque 1024-by-1024 BGRA coordinate hash is
+substituted only at fragment texture 3 of the detached producer.  Apple keeps
+its pipeline, mesh, uniforms, viewport, scissor, sampler, render target,
+copy-base dispatch, mip generation, glass draws, and final compositor.
+
+The probe now recognizes `downsample_4_frag_lph` at both the binding and replay
+boundaries.  The direct-Retina runner is
+`Analysis/run_walle_regular_controlled_backdrop_local_macos_26_6_1.sh`,
+SHA-256
+`f5944dec2c1102cfed77587325fdde21190ac396019110db0655ac04c4e2b7f0`.
+It rejects GitHub Actions, a debugger, a non-Retina session, a dirty checkout,
+and any Nix-store path in native build or capture.  The frozen validator and
+its five discriminators have SHA-256 values
+`6b8a34c4e34d95fcbe1348654483e4368673748b2eaca3fa43a6a05ba9b5bd11`
+and
+`3bf51ac116ec4d2a0bf18aa0da0567cb98e4a98dccd0d35ff230dd92a61f9f62`.
+
+Acceptance requires all eight exact controlled inputs, one producer/copy-base
+boundary per state, strict address and command-sequence joins, both producer
+families, complete contiguous mip chains, and at least 4,096 distinct BGRA
+pixels in every producer output and copy-base level zero.  The tolerance is
+zero and post-capture state exclusion is forbidden.  Passing this first gate
+admits the information-rich corpus; it does not yet claim the producer
+arithmetic.  Independent reconstruction of every producer, copy-base, and mip
+byte is the next gate before those real-wallpaper inputs enter ordinary Walle.

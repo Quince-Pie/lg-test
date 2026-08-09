@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "title": "Regular Walle dynamic controlled-backdrop calibration",
+  "status": "frozen-before-first-regular-controlled-capture",
+  "frozenAtUTC": "2026-08-09T08:28:05Z",
+  "classification": "opened-discovery-calibration",
+  "platform": {
+    "architecture": "arm64",
+    "device": "Apple M1 Max with built-in Liquid Retina XDR display",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "nativeSDKVersion": "26.5",
+    "physicalPixels": [3456, 2234],
+    "logicalPoints": [1728, 1117],
+    "backingScaleFactor": 2,
+    "githubActionsPermitted": false,
+    "nativeCaptureDebuggerPermitted": false,
+    "nixStorePathInNativeBuildOrCapturePermitted": false
+  },
+  "case": {
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "dematerialize",
+    "geometry": "circle-480-center",
+    "sampleIndices": [1, 4, 8, 12, 16, 20, 24, 28],
+    "expectedProducerFragmentFamilies": [
+      "downsample_4_frag_lph",
+      "TimgA2Xhfc_Isrc"
+    ]
+  },
+  "controlledIntervention": {
+    "name": "opaque-coordinate-hash-v1",
+    "location": "fragment texture index 3 of the detached local CARenderer regular producer pass only",
+    "texture": {
+      "width": 1024,
+      "height": 1024,
+      "pixelFormat": 80,
+      "channelOrder": "BGRA",
+      "alpha": 255,
+      "rawBytes": 4194304,
+      "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88",
+      "blue": "(37*x + 17*y + 13) mod 256",
+      "green": "(11*x xor 29*y xor 0x5a) mod 256",
+      "red": "(3*x + 5*y + ((x*y) mod 251)) mod 256"
+    },
+    "doesNotModify": [
+      "the live presentation-layer transition",
+      "producer pipeline state, mesh, uniforms, viewport, scissor, sampler, render target, or draw",
+      "copy-base and mip compute pipelines",
+      "glass and final compositor pipelines",
+      "Walle's protected production shader"
+    ]
+  },
+  "captureEnvironment": {
+    "LG_GLASS_MATERIAL": "regular",
+    "LG_GLASS_APPEARANCE": "dark",
+    "LG_GLASS_GEOMETRY": "circle-480-center",
+    "LG_TRANSITION_TIMELINE": "1",
+    "LG_TRANSITION_UNIFORMS": "1",
+    "LG_TRANSITION_DIRECTION": "dematerialize",
+    "LG_TRANSITION_CONTROLLED_BACKDROP": "1",
+    "LG_TRANSITION_HIGHLIGHT_TRACE": "0",
+    "LG_TRANSITION_CURRENT_COMPOSITOR_TRANSFER_TRACE": "0",
+    "LG_TRANSITION_ISCD_BORDER_TRACE": "0",
+    "LG_ENABLE_UNSAFE_PRIVATE_INTERPOLANT_TRACE": "0"
+  },
+  "frozenSourceSHA256": {
+    "Sources/GlassIntrospect/main.swift": "dd3d7aa262424ce0b0d6351dd3fc8051b851a1464392caf0f1c36da1d38e9315",
+    "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
+    "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
+    "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
+    "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
+    "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
+    "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208",
+    "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
+    "Analysis/validate_walle_regular_controlled_backdrop.py": "6b8a34c4e34d95fcbe1348654483e4368673748b2eaca3fa43a6a05ba9b5bd11",
+    "Analysis/test_validate_walle_regular_controlled_backdrop.py": "3bf51ac116ec4d2a0bf18aa0da0567cb98e4a98dccd0d35ff230dd92a61f9f62",
+    "../shaders/frag.glsl": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d"
+  },
+  "acceptance": {
+    "requiredStateCount": 8,
+    "requiredBoundaryCountPerState": 1,
+    "requiredControlledInputSHA256EveryState": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88",
+    "minimumUniqueProducerOutputPixelsPerState": 4096,
+    "minimumUniqueCopyBaseMipZeroPixelsPerState": 4096,
+    "requireBothProducerFragmentFamilies": true,
+    "requireProducerCopyBaseAddressAndSequenceJoin": true,
+    "requireCompleteContiguousMipPyramid": true,
+    "postCaptureStateExclusionPermitted": false,
+    "pixelTolerance": 0,
+    "qualityRegressionPermitted": false
+  },
+  "analysisOrder": [
+    "validate the exact controlled input, producer/copy-base joins, branch census, and nondegenerate outputs",
+    "reconstruct downsample_4 and direct-image producer bytes independently",
+    "reconstruct copy-base and every mip byte independently",
+    "port the accepted arithmetic to Walle's core-OpenGL renderer and compare a fresh production frame byte for byte"
+  ],
+  "claimBoundary": {
+    "successfulCaptureValidationPromotes": "an information-rich regular-material producer corpus covering direct and four-sample branches",
+    "successfulCaptureValidationDoesNotPromote": [
+      "an exact producer arithmetic implementation",
+      "an ordinary Walle integration",
+      "physical Retina parity",
+      "formal Liquid Glass parity"
+    ]
+  },
+  "result": null
+}

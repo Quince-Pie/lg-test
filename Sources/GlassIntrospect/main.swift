@@ -7625,6 +7625,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 as? String,
               fragment == "A2Xghfc"
                 || fragment == "TimgA2Xhfc_Isrc"
+                || fragment == "downsample_4_frag_lph"
         else {
             lock.unlock()
             return texture
@@ -7720,6 +7721,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     .fragmentFunction?.name
                 producerPipeline = fragment == "A2Xghfc"
                     || fragment == "TimgA2Xhfc_Isrc"
+                    || fragment == "downsample_4_frag_lph"
             case .fragmentTexture(let texture, let index):
                 if index == 3 {
                     fragmentInput = texture
