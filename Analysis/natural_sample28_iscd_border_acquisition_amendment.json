@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "amends": "natural_sample28_iscd_interpolant_preregistration.json",
+  "reason": "Four corrected direct Retina runs produced exact Iscd trace transport but their naturally scheduled sample 28 values all landed on the six-index side of the sub-millisecond Float32 round-trip interval.",
+  "frozenFailedAcquisitions": [
+    {"remainingFloat32Bits": "0x3dfed000", "IscdIndexCount": 6},
+    {"remainingFloat32Bits": "0x3dfe4680", "IscdIndexCount": 6},
+    {"remainingFloat32Bits": "0x3dfd5a00", "IscdIndexCount": 6},
+    {"remainingFloat32Bits": "0x3dfdc680", "IscdIndexCount": 6}
+  ],
+  "targetPredicate": "For the actual presentation CASDFElementLayer extent e, let h = Float32(e / 2) and r = Float32(Float32(h + 9) - 9). Retain the snapshot iff r != h; this is the independently recovered predicate for Apple's 24-index round-trip-radius border grid.",
+  "acquisitionRule": "At requested sample 28, read successive unmodified presentation-layer snapshots for at most 250 milliseconds and retain the first satisfying targetPredicate. Record the attempt number and re-check the predicate from the retained layer state. Never write a filter, layer, animation, geometry, or timing value.",
+  "requiredCase": {
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "dematerialize",
+    "geometry": "circle-480-center",
+    "sampleIndex": 28
+  },
+  "promotionGate": "This amendment only acquires diagnostic Apple interpolants. The trace remains forbidden as a Walle input, and any constructor correction still requires a distinct naturally scheduled Retina capture plus the complete zero-tolerance eight-state AMD gate.",
+  "forbidden": [
+    "mutating presentation state",
+    "pausing or seeking the animation",
+    "changing shader arithmetic",
+    "captured per-pixel correction surfaces",
+    "nonzero pixel tolerance"
+  ]
+}

@@ -21617,12 +21617,30 @@ private struct TransitionBackgroundFilterSnapshot {
     let sampleIndex: Int
     let requestedProgress: Double
     let remaining: Double
+    let targetedFinalHighlightBorderSelection: Bool
+    let targetedFinalHighlightBorderSelectionAttempt: Int
     let filter: NSObject
     let backgroundPath: [Int]
     let foregroundFilter: NSObject?
     let foregroundPath: [Int]?
     let layerStates: [TransitionLayerState]
     let layerSource: String
+}
+
+private func usesFinalHighlightBorderTopology(
+    _ snapshot: TransitionBackgroundFilterSnapshot
+) -> Bool {
+    let elementPath = [1, 0, 1, 0, 0, 0, 0]
+    let matches = snapshot.layerStates.filter {
+        $0.path == elementPath
+            && $0.className == "CASDFElementLayer"
+    }
+    guard matches.count == 1 else { return false }
+    let extent = matches[0].bounds.width
+    guard extent.isFinite, extent > 0 else { return false }
+    let halfExtent = Float(extent / 2)
+    let roundTripRadius = Float(Float(halfExtent + 9) - 9)
+    return roundTripRadius != halfExtent
 }
 
 private struct TransitionLayerState {
@@ -22264,7 +22282,9 @@ private func transitionBackgroundFilterSnapshot(
     requestedProgress: Double,
     presentationLayerSource: String = "presentation",
     modelLayerSource: String = "model-endpoint-fallback",
-    requireForeground: Bool = true
+    requireForeground: Bool = true,
+    targetedFinalHighlightBorderSelection: Bool = false,
+    targetedFinalHighlightBorderSelectionAttempt: Int = 1
 ) -> TransitionBackgroundFilterSnapshot? {
     var candidates: [(layer: CALayer, source: String)] = []
     if let presentation = rootLayer.presentation() {
@@ -22292,6 +22312,10 @@ private func transitionBackgroundFilterSnapshot(
             sampleIndex: sampleIndex,
             requestedProgress: requestedProgress,
             remaining: remaining.doubleValue,
+            targetedFinalHighlightBorderSelection:
+                targetedFinalHighlightBorderSelection,
+            targetedFinalHighlightBorderSelectionAttempt:
+                targetedFinalHighlightBorderSelectionAttempt,
             filter: copied,
             backgroundPath: target.path,
             foregroundFilter: copiedForeground,
@@ -24098,6 +24122,12 @@ private func transitionBackgroundUniformEvidence(
             "sampleIndex": snapshot.sampleIndex,
             "requestedProgress": snapshot.requestedProgress,
             "remaining": snapshot.remaining,
+            "targetedFinalHighlightBorderSelection":
+                snapshot.targetedFinalHighlightBorderSelection,
+            "targetedFinalHighlightBorderSelectionAttempt":
+                snapshot.targetedFinalHighlightBorderSelectionAttempt,
+            "retainedStateUsesFinalHighlightBorderTopology":
+                usesFinalHighlightBorderTopology(snapshot),
             "replayedLayerCount": requestedLayerStates.count,
             "installedCarrierLayerCount":
                 replay.installedPaths.count,
@@ -25530,6 +25560,14 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_CURRENT_COMPOSITOR_TRANSFER_TRACE"
                 ] == "1"
+            let iscdBorderTraceRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_ISCD_BORDER_TRACE"
+                ] == "1"
+            let highlightTraceRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_HIGHLIGHT_TRACE"
+                ] == "1"
             let highlightSourceTraceRequested =
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_FINAL_SOURCE_TRACE"
@@ -26010,6 +26048,24 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "circle-480-center case",
                     ])
             }
+            if iscdBorderTraceRequested,
+               !dynamicUniformsRequested
+                    || !highlightTraceRequested
+                    || direction != .dematerialize
+                    || material != .regular
+                    || appearance != .dark
+                    || geometry.rawValue != "circle-480-center"
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 39,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "Iscd border trace requires highlighted "
+                            + "regular/dark dematerialize dynamic uniforms "
+                            + "for circle-480-center",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
@@ -26175,11 +26231,36 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 if dynamicUniformsRequested,
                    dynamicUniformSampleIndices.contains(index)
                 {
-                    let snapshot =
-                        transitionBackgroundFilterSnapshot(
+                    var snapshot: TransitionBackgroundFilterSnapshot?
+                    if iscdBorderTraceRequested && index == 28 {
+                        let deadline = CACurrentMediaTime() + 0.25
+                        var attempt = 0
+                        repeat {
+                            attempt += 1
+                            window.displayIfNeeded()
+                            CATransaction.flush()
+                            let candidate =
+                                transitionBackgroundFilterSnapshot(
+                                    rootLayer: rootLayer,
+                                    sampleIndex: index,
+                                    requestedProgress: progress,
+                                    targetedFinalHighlightBorderSelection:
+                                        true,
+                                    targetedFinalHighlightBorderSelectionAttempt:
+                                        attempt)
+                            if let candidate,
+                               usesFinalHighlightBorderTopology(candidate)
+                            {
+                                snapshot = candidate
+                                break
+                            }
+                        } while CACurrentMediaTime() < deadline
+                    } else {
+                        snapshot = transitionBackgroundFilterSnapshot(
                             rootLayer: rootLayer,
                             sampleIndex: index,
                             requestedProgress: progress)
+                    }
                     if let snapshot {
                         dynamicUniformSnapshots.append(snapshot)
                     } else if index != sampleCount - 1 {
