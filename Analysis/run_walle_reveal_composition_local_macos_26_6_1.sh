@@ -77,7 +77,7 @@ require_sha256 "$preregistration" a6964c111c85985701c36ba31c146d3df81193150b5805
 require_sha256 "$probe" 8b810c88d65b54daf6fce8b3cd07fa7932073c8c7f643493cecd06569d7a6514
 require_sha256 "$validator" 1de5b3a80396d62962ee88412bcb251c94f6def45b7f5e1236f302797a8701d4
 require_sha256 "$validator_test" c9b4ed9aed8781dd8ba0094cdfcf33f43df8c7d024631ee09083901b2aaf38ba
-require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bc1bf1dbdf50aea913926f1
+require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
 
 readonly build_directory=$(/usr/bin/mktemp -d -t lg-walle-reveal)
 if [[ ! "$build_directory" =~ ^/var/folders/.+/T/lg-walle-reveal\..+$ ]]; then
