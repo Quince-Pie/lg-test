@@ -229,7 +229,7 @@ def final_axes(
     radius = min(radius_x, radius_y)
     outer_x = model.float32(radius_x + 9.0)
     outer_y = model.float32(radius_y + 9.0)
-    border = radius_x != half_x or radius_y != half_y or radius_x != radius_y
+    border = radius_x > half_x or radius_y > half_y or radius_x != radius_y
     if border:
         positions_x = (
             model.float32(origin_x - 9.0),

@@ -12784,13 +12784,15 @@ equal. Their observed and predicted stream SHA-256 values are respectively
 and
 `3e68886fce8d5de241728b812053840022237769ad094a47c63ea28a9f96248d`.
 
-The current `TkfhBvcm...Iscd` final topology is also exact in all 191 states:
-186 four-vertex/six-index quads and five sixteen-vertex/twenty-four-index
-borders. Let `hx = binary32(width/2)`, `hy = binary32(height/2)`,
-`rx = binary32(binary32(hx+9)-9)`, and
-`ry = binary32(binary32(hy+9)-9)`. Apple selects the border exactly when
-`rx != hx || ry != hy || rx != ry`. This predicate has zero disagreements in
-the corpus, including three border states without a current background draw.
+The current `TkfhBvcm...Iscd` final topology reconstruction is exact in all
+191 states in this opened corpus: 186 four-vertex/six-index quads and five
+sixteen-vertex/twenty-four-index borders.  The then-proposed predicate
+`rx != hx || ry != hy || rx != ry` also has zero disagreements inside that
+corpus.  It is not a universal selector: later natural captures contain
+`rx < hx && ry < hy && rx == ry` states that remain compact and therefore
+falsify the inequality predicate.  The prospective selector section at the
+end of this document supersedes that predicate without changing this
+section's bitwise geometry, clipping, or stream results.
 
 The apparently alternating one-ULP clipping residual was caused by using the
 wrong precision boundary. The executing call path on macOS 26.6.1 is
@@ -15092,3 +15094,54 @@ versus 24-index construction for arbitrary natural states outside the frozen
 trajectory.  Production-process rendering and physical Retina presentation
 of Walle-produced pixels remain separate product gates and are not claimed by
 this result.
+
+### Frozen prospective current-final topology selector
+
+Subsequent natural sample-28 captures exposed a false generalization in the
+older current-final topology section.  Five independently rendered square
+states have a binary32 radius round trip one ULP below their half-extent and
+all five use the compact four-vertex/six-index `Iscd` draw.  The old
+inequality predicate predicts a border for every one.  Conversely, the fresh
+accepted full-frame holdout above has a one-ULP positive round trip and uses
+the 16-vertex/24-index border.  Across the 191-state opened current corpus and
+these six later natural states, the directional candidate has zero topology
+disagreements while the old rule has five.
+
+Let
+
+```text
+hx = binary32(width / 2)
+hy = binary32(height / 2)
+rx = binary32(binary32(hx + 9) - 9)
+ry = binary32(binary32(hy + 9) - 9)
+```
+
+The frozen candidate is
+
+```text
+border = rx > hx || ry > hy || rx != ry
+```
+
+This is also the direction encoded by the native
+`emit_sdf_bounds_internal` branch: the comparison at symbol offset `+1604`
+enters the compact constructor through `b.ge`, while its fallthrough builds
+the subdivided mesh.  The already closed 123-state small-clear family uses
+the same directional `r > h` boundary under its independently recovered
+radius operation order.
+
+`Analysis/walle_current_final_topology_selector_preregistration.json` freezes
+one final output-blind discriminator before capture.  At requested sample 28,
+the probe may only read successive unmodified presentation snapshots and
+retain the first equal-axis state for which `rx < hx` and `ry < hy`.  It may
+not seek or pause the animation or write any layer, filter, buffer, geometry,
+or timing value.  The prediction is an ordinary 4-vertex/6-index `Iscd` draw
+with no `Irsd` draw; the old predicate is the mandatory disagreeing positive
+control.  The direct-Retina runner uses only Apple's native toolchain for the
+build and capture, records no GitHub Actions or debugger use, and admits Nix
+only after the native process exits for Python 3.14 validation.
+
+A passing capture closes the sole remaining Apple selector unknown and
+authorizes guarded Walle integration.  It does not by itself establish
+production parity: Walle must still pass a fresh zero-unequal-byte production
+frame and physical Retina presentation gate.  Shader-quality reduction and
+nonzero tolerances remain forbidden.

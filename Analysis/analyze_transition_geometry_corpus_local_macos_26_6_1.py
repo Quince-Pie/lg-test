@@ -1074,7 +1074,7 @@ def expected_final_highlight(
     right = float32((horizontal_origin + element_extent) + FINAL_HIGHLIGHT_EXPANSION)
     top = float32(vertical_origin + FINAL_HIGHLIGHT_EXPANSION)
     bottom = float32((vertical_origin - element_extent) - FINAL_HIGHLIGHT_EXPANSION)
-    if radius != half_extent:
+    if radius > half_extent:
         positions_x = (
             left,
             float32(left + outer_radius),

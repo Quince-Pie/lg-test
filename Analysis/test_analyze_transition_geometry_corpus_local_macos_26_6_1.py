@@ -376,6 +376,20 @@ class FinalHighlightConstructionTests(unittest.TestCase):
             "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572",
         )
 
+    def test_negative_radius_round_trip_remains_compact(self) -> None:
+        construction = corpus.expected_final_highlight(
+            self.geometry(480),
+            material="regular",
+            appearance="dark",
+            remaining=0.12018394470214844,
+        )
+        radius, _, _, _ = struct.unpack_from("<4f", construction["fragmentPrefix"], 0)
+        half_extent = struct.unpack_from("<f", construction["fragmentPrefix"], 0x28)[0]
+        self.assertLess(float32_bits(radius), float32_bits(half_extent))
+        self.assertEqual(construction["topology"], "exact-circle-quad")
+        self.assertEqual(len(construction["vertices"]), 4)
+        self.assertEqual(len(construction["indices"]), 6)
+
     def test_static_endpoint_uses_exact_source_coordinate_sentinel(self) -> None:
         construction = corpus.expected_final_highlight(
             self.geometry(455),

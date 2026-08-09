@@ -22252,6 +22252,8 @@ private struct TransitionBackgroundFilterSnapshot {
     let remaining: Double
     let targetedFinalHighlightBorderSelection: Bool
     let targetedFinalHighlightBorderSelectionAttempt: Int
+    let targetedFinalHighlightRadiusShrinkSelection: Bool
+    let targetedFinalHighlightRadiusShrinkSelectionAttempt: Int
     let filter: NSObject
     let backgroundPath: [Int]
     let foregroundFilter: NSObject?
@@ -22260,20 +22262,61 @@ private struct TransitionBackgroundFilterSnapshot {
     let layerSource: String
 }
 
-private func usesFinalHighlightBorderTopology(
+private struct FinalHighlightRoundTripTopologyTerms {
+    let halfX: Float
+    let halfY: Float
+    let radiusX: Float
+    let radiusY: Float
+}
+
+private func finalHighlightRoundTripTopologyTerms(
     _ snapshot: TransitionBackgroundFilterSnapshot
-) -> Bool {
+) -> FinalHighlightRoundTripTopologyTerms? {
     let elementPath = [1, 0, 1, 0, 0, 0, 0]
     let matches = snapshot.layerStates.filter {
         $0.path == elementPath
             && $0.className == "CASDFElementLayer"
     }
-    guard matches.count == 1 else { return false }
-    let extent = matches[0].bounds.width
-    guard extent.isFinite, extent > 0 else { return false }
-    let halfExtent = Float(extent / 2)
-    let roundTripRadius = Float(Float(halfExtent + 9) - 9)
-    return roundTripRadius != halfExtent
+    guard matches.count == 1 else { return nil }
+    let width = matches[0].bounds.width
+    let height = matches[0].bounds.height
+    guard width.isFinite, width > 0,
+          height.isFinite, height > 0
+    else {
+        return nil
+    }
+    let halfX = Float(width / 2)
+    let halfY = Float(height / 2)
+    return FinalHighlightRoundTripTopologyTerms(
+        halfX: halfX,
+        halfY: halfY,
+        radiusX: Float(Float(halfX + 9) - 9),
+        radiusY: Float(Float(halfY + 9) - 9))
+}
+
+private func usesFinalHighlightBorderTopology(
+    _ snapshot: TransitionBackgroundFilterSnapshot
+) -> Bool {
+    guard let terms = finalHighlightRoundTripTopologyTerms(snapshot)
+    else {
+        return false
+    }
+    return terms.radiusX > terms.halfX
+        || terms.radiusY > terms.halfY
+        || terms.radiusX != terms.radiusY
+}
+
+private func usesFinalHighlightRadiusShrinkTopologyProbe(
+    _ snapshot: TransitionBackgroundFilterSnapshot
+) -> Bool {
+    guard let terms = finalHighlightRoundTripTopologyTerms(snapshot)
+    else {
+        return false
+    }
+    return terms.halfX == terms.halfY
+        && terms.radiusX == terms.radiusY
+        && terms.radiusX < terms.halfX
+        && terms.radiusY < terms.halfY
 }
 
 private struct TransitionLayerState {
@@ -22917,7 +22960,9 @@ private func transitionBackgroundFilterSnapshot(
     modelLayerSource: String = "model-endpoint-fallback",
     requireForeground: Bool = true,
     targetedFinalHighlightBorderSelection: Bool = false,
-    targetedFinalHighlightBorderSelectionAttempt: Int = 1
+    targetedFinalHighlightBorderSelectionAttempt: Int = 1,
+    targetedFinalHighlightRadiusShrinkSelection: Bool = false,
+    targetedFinalHighlightRadiusShrinkSelectionAttempt: Int = 1
 ) -> TransitionBackgroundFilterSnapshot? {
     var candidates: [(layer: CALayer, source: String)] = []
     if let presentation = rootLayer.presentation() {
@@ -22949,6 +22994,10 @@ private func transitionBackgroundFilterSnapshot(
                 targetedFinalHighlightBorderSelection,
             targetedFinalHighlightBorderSelectionAttempt:
                 targetedFinalHighlightBorderSelectionAttempt,
+            targetedFinalHighlightRadiusShrinkSelection:
+                targetedFinalHighlightRadiusShrinkSelection,
+            targetedFinalHighlightRadiusShrinkSelectionAttempt:
+                targetedFinalHighlightRadiusShrinkSelectionAttempt,
             filter: copied,
             backgroundPath: target.path,
             foregroundFilter: copiedForeground,
@@ -24759,8 +24808,14 @@ private func transitionBackgroundUniformEvidence(
                 snapshot.targetedFinalHighlightBorderSelection,
             "targetedFinalHighlightBorderSelectionAttempt":
                 snapshot.targetedFinalHighlightBorderSelectionAttempt,
+            "targetedFinalHighlightRadiusShrinkSelection":
+                snapshot.targetedFinalHighlightRadiusShrinkSelection,
+            "targetedFinalHighlightRadiusShrinkSelectionAttempt":
+                snapshot.targetedFinalHighlightRadiusShrinkSelectionAttempt,
             "retainedStateUsesFinalHighlightBorderTopology":
                 usesFinalHighlightBorderTopology(snapshot),
+            "retainedStateUsesFinalHighlightRadiusShrinkTopologyProbe":
+                usesFinalHighlightRadiusShrinkTopologyProbe(snapshot),
             "replayedLayerCount": requestedLayerStates.count,
             "installedCarrierLayerCount":
                 replay.installedPaths.count,
@@ -26197,6 +26252,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_ISCD_BORDER_TRACE"
                 ] == "1"
+            let iscdRadiusShrinkTraceRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_ISCD_RADIUS_SHRINK_TRACE"
+                ] == "1"
             let highlightTraceRequested =
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_HIGHLIGHT_TRACE"
@@ -26699,12 +26758,39 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "for circle-480-center",
                     ])
             }
+            if iscdRadiusShrinkTraceRequested,
+               !dynamicUniformsRequested
+                    || iscdBorderTraceRequested
+                    || currentFinalCompositorTransferRequested
+                    || highlightVertexTailTraceRequested
+                    || highlightSourceTraceRequested
+                    || smallClearFinalColorTraceRequested
+                    || smallClearBackgroundTraceRequested
+                    || smallClearTmuaCompositionTraceRequested
+                    || smallClearTmuaNonvacuousTraceRequested
+                    || direction != .dematerialize
+                    || material != .regular
+                    || appearance != .dark
+                    || geometry.rawValue != "circle-480-center"
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 40,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "Iscd radius-shrink trace requires exclusive "
+                            + "regular/dark dematerialize dynamic uniforms "
+                            + "for circle-480-center",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
             let endpointTopologyDeadlineSeconds = 1.0
             let dynamicUniformSampleIndices = Set(
-                currentFinalCompositorTransferRequested
+                iscdRadiusShrinkTraceRequested
+                    ? [28]
+                    : currentFinalCompositorTransferRequested
                     ? currentFinalCompositorTransferSampleIndices
                     : highlightSourceTraceRequested
                     ? finalHighlightSourceCandidateSampleIndices
@@ -26865,7 +26951,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                    dynamicUniformSampleIndices.contains(index)
                 {
                     var snapshot: TransitionBackgroundFilterSnapshot?
-                    if iscdBorderTraceRequested && index == 28 {
+                    if (iscdBorderTraceRequested
+                            || iscdRadiusShrinkTraceRequested)
+                        && index == 28
+                    {
                         let deadline = CACurrentMediaTime() + 0.25
                         var attempt = 0
                         repeat {
@@ -26878,11 +26967,18 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     sampleIndex: index,
                                     requestedProgress: progress,
                                     targetedFinalHighlightBorderSelection:
-                                        true,
+                                        iscdBorderTraceRequested,
                                     targetedFinalHighlightBorderSelectionAttempt:
+                                        attempt,
+                                    targetedFinalHighlightRadiusShrinkSelection:
+                                        iscdRadiusShrinkTraceRequested,
+                                    targetedFinalHighlightRadiusShrinkSelectionAttempt:
                                         attempt)
                             if let candidate,
-                               usesFinalHighlightBorderTopology(candidate)
+                               (iscdBorderTraceRequested
+                                ? usesFinalHighlightBorderTopology(candidate)
+                                : usesFinalHighlightRadiusShrinkTopologyProbe(
+                                    candidate))
                             {
                                 snapshot = candidate
                                 break
