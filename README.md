@@ -14940,32 +14940,58 @@ distance zero.  The controls are nonvacuous: the prior radial evaluation has
 633,382 stage mismatches and 47 tomography mismatches, while the wrong-pass
 uniform has the historical 148 alpha mismatches.
 
-This is exact calibration evidence, not yet prospective promotion.  The radial
-rule was selected after this capture was opened.  Schema 4 of
+The preceding result is calibration evidence: the radial rule was selected
+after that capture was opened.  Schema 4 of
 `Analysis/natural_sample28_border_highlight_arithmetic_preregistration.json`,
 SHA-256
 `475e4997a20da7eb7de5b3eeee0e068ab0562aecba5be749a20f573f0810b862`,
-therefore freezes the rule and requires one fresh native Retina holdout with
-a different timeline.  Four output-blind SDF inputs are fixed before capture:
+therefore froze the rule and required one fresh native Retina holdout with a
+different timeline.  Four output-blind SDF inputs were fixed before capture:
 wide and tall 248-by-240 coarse cases, plus wide and tall cases separated by
 six binary32 ULP around the natural half-size.  Every case has preregistered
 natural-uniform, alpha-oracle-uniform, and 48-byte SDF-record hashes.  The rig
-must replay Apple's unmodified private function, the current-system
+was required to replay Apple's unmodified private function, the current-system
 specialization, its binary16 alpha output, and all nine raw diagnostic stages
-for each case.  It must also repeat the original forty stage comparisons, the
-final SDF, natural alpha, and ten tomography cases with zero unequal words.
-The subsequent eight-state AMD frame gate remains mandatory.
+for each case with zero unequal words.
+
+Commit `49732f6291c80ef7c2b17529369ddbee379fe396` executed that holdout directly
+on the physical M1 Max Retina Mac.  The active display was 3456 by 2234 pixels
+at 2x, unlocked and on-console; GitHub Actions was not used.  All four cases,
+all 36 diagnostic replays, and both Apple function paths executed.  The
+captured private function and reconstructed current-system specialization
+matched across all 16,777,216 compared bytes.  The launcher's provenance text
+expanded short commit `49732f6` with an incorrect suffix; that original value
+is retained, and the correction is authenticated by the exact committed Swift
+and preregistration blob hashes.  No rendered evidence was changed.
+
+The independent RX 9070 XT analyzer
+`../analysis/analyze_sample28_border_highlight_arithmetic_holdout.py` has
+SHA-256
+`9d5b87e2268962661b6a5e51b92dd3dde79be3ef8a17dd3af6d92487b69eccc4`.
+Its deterministic full result has SHA-256
+`aa74cb7abb859219680385219365846969a6b092bb06051196267023db1a36f4`.
+Across the four unseen inputs it matches 159,383,552 decoded stage words,
+12,582,912 final SDF words, and 4,194,304 binary16 alpha words: 176,160,768
+checked candidate words, zero mismatches, maximum bit distance zero.  The old
+radial rule is nonvacuous in every case and differs in 483,328 radial-input-Y
+words.  The retained compact result is
+`Analysis/natural_sample28_border_highlight_arithmetic_holdout_result.json`,
+SHA-256
+`732663167e7307d70b3620fa69d3afdfc04dfe7ee7868f0e983bb9b6f4bde7d1`.
+This prospectively promotes the recovered arithmetic rule.  The subsequent
+eight-state AMD frame gate remains mandatory before a production parity claim.
 
 The corrected ledger is:
 
 1. **Unknowns blocking guarded Walle work: zero.**  Pass ownership and the
-   sample-28 arithmetic rule are independently named and exact in calibration.
+   sample-28 arithmetic rule are independently named, exact in calibration,
+   and now exact on the output-blind prospective holdout.
 2. **Apple algorithm families still unknown before universal circle-domain
    parity: one.**  The general policy selecting compact six-index versus
    24-index final-highlight construction for unseen natural states remains.
-3. **Arithmetic proof obligations: two, not algorithm unknowns.**  Complete
-   the frozen unseen Retina holdout, then the unseen eight-state AMD frame
-   gate.  Neither permits a nonzero tolerance.
+3. **Remaining arithmetic verification obligations: one, not an algorithm
+   unknown.**  Complete the unseen eight-state AMD full-frame gate at zero
+   tolerance.  The prospective Retina arithmetic holdout is complete.
 4. **Production parity remains false.**  Walle's protected production shader
    is still SHA-256
    `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "classification": "exact prospective sample-28 non-square final-highlight arithmetic holdout",
+  "capture": {
+    "sourceCommit": "49732f6291c80ef7c2b17529369ddbee379fe396",
+    "host": "physical Retina Apple M1 Max on macOS 26.6.1 build 25G76",
+    "githubActionsUsed": false,
+    "nativeExecutableSha256": "5c8016631ba10ce3a453cf1c19ebd40dbbdd8f697f9f7675bca927451dff50d9",
+    "mainSwiftSha256": "1f3f345cdba6bb328f6987a1948bac126ec9abca5356715272fc4eb3adea9e7e",
+    "timelineSha256": "e7d9a931b74237a04780ddb6908498db48c192284647935fa4c59310f1efc385",
+    "arithmeticRecordSha256": "781d05a78e78a512e2a1d2756a7a2b5394347bce0f3d725c4e28485fe5294a39",
+    "arithmeticPreregistrationSha256": "475e4997a20da7eb7de5b3eeee0e068ab0562aecba5be749a20f573f0810b862",
+    "commitLabelCorrection": {
+      "recorded": "49732f620d7b92092cb55afc6715f1a4de3f150e",
+      "correct": "49732f6291c80ef7c2b17529369ddbee379fe396",
+      "sourceBlobHashesMatchCorrectCommit": true,
+      "renderedEvidenceModified": false
+    },
+    "captureSession": {
+      "activeRetinaPhysicalPixels": [3456, 2234],
+      "logicalPoints": [1728, 1117],
+      "backingScaleFactor": 2,
+      "unlockedOnConsole": true
+    },
+    "holdoutCaseCount": 4,
+    "diagnosticPipelineCountPerCase": 9,
+    "diagnosticReplayCount": 36,
+    "capturedPrivateVsCurrentSystemCheckedBytes": 16777216,
+    "capturedPrivateVsCurrentSystemMismatchedBytes": 0
+  },
+  "analysis": {
+    "host": "AMD Radeon RX 9070 XT",
+    "script": "../analysis/analyze_sample28_border_highlight_arithmetic_holdout.py",
+    "scriptSha256": "9d5b87e2268962661b6a5e51b92dd3dde79be3ef8a17dd3af6d92487b69eccc4",
+    "referenceShaderSha256": "9c89bd0caba93f17957be62a4140150be3619754c107f4c778fb5b2148ca7127",
+    "referenceRendererSha256": "a5013b828e67bdab2db7b21efca8070d7df53f1895212b56fded38d1365d688d",
+    "fixtureManifestSha256": "7b8e698a5b4dc09ecd4da804f6c7cea8707966ae933cd6f3f196a54ca505187a",
+    "fullResultSha256": "aa74cb7abb859219680385219365846969a6b092bb06051196267023db1a36f4",
+    "deterministicRepeat": true,
+    "comparisonTolerance": 0,
+    "capturedPixelSurfaceUsedAsRendererInput": false,
+    "perPixelCorrectionTableUsed": false
+  },
+  "inputs": {
+    "candidateFrozenBeforeAppleOutput": true,
+    "cases": [
+      {
+        "name": "wide-coarse",
+        "sdfArgBits": ["0x43780000", "0x43700000"],
+        "priorRadialMismatchedWords": 262144
+      },
+      {
+        "name": "tall-coarse",
+        "sdfArgBits": ["0x43700000", "0x43780000"],
+        "priorRadialMismatchedWords": 68608
+      },
+      {
+        "name": "wide-ulp",
+        "sdfArgBits": ["0x4377016b", "0x43770165"],
+        "priorRadialMismatchedWords": 76800
+      },
+      {
+        "name": "tall-ulp",
+        "sdfArgBits": ["0x43770165", "0x4377016b"],
+        "priorRadialMismatchedWords": 75776
+      }
+    ]
+  },
+  "recoveredRule": {
+    "radialY": "point.y * (arg.x * apple_fast_reciprocal(arg.y))",
+    "radialSquared": "radial.y * radial.y + (radial.x * radial.x)",
+    "radialInverseLength": "apple_fast_rsqrt(radialSquared)"
+  },
+  "positiveControl": {
+    "description": "the prior AMD radial evaluation must diverge at radial-input-y in every holdout case",
+    "caseCount": 4,
+    "exactCaseCount": 0,
+    "mismatchedWords": 483328,
+    "passed": true
+  },
+  "candidate": {
+    "stageCaseCount": 152,
+    "checkedStageWords": 159383552,
+    "mismatchedStageWords": 0,
+    "checkedSdfWords": 12582912,
+    "mismatchedSdfWords": 0,
+    "checkedAlphaHalfWords": 4194304,
+    "mismatchedAlphaHalfWords": 0,
+    "totalCheckedWords": 176160768,
+    "totalMismatchedWords": 0,
+    "maximumBitDistance": 0
+  },
+  "gate": {
+    "prospectiveHoldoutExact": true,
+    "calibrationPromoted": true,
+    "safeForGuardedWalleIntegration": true,
+    "eightStateAmdFrameGateRequired": true,
+    "generalTopologySelectorRequired": true,
+    "remainingAlgorithmFamilyUnknowns": 1,
+    "productionWalleParityEstablished": false,
+    "productionShaderSha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "productionShaderModified": false,
+    "shaderQualityReductionAllowed": false
+  }
+}
