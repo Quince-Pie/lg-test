@@ -26254,6 +26254,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                 snapshot = candidate
                                 break
                             }
+                            try? await Task.sleep(
+                                for: .milliseconds(1))
                         } while CACurrentMediaTime() < deadline
                     } else {
                         snapshot = transitionBackgroundFilterSnapshot(
