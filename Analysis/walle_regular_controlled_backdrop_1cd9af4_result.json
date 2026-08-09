@@ -1,0 +1,808 @@
+{
+  "acceptance": {
+    "allControlledInputsExact": true,
+    "allCopyBaseMipZeroOutputsNondegenerate": true,
+    "allProducerOutputsNondegenerate": true,
+    "directAndDownsampleProducerBranchesObserved": true,
+    "pixelTolerance": 0,
+    "producerAndCopyBaseJoinsExact": true
+  },
+  "capture": "/Users/quince/lg-test-controlled-1cd9af4/local-walle-regular-controlled-backdrop-1cd9af4-run1-v1",
+  "captureDynamicUniformSchemaVersion": 9,
+  "claimBoundary": {
+    "captureValidated": true,
+    "producerArithmeticReconstructed": false,
+    "productionParityEstablished": false
+  },
+  "controlledInputSHA256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88",
+  "frozenValidatorExpectedSchemaVersion": 7,
+  "producerFragmentCounts": {
+    "TimgA2Xhfc_Isrc": 5,
+    "downsample_4_frag_lph": 3
+  },
+  "sampleIndices": [
+    1,
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    28
+  ],
+  "schemaVersion": 2,
+  "stateCount": 8,
+  "states": [
+    {
+      "mips": [
+        {
+          "bytes": 1048576,
+          "extent": [
+            512,
+            512
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-01-texture-000-pf80-512x512.raw",
+          "sha256": "c5e4cde6a2e59dfcb00873427fe5191f3d4bf96f356678337b2e0ce80757624e",
+          "uniqueBGRA8Pixels": 47720
+        },
+        {
+          "bytes": 262144,
+          "extent": [
+            256,
+            256
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-01-texture-000-pf80-512x512-mip-01.raw",
+          "sha256": "9d56ad50ed55231c3893ec43f6e46a56a0daf38fa4fe307d5e78ce394859e38f",
+          "uniqueBGRA8Pixels": 2127
+        },
+        {
+          "bytes": 65536,
+          "extent": [
+            128,
+            128
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-01-texture-000-pf80-512x512-mip-02.raw",
+          "sha256": "c6621949b2d8420715202a1d89e3b933c89f4896d1894e3a9546dbc45e41290b",
+          "uniqueBGRA8Pixels": 489
+        },
+        {
+          "bytes": 16384,
+          "extent": [
+            64,
+            64
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-01-texture-000-pf80-512x512-mip-03.raw",
+          "sha256": "3b65223cd6842398cfe943e4c9101aa7d45ee342db77aa979f363f7ee1ec1786",
+          "uniqueBGRA8Pixels": 205
+        },
+        {
+          "bytes": 4096,
+          "extent": [
+            32,
+            32
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-01-texture-000-pf80-512x512-mip-04.raw",
+          "sha256": "6080ac2e00d76d4f7a0e485807edffeb9cfa3a55e350f730462b5306bf7fe365",
+          "uniqueBGRA8Pixels": 134
+        },
+        {
+          "bytes": 1024,
+          "extent": [
+            16,
+            16
+          ],
+          "level": 5,
+          "rawFile": "sdf-generator-transition-background-uniform-01-texture-000-pf80-512x512-mip-05.raw",
+          "sha256": "49c81ac0b6e7bc1885d599298cb83b027f3a7f6e6445083e542fda33850a8e7a",
+          "uniqueBGRA8Pixels": 115
+        },
+        {
+          "bytes": 256,
+          "extent": [
+            8,
+            8
+          ],
+          "level": 6,
+          "rawFile": "sdf-generator-transition-background-uniform-01-texture-000-pf80-512x512-mip-06.raw",
+          "sha256": "4c53593f9e61ef72f37fff4f51021be4f69e8189ac624d4eae1432d8fd210c17",
+          "uniqueBGRA8Pixels": 59
+        }
+      ],
+      "producerExtent": [
+        256,
+        256
+      ],
+      "producerFragment": "downsample_4_frag_lph",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-01-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 262144,
+        "rawFile": "transition-background-uniform-01-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "1e1c1ae887786c4c3caeb51e761ac6bb17ebfdf0961ffe8cce795bdc8c5b4df6",
+        "uniqueBGRA8Pixels": 48571
+      },
+      "remaining": 0.9682731628417969,
+      "sampleIndex": 1
+    },
+    {
+      "mips": [
+        {
+          "bytes": 1310720,
+          "extent": [
+            640,
+            512
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-04-texture-000-pf80-640x512.raw",
+          "sha256": "2469671fbfeb7ff88240a0f3c3c7c2a1d723944df104339660a891013a10eb22",
+          "uniqueBGRA8Pixels": 74757
+        },
+        {
+          "bytes": 327680,
+          "extent": [
+            320,
+            256
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-04-texture-000-pf80-640x512-mip-01.raw",
+          "sha256": "25f43d4d4db7f10271ee1a11a40ecc1dfcb8385b605088936169d0d0d32ac8c5",
+          "uniqueBGRA8Pixels": 2741
+        },
+        {
+          "bytes": 81920,
+          "extent": [
+            160,
+            128
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-04-texture-000-pf80-640x512-mip-02.raw",
+          "sha256": "963134d4f685d3fa4ba0ed3a9917669eb352cce78e5080dffa69a6ff292e17c9",
+          "uniqueBGRA8Pixels": 532
+        },
+        {
+          "bytes": 20480,
+          "extent": [
+            80,
+            64
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-04-texture-000-pf80-640x512-mip-03.raw",
+          "sha256": "79da7b0b9d35b281f21066b9a925e27d45e506da0410804e2c680f82fb86bee2",
+          "uniqueBGRA8Pixels": 251
+        },
+        {
+          "bytes": 5120,
+          "extent": [
+            40,
+            32
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-04-texture-000-pf80-640x512-mip-04.raw",
+          "sha256": "715c0f2aa0659342a3557e07a1a46eb33c35184274baf81f26f7a8bb72e9ec88",
+          "uniqueBGRA8Pixels": 152
+        },
+        {
+          "bytes": 1280,
+          "extent": [
+            20,
+            16
+          ],
+          "level": 5,
+          "rawFile": "sdf-generator-transition-background-uniform-04-texture-000-pf80-640x512-mip-05.raw",
+          "sha256": "de182a9f917262b8e4bb24039010e7d82b17d507eafbd2313daa802c83c8d565",
+          "uniqueBGRA8Pixels": 108
+        },
+        {
+          "bytes": 320,
+          "extent": [
+            10,
+            8
+          ],
+          "level": 6,
+          "rawFile": "sdf-generator-transition-background-uniform-04-texture-000-pf80-640x512-mip-06.raw",
+          "sha256": "0ff1e8737508dbf518741de98f44ac4f94f6b0c2bfe0be93e0e9ea62df9f72aa",
+          "uniqueBGRA8Pixels": 67
+        }
+      ],
+      "producerExtent": [
+        320,
+        320
+      ],
+      "producerFragment": "downsample_4_frag_lph",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-04-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 409600,
+        "rawFile": "transition-background-uniform-04-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "0be8bf0bc3da55dfb23c7eeef6088b9449064c4013bbda95608197bcec2688f5",
+        "uniqueBGRA8Pixels": 75273
+      },
+      "remaining": 0.8744297027587891,
+      "sampleIndex": 4
+    },
+    {
+      "mips": [
+        {
+          "bytes": 1638400,
+          "extent": [
+            640,
+            640
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-08-texture-000-pf80-640x640.raw",
+          "sha256": "872e95af100ff97f57d51a217632f0e1e01d0dd7c5852d024e555908c3f480db",
+          "uniqueBGRA8Pixels": 125120
+        },
+        {
+          "bytes": 409600,
+          "extent": [
+            320,
+            320
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-08-texture-000-pf80-640x640-mip-01.raw",
+          "sha256": "e7b092c43bd391cd3c4a922d261e0d7ae305756cfd469feb1a30f5640c166cc4",
+          "uniqueBGRA8Pixels": 5695
+        },
+        {
+          "bytes": 102400,
+          "extent": [
+            160,
+            160
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-08-texture-000-pf80-640x640-mip-02.raw",
+          "sha256": "685b6a59de201f39e0cf2cac2940acf1be0e887e0a85719fc338824654f29cfa",
+          "uniqueBGRA8Pixels": 815
+        },
+        {
+          "bytes": 25600,
+          "extent": [
+            80,
+            80
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-08-texture-000-pf80-640x640-mip-03.raw",
+          "sha256": "afb0adf3772d9d5178fe464dd7cf176290bf51e0533de4a76f9dd491c7e0d025",
+          "uniqueBGRA8Pixels": 315
+        },
+        {
+          "bytes": 6400,
+          "extent": [
+            40,
+            40
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-08-texture-000-pf80-640x640-mip-04.raw",
+          "sha256": "2fc4f6c8c1c34486cdb0b8ee7b690cafa1432486cf2e087ba7fa337aeb34d909",
+          "uniqueBGRA8Pixels": 166
+        },
+        {
+          "bytes": 1600,
+          "extent": [
+            20,
+            20
+          ],
+          "level": 5,
+          "rawFile": "sdf-generator-transition-background-uniform-08-texture-000-pf80-640x640-mip-05.raw",
+          "sha256": "4c3b90f83b9b69343e552aa4c15b8b8f60e81df08c1f918065317f2fe7bd1e52",
+          "uniqueBGRA8Pixels": 108
+        },
+        {
+          "bytes": 400,
+          "extent": [
+            10,
+            10
+          ],
+          "level": 6,
+          "rawFile": "sdf-generator-transition-background-uniform-08-texture-000-pf80-640x640-mip-06.raw",
+          "sha256": "61ae9a65a13ae4b878b7840c50c05492c862478c81b670e825f95a89125a554c",
+          "uniqueBGRA8Pixels": 66
+        }
+      ],
+      "producerExtent": [
+        384,
+        384
+      ],
+      "producerFragment": "downsample_4_frag_lph",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-08-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 589824,
+        "rawFile": "transition-background-uniform-08-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "edb11c40bbce0f1b3c9d990c2c89ef3ffba8930b8cef29bb402e1bab1a9623dd",
+        "uniqueBGRA8Pixels": 126146
+      },
+      "remaining": 0.7484493255615234,
+      "sampleIndex": 8
+    },
+    {
+      "mips": [
+        {
+          "bytes": 1966080,
+          "extent": [
+            640,
+            768
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-12-texture-001-pf80-640x768.raw",
+          "sha256": "a3a0ff350f4fec7d29fc1bf0185733367999dff0211363429ee0289f93ef5e37",
+          "uniqueBGRA8Pixels": 185463
+        },
+        {
+          "bytes": 491520,
+          "extent": [
+            320,
+            384
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-12-texture-001-pf80-640x768-mip-01.raw",
+          "sha256": "ceac5fa051c4352f2cabcedf715267b42092dc7aeedcce64be5b3cbfc46ae6a3",
+          "uniqueBGRA8Pixels": 14170
+        },
+        {
+          "bytes": 122880,
+          "extent": [
+            160,
+            192
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-12-texture-001-pf80-640x768-mip-02.raw",
+          "sha256": "1f334504a864b8a072e121b36f4faf38e74b84338f8f349652c06a5191d1edd4",
+          "uniqueBGRA8Pixels": 1957
+        },
+        {
+          "bytes": 30720,
+          "extent": [
+            80,
+            96
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-12-texture-001-pf80-640x768-mip-03.raw",
+          "sha256": "fde97e2f8512abddc650e3b003e783109323e2063424fd8afe461142b761e2ba",
+          "uniqueBGRA8Pixels": 669
+        },
+        {
+          "bytes": 7680,
+          "extent": [
+            40,
+            48
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-12-texture-001-pf80-640x768-mip-04.raw",
+          "sha256": "9558691838b921bd11b58e6d8c68582299a99f080284c1ea084c6daa3697358f",
+          "uniqueBGRA8Pixels": 317
+        },
+        {
+          "bytes": 1920,
+          "extent": [
+            20,
+            24
+          ],
+          "level": 5,
+          "rawFile": "sdf-generator-transition-background-uniform-12-texture-001-pf80-640x768-mip-05.raw",
+          "sha256": "876d7c641f87a78a0a8fe46354e6109099a47e04ae5235a4f1223a899c888402",
+          "uniqueBGRA8Pixels": 163
+        },
+        {
+          "bytes": 480,
+          "extent": [
+            10,
+            12
+          ],
+          "level": 6,
+          "rawFile": "sdf-generator-transition-background-uniform-12-texture-001-pf80-640x768-mip-06.raw",
+          "sha256": "2fdd3e1089c6f7883e2071fb7333e877ecb3c24178e6065f48e75e92eb9f5347",
+          "uniqueBGRA8Pixels": 73
+        }
+      ],
+      "producerExtent": [
+        448,
+        448
+      ],
+      "producerFragment": "TimgA2Xhfc_Isrc",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-12-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 802816,
+        "rawFile": "transition-background-uniform-12-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "7f0c0f3fa462107423901f0a5f44d6d33ea345cb46421fdeea4283b5cf0c98ab",
+        "uniqueBGRA8Pixels": 187156
+      },
+      "remaining": 0.6244058609008789,
+      "sampleIndex": 12
+    },
+    {
+      "mips": [
+        {
+          "bytes": 2359296,
+          "extent": [
+            768,
+            768
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-16-texture-001-pf80-768x768.raw",
+          "sha256": "090cd4446acd8c2f4f08054c019a38212348c7564e8c29548ab80d71a06a4cfd",
+          "uniqueBGRA8Pixels": 245949
+        },
+        {
+          "bytes": 589824,
+          "extent": [
+            384,
+            384
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-16-texture-001-pf80-768x768-mip-01.raw",
+          "sha256": "75b395a27060a85d7c00448f5db38242ee40a8fb486bd87cfb555bc85393b6d6",
+          "uniqueBGRA8Pixels": 15678
+        },
+        {
+          "bytes": 147456,
+          "extent": [
+            192,
+            192
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-16-texture-001-pf80-768x768-mip-02.raw",
+          "sha256": "01095aa82590b7f8cb469034bc2d5cb08a3e0b501bc338f424a70004655ce1b1",
+          "uniqueBGRA8Pixels": 1970
+        },
+        {
+          "bytes": 36864,
+          "extent": [
+            96,
+            96
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-16-texture-001-pf80-768x768-mip-03.raw",
+          "sha256": "419ccc4336f4a1e885e4a89e6b5a0d8cdabfa927c2b6bf2da083a9e8736e5922",
+          "uniqueBGRA8Pixels": 707
+        },
+        {
+          "bytes": 9216,
+          "extent": [
+            48,
+            48
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-16-texture-001-pf80-768x768-mip-04.raw",
+          "sha256": "479a549a48a767db439130f38a206263850723f467bd9cbb566d5cfdaceea068",
+          "uniqueBGRA8Pixels": 261
+        },
+        {
+          "bytes": 2304,
+          "extent": [
+            24,
+            24
+          ],
+          "level": 5,
+          "rawFile": "sdf-generator-transition-background-uniform-16-texture-001-pf80-768x768-mip-05.raw",
+          "sha256": "452776299003926306be78420cc3dd6b0255cf375588a63333f70e36fe94a679",
+          "uniqueBGRA8Pixels": 138
+        },
+        {
+          "bytes": 576,
+          "extent": [
+            12,
+            12
+          ],
+          "level": 6,
+          "rawFile": "sdf-generator-transition-background-uniform-16-texture-001-pf80-768x768-mip-06.raw",
+          "sha256": "f710b1f22de96c257c5569643fc9efc16bf03b2a21169aa363725064e363ae20",
+          "uniqueBGRA8Pixels": 66
+        }
+      ],
+      "producerExtent": [
+        512,
+        512
+      ],
+      "producerFragment": "TimgA2Xhfc_Isrc",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-16-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 1048576,
+        "rawFile": "transition-background-uniform-16-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "edb3575e7cdd42f9c304b32f5fcd858dbc038e955ae850b1df6d8b312b7353a8",
+        "uniqueBGRA8Pixels": 247412
+      },
+      "remaining": 0.4991474151611328,
+      "sampleIndex": 16
+    },
+    {
+      "mips": [
+        {
+          "bytes": 2752512,
+          "extent": [
+            896,
+            768
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-20-texture-001-pf80-896x768.raw",
+          "sha256": "e55e5d383b4607f6f21e4e6e7488257fc1262c7625863623ba732fec7c78ddff",
+          "uniqueBGRA8Pixels": 301037
+        },
+        {
+          "bytes": 688128,
+          "extent": [
+            448,
+            384
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-20-texture-001-pf80-896x768-mip-01.raw",
+          "sha256": "fff0ca6d6d690014e9257effc83aeea7a3086fcd1a1a60853cbae273e2b2fc12",
+          "uniqueBGRA8Pixels": 18193
+        },
+        {
+          "bytes": 172032,
+          "extent": [
+            224,
+            192
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-20-texture-001-pf80-896x768-mip-02.raw",
+          "sha256": "8e5e0834daa17b9bac21d1569c8fdbac4c67476eb2df09fa23a75ecd6b709ecb",
+          "uniqueBGRA8Pixels": 2512
+        },
+        {
+          "bytes": 43008,
+          "extent": [
+            112,
+            96
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-20-texture-001-pf80-896x768-mip-03.raw",
+          "sha256": "38572f73c838579ae509151e73d459a3318edc02d538411935a0ea49aafb2828",
+          "uniqueBGRA8Pixels": 746
+        },
+        {
+          "bytes": 10752,
+          "extent": [
+            56,
+            48
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-20-texture-001-pf80-896x768-mip-04.raw",
+          "sha256": "22ad68629afe9a92890a3ffda407cc5efae3330bc169f76e310db63d8f1b8157",
+          "uniqueBGRA8Pixels": 310
+        },
+        {
+          "bytes": 2688,
+          "extent": [
+            28,
+            24
+          ],
+          "level": 5,
+          "rawFile": "sdf-generator-transition-background-uniform-20-texture-001-pf80-896x768-mip-05.raw",
+          "sha256": "8245c1d6f6e0af4741b056105e56b1d3a390c49709085ab1d000673947de1e92",
+          "uniqueBGRA8Pixels": 146
+        },
+        {
+          "bytes": 672,
+          "extent": [
+            14,
+            12
+          ],
+          "level": 6,
+          "rawFile": "sdf-generator-transition-background-uniform-20-texture-001-pf80-896x768-mip-06.raw",
+          "sha256": "516bc6f56f101178b79e374f84d57d017aef44ca6faba555d806f43bd5606763",
+          "uniqueBGRA8Pixels": 77
+        }
+      ],
+      "producerExtent": [
+        576,
+        576
+      ],
+      "producerFragment": "TimgA2Xhfc_Isrc",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-20-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 1327104,
+        "rawFile": "transition-background-uniform-20-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "f9ec020140b01765038f4cd804d14603c53540c855616322e736130ef2e77b23",
+        "uniqueBGRA8Pixels": 302651
+      },
+      "remaining": 0.37360668182373047,
+      "sampleIndex": 20
+    },
+    {
+      "mips": [
+        {
+          "bytes": 2359296,
+          "extent": [
+            768,
+            768
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-24-texture-001-pf80-768x768.raw",
+          "sha256": "1c1816909074d4af5925418608e6e0dfb33a0daf50822d7100d4feb277b3b857",
+          "uniqueBGRA8Pixels": 353303
+        },
+        {
+          "bytes": 589824,
+          "extent": [
+            384,
+            384
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-24-texture-001-pf80-768x768-mip-01.raw",
+          "sha256": "1b6564742086b6577b78b980c989c0aa017908d4723d155ad35bda455cc60874",
+          "uniqueBGRA8Pixels": 22774
+        },
+        {
+          "bytes": 147456,
+          "extent": [
+            192,
+            192
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-24-texture-001-pf80-768x768-mip-02.raw",
+          "sha256": "2aafc9351f65e4ace0b8ccadcc811d5dcf95ed1117831fb6a15fa4c81170cbf6",
+          "uniqueBGRA8Pixels": 2661
+        },
+        {
+          "bytes": 36864,
+          "extent": [
+            96,
+            96
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-24-texture-001-pf80-768x768-mip-03.raw",
+          "sha256": "3c5e7442d9918c2c6f4a8882f33ea53fd6181cf213747d94ddb80ebeec624209",
+          "uniqueBGRA8Pixels": 801
+        },
+        {
+          "bytes": 9216,
+          "extent": [
+            48,
+            48
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-24-texture-001-pf80-768x768-mip-04.raw",
+          "sha256": "8327a4e0abc8c4da3778ab7280a500f86592d7b84b68f8d116552d79c3a713f7",
+          "uniqueBGRA8Pixels": 311
+        },
+        {
+          "bytes": 2304,
+          "extent": [
+            24,
+            24
+          ],
+          "level": 5,
+          "rawFile": "sdf-generator-transition-background-uniform-24-texture-001-pf80-768x768-mip-05.raw",
+          "sha256": "242e2e0ec623955a862c33acd0ba15982bac8ce3a60fae59d13af2151acdcf2e",
+          "uniqueBGRA8Pixels": 113
+        }
+      ],
+      "producerExtent": [
+        640,
+        640
+      ],
+      "producerFragment": "TimgA2Xhfc_Isrc",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-24-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 1638400,
+        "rawFile": "transition-background-uniform-24-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "3074ea5289128fa6e75aeda449ea09f067b1933188211d5b21e901b084419195",
+        "uniqueBGRA8Pixels": 356200
+      },
+      "remaining": 0.2487325668334961,
+      "sampleIndex": 24
+    },
+    {
+      "mips": [
+        {
+          "bytes": 1982464,
+          "extent": [
+            704,
+            704
+          ],
+          "level": 0,
+          "rawFile": "sdf-generator-transition-background-uniform-28-texture-001-pf80-704x704.raw",
+          "sha256": "06a90a55c28cb5953a9ce0cf88ec576497e494ca6efa4e5db2ab2f8111fa21e5",
+          "uniqueBGRA8Pixels": 403293
+        },
+        {
+          "bytes": 495616,
+          "extent": [
+            352,
+            352
+          ],
+          "level": 1,
+          "rawFile": "sdf-generator-transition-background-uniform-28-texture-001-pf80-704x704-mip-01.raw",
+          "sha256": "f566301daf1184875c9576d092f946c7fb1c3d4e8f1941d0416c0760db7d1433",
+          "uniqueBGRA8Pixels": 26748
+        },
+        {
+          "bytes": 123904,
+          "extent": [
+            176,
+            176
+          ],
+          "level": 2,
+          "rawFile": "sdf-generator-transition-background-uniform-28-texture-001-pf80-704x704-mip-02.raw",
+          "sha256": "0a360615d1ecfbf6d790a612829d4e5779e1b4d2f2c36f5c918780dc9eb05194",
+          "uniqueBGRA8Pixels": 3505
+        },
+        {
+          "bytes": 30976,
+          "extent": [
+            88,
+            88
+          ],
+          "level": 3,
+          "rawFile": "sdf-generator-transition-background-uniform-28-texture-001-pf80-704x704-mip-03.raw",
+          "sha256": "4adb7197723b3e11e84a7dc6eae29ceb96914b80666499a84f1a77a95bef05b7",
+          "uniqueBGRA8Pixels": 1049
+        },
+        {
+          "bytes": 7744,
+          "extent": [
+            44,
+            44
+          ],
+          "level": 4,
+          "rawFile": "sdf-generator-transition-background-uniform-28-texture-001-pf80-704x704-mip-04.raw",
+          "sha256": "fd790a50240b7e77e563a5f68c053148bf10c62da478eab8059d48f205416277",
+          "uniqueBGRA8Pixels": 294
+        }
+      ],
+      "producerExtent": [
+        704,
+        704
+      ],
+      "producerFragment": "TimgA2Xhfc_Isrc",
+      "producerInput": {
+        "bytes": 4194304,
+        "rawFile": "transition-background-uniform-28-dynamic-backdrop-producer-input-0-bgra8.raw",
+        "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+      },
+      "producerOutput": {
+        "bytes": 1982464,
+        "rawFile": "transition-background-uniform-28-dynamic-backdrop-producer-output-0-bgra8.raw",
+        "sha256": "98bde8bb64cd40e1395303ba640fd0653af16449a27a907eeb0b095c6cdcb822",
+        "uniqueBGRA8Pixels": 405748
+      },
+      "remaining": 0.12386131286621094,
+      "sampleIndex": 28
+    }
+  ],
+  "status": "accepted-after-schema-only-transport-correction",
+  "timelineSHA256": "aacd810f3b57da6e6c39f82f5b773fb0150665c21ba004d8f109976bf4558cdb",
+  "transportCorrection": {
+    "acceptanceThresholdChanged": false,
+    "answerBytesReadBeforeFrozenFailure": 0,
+    "correctedValue": 9,
+    "field": "dynamicBackgroundUniforms.schemaVersion",
+    "frozenValue": 7,
+    "pixelSelectionChanged": false,
+    "stateSelectionChanged": false,
+    "toleranceChanged": false
+  }
+}

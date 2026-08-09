@@ -1,0 +1,1361 @@
+{
+  "cases": {
+    "controlled": [
+      {
+        "cropOracle": null,
+        "fragmentFunction": "downsample_4_frag_lph",
+        "prediction": {
+          "aggregateF64": [
+            110.0,
+            95.0,
+            819.0,
+            819.0
+          ],
+          "backdropScaleF32": 0.27379512786865234,
+          "filterDODF64": [
+            111.61444091796875,
+            96.38555908203125,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            111.61444091796875,
+            96.38555908203125,
+            816.0,
+            816.0
+          ],
+          "nestedI32": [
+            110,
+            95,
+            819,
+            819
+          ],
+          "primaryPositionF32Bits": [
+            1106247680,
+            1104150528,
+            1132396544,
+            1104150528,
+            1132396544,
+            1132134400,
+            1106247680,
+            1132134400
+          ],
+          "primarySourceF32Bits": [
+            1121657943,
+            1119743052,
+            1147721373,
+            1119743052,
+            1147721373,
+            1147482011,
+            1121657943,
+            1147482011
+          ],
+          "remainingF32": 0.9682731628417969,
+          "roiF64": [
+            12.1068115234375,
+            12.1068115234375,
+            999.786376953125,
+            999.786376953125
+          ],
+          "visibleI32": [
+            110,
+            95,
+            819,
+            819
+          ],
+          "workingI32": [
+            110,
+            95,
+            819,
+            819
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 1
+      },
+      {
+        "cropOracle": null,
+        "fragmentFunction": "downsample_4_frag_lph",
+        "prediction": {
+          "aggregateF64": [
+            133.0,
+            72.0,
+            819.0,
+            819.0
+          ],
+          "backdropScaleF32": 0.3441777229309082,
+          "filterDODF64": [
+            134.13687133789062,
+            73.86312866210938,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            134.13687133789062,
+            73.86312866210938,
+            816.0,
+            816.0
+          ],
+          "nestedI32": [
+            133,
+            72,
+            819,
+            819
+          ],
+          "primaryPositionF32Bits": [
+            1110704128,
+            1103101952,
+            1134821376,
+            1103101952,
+            1134821376,
+            1134133248,
+            1110704128,
+            1134133248
+          ],
+          "primarySourceF32Bits": [
+            1124253460,
+            1116436092,
+            1148075967,
+            1116436092,
+            1148075967,
+            1147076297,
+            1124253460,
+            1147076297
+          ],
+          "remainingF32": 0.8744297027587891,
+          "roiF64": [
+            32.12774658203125,
+            32.12774658203125,
+            959.7445068359375,
+            959.7445068359375
+          ],
+          "visibleI32": [
+            133,
+            72,
+            819,
+            819
+          ],
+          "workingI32": [
+            133,
+            72,
+            819,
+            819
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 4
+      },
+      {
+        "cropOracle": null,
+        "fragmentFunction": "downsample_4_frag_lph",
+        "prediction": {
+          "aggregateF64": [
+            163.0,
+            43.627838134765625,
+            817.3721618652344,
+            817.3721618652344
+          ],
+          "backdropScaleF32": 0.4386630058288574,
+          "filterDODF64": [
+            164.37216186523438,
+            43.627838134765625,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            164.37216186523438,
+            59.34735107421875,
+            800.2804870605469,
+            800.2804870605469
+          ],
+          "nestedI32": [
+            163,
+            58,
+            803,
+            803
+          ],
+          "primaryPositionF32Bits": [
+            1116602368,
+            1099956224,
+            1138196480,
+            1099956224,
+            1138196480,
+            1136492544,
+            1116602368,
+            1136492544
+          ],
+          "primarySourceF32Bits": [
+            1126292223,
+            1109664406,
+            1148559868,
+            1109664406,
+            1148559868,
+            1146617675,
+            1126292223,
+            1146617675
+          ],
+          "remainingF32": 0.7484493255615234,
+          "roiF64": [
+            59.34735107421875,
+            59.34735107421875,
+            905.3052978515625,
+            905.3052978515625
+          ],
+          "visibleI32": [
+            162,
+            42,
+            820,
+            820
+          ],
+          "workingI32": [
+            162,
+            42,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 8
+      },
+      {
+        "cropOracle": null,
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            193.0,
+            13.857406616210938,
+            817.1425933837891,
+            817.1425933837891
+          ],
+          "backdropScaleF32": 0.5316956043243408,
+          "filterDODF64": [
+            194.14259338378906,
+            13.857406616210938,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            194.14259338378906,
+            86.13308715820312,
+            743.7243194580078,
+            743.7243194580078
+          ],
+          "nestedI32": [
+            193,
+            85,
+            746,
+            746
+          ],
+          "primaryPositionF32Bits": [
+            1120665600,
+            1086324736,
+            1141293056,
+            1086324736,
+            1141293056,
+            1138589696,
+            1120665600,
+            1138589696
+          ],
+          "primarySourceF32Bits": [
+            1128257230,
+            1093963248,
+            1149071162,
+            1093963248,
+            1149071162,
+            1146112958,
+            1128257230,
+            1146112958
+          ],
+          "remainingF32": 0.6244058609008789,
+          "roiF64": [
+            86.13308715820312,
+            86.13308715820312,
+            851.7338256835938,
+            851.7338256835938
+          ],
+          "visibleI32": [
+            192,
+            12,
+            820,
+            820
+          ],
+          "workingI32": [
+            192,
+            12,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 12
+      },
+      {
+        "cropOracle": null,
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            223.0,
+            -16.204620361328125,
+            817.2046203613281,
+            817.2046203613281
+          ],
+          "backdropScaleF32": 0.6256394386291504,
+          "filterDODF64": [
+            224.20462036132812,
+            -16.204620361328125,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            224.20462036132812,
+            113.19097900390625,
+            686.6044006347656,
+            686.6044006347656
+          ],
+          "nestedI32": [
+            223,
+            112,
+            689,
+            689
+          ],
+          "primaryPositionF32Bits": [
+            1124728832,
+            0,
+            1142964224,
+            0,
+            1142964224,
+            1140523008,
+            1124728832,
+            1140523008
+          ],
+          "primarySourceF32Bits": [
+            1130140423,
+            0,
+            1149243816,
+            0,
+            1149243816,
+            1145608259,
+            1130140423,
+            1145608259
+          ],
+          "remainingF32": 0.4991474151611328,
+          "roiF64": [
+            113.19097900390625,
+            113.19097900390625,
+            797.6180419921875,
+            797.6180419921875
+          ],
+          "visibleI32": [
+            222,
+            0,
+            802,
+            802
+          ],
+          "workingI32": [
+            222,
+            -18,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 16
+      },
+      {
+        "cropOracle": null,
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            253.0,
+            -46.33439636230469,
+            817.3343963623047,
+            817.3343963623047
+          ],
+          "backdropScaleF32": 0.7197949886322021,
+          "filterDODF64": [
+            254.3343963623047,
+            -46.33439636230469,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            254.3343963623047,
+            140.31210327148438,
+            629.3535003662109,
+            629.3535003662109
+          ],
+          "nestedI32": [
+            253,
+            139,
+            632,
+            632
+          ],
+          "primaryPositionF32Bits": [
+            1127546880,
+            0,
+            1144553472,
+            0,
+            1144553472,
+            1141571584,
+            1127546880,
+            1141571584
+          ],
+          "primarySourceF32Bits": [
+            1132164579,
+            0,
+            1149249880,
+            0,
+            1149249880,
+            1145117772,
+            1132164579,
+            1145117772
+          ],
+          "remainingF32": 0.37360668182373047,
+          "roiF64": [
+            140.31210327148438,
+            140.31210327148438,
+            743.3757934570312,
+            743.3757934570312
+          ],
+          "visibleI32": [
+            252,
+            0,
+            772,
+            772
+          ],
+          "workingI32": [
+            252,
+            -48,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 20
+      },
+      {
+        "cropOracle": null,
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            283.0,
+            -76.30418395996094,
+            817.3041839599609,
+            817.3041839599609
+          ],
+          "backdropScaleF32": 0.8134505748748779,
+          "filterDODF64": [
+            284.30418395996094,
+            -76.30418395996094,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            284.30418395996094,
+            167.28390502929688,
+            572.4119110107422,
+            572.4119110107422
+          ],
+          "nestedI32": [
+            283,
+            166,
+            575,
+            575
+          ],
+          "primaryPositionF32Bits": [
+            1130692608,
+            0,
+            1146109952,
+            0,
+            1146109952,
+            1142358016,
+            1130692608,
+            1142358016
+          ],
+          "primarySourceF32Bits": [
+            1133298214,
+            0,
+            1149239564,
+            0,
+            1149239564,
+            1144627461,
+            1133298214,
+            1144627461
+          ],
+          "remainingF32": 0.2487325668334961,
+          "roiF64": [
+            167.28390502929688,
+            167.28390502929688,
+            689.4321899414062,
+            689.4321899414062
+          ],
+          "visibleI32": [
+            282,
+            0,
+            742,
+            742
+          ],
+          "workingI32": [
+            282,
+            -78,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 24
+      },
+      {
+        "cropOracle": null,
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            313.0,
+            -106.27328491210938,
+            817.2732849121094,
+            817.2732849121094
+          ],
+          "backdropScaleF32": 0.9071040153503418,
+          "filterDODF64": [
+            314.2732849121094,
+            -106.27328491210938,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            314.2732849121094,
+            194.25506591796875,
+            515.4716491699219,
+            515.4716491699219
+          ],
+          "nestedI32": [
+            313,
+            193,
+            518,
+            518
+          ],
+          "primaryPositionF32Bits": [
+            1133346816,
+            0,
+            1147682816,
+            0,
+            1147682816,
+            1143046144,
+            1133346816,
+            1143046144
+          ],
+          "primarySourceF32Bits": [
+            1134296494,
+            0,
+            1149240429,
+            0,
+            1149240429,
+            1144130052,
+            1134296494,
+            1144130052
+          ],
+          "remainingF32": 0.12386131286621094,
+          "roiF64": [
+            194.25506591796875,
+            194.25506591796875,
+            635.4898681640625,
+            635.4898681640625
+          ],
+          "visibleI32": [
+            312,
+            0,
+            712,
+            712
+          ],
+          "workingI32": [
+            312,
+            -108,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 28
+      }
+    ],
+    "natural": [
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            110,
+            95,
+            819,
+            819
+          ],
+          "observedWorkingI32": [
+            110,
+            95,
+            819,
+            819
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "downsample_4_frag_lph",
+        "prediction": {
+          "aggregateF64": [
+            110.0,
+            95.0,
+            819.0,
+            819.0
+          ],
+          "backdropScaleF32": 0.27436089515686035,
+          "filterDODF64": [
+            111.79548645019531,
+            96.20451354980469,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            111.79548645019531,
+            96.20451354980469,
+            816.0,
+            816.0
+          ],
+          "nestedI32": [
+            110,
+            95,
+            819,
+            819
+          ],
+          "primaryPositionF32Bits": [
+            1106247680,
+            1104150528,
+            1132396544,
+            1104150528,
+            1132396544,
+            1132134400,
+            1106247680,
+            1132134400
+          ],
+          "primarySourceF32Bits": [
+            1121628328,
+            1119717385,
+            1147689906,
+            1119717385,
+            1147689906,
+            1147451038,
+            1121628328,
+            1147451038
+          ],
+          "remainingF32": 0.9675188064575195,
+          "roiF64": [
+            12.275787353515625,
+            12.275787353515625,
+            999.4484252929688,
+            999.4484252929688
+          ],
+          "visibleI32": [
+            110,
+            95,
+            819,
+            819
+          ],
+          "workingI32": [
+            110,
+            95,
+            819,
+            819
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 1
+      },
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            133,
+            72,
+            819,
+            819
+          ],
+          "observedWorkingI32": [
+            133,
+            72,
+            819,
+            819
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "downsample_4_frag_lph",
+        "prediction": {
+          "aggregateF64": [
+            133.0,
+            72.0,
+            819.0,
+            819.0
+          ],
+          "backdropScaleF32": 0.34456539154052734,
+          "filterDODF64": [
+            134.26092529296875,
+            73.73907470703125,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            134.26092529296875,
+            73.73907470703125,
+            816.0,
+            816.0
+          ],
+          "nestedI32": [
+            133,
+            72,
+            819,
+            819
+          ],
+          "primaryPositionF32Bits": [
+            1110704128,
+            1103101952,
+            1134854144,
+            1103101952,
+            1134854144,
+            1134166016,
+            1110704128,
+            1134166016
+          ],
+          "primarySourceF32Bits": [
+            1124243820,
+            1116425809,
+            1148105949,
+            1116425809,
+            1148105949,
+            1147107405,
+            1124243820,
+            1147107405
+          ],
+          "remainingF32": 0.8739128112792969,
+          "roiF64": [
+            32.2435302734375,
+            32.2435302734375,
+            959.512939453125,
+            959.512939453125
+          ],
+          "visibleI32": [
+            133,
+            72,
+            819,
+            819
+          ],
+          "workingI32": [
+            133,
+            72,
+            819,
+            819
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 4
+      },
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            162,
+            42,
+            820,
+            820
+          ],
+          "observedWorkingI32": [
+            162,
+            42,
+            820,
+            820
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "downsample_4_frag_lph",
+        "prediction": {
+          "aggregateF64": [
+            163.0,
+            43.94232177734375,
+            817.0576782226562,
+            817.0576782226562
+          ],
+          "backdropScaleF32": 0.4376802444458008,
+          "filterDODF64": [
+            164.05767822265625,
+            43.94232177734375,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            164.05767822265625,
+            59.0538330078125,
+            800.8884887695312,
+            800.8884887695312
+          ],
+          "nestedI32": [
+            163,
+            58,
+            803,
+            803
+          ],
+          "primaryPositionF32Bits": [
+            1116471296,
+            1099956224,
+            1138163712,
+            1099956224,
+            1138163712,
+            1136459776,
+            1116471296,
+            1136459776
+          ],
+          "primarySourceF32Bits": [
+            1126166306,
+            1109688560,
+            1148558580,
+            1109688560,
+            1148558580,
+            1146612026,
+            1126166306,
+            1146612026
+          ],
+          "remainingF32": 0.7497596740722656,
+          "roiF64": [
+            59.0538330078125,
+            59.0538330078125,
+            905.892333984375,
+            905.892333984375
+          ],
+          "visibleI32": [
+            162,
+            42,
+            820,
+            820
+          ],
+          "workingI32": [
+            162,
+            42,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 8
+      },
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            192,
+            12,
+            820,
+            820
+          ],
+          "observedWorkingI32": [
+            192,
+            12,
+            820,
+            820
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            193.0,
+            13.960861206054688,
+            817.0391387939453,
+            817.0391387939453
+          ],
+          "backdropScaleF32": 0.5313723087310791,
+          "filterDODF64": [
+            194.0391387939453,
+            13.960861206054688,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            194.0391387939453,
+            86.03652954101562,
+            743.9243316650391,
+            743.9243316650391
+          ],
+          "nestedI32": [
+            193,
+            85,
+            746,
+            746
+          ],
+          "primaryPositionF32Bits": [
+            1120665600,
+            1086324736,
+            1141276672,
+            1086324736,
+            1141276672,
+            1138589696,
+            1120665600,
+            1138589696
+          ],
+          "primarySourceF32Bits": [
+            1128264880,
+            1093970447,
+            1149050434,
+            1093970447,
+            1149050434,
+            1146121264,
+            1128264880,
+            1146121264
+          ],
+          "remainingF32": 0.6248369216918945,
+          "roiF64": [
+            86.03652954101562,
+            86.03652954101562,
+            851.9269409179688,
+            851.9269409179688
+          ],
+          "visibleI32": [
+            192,
+            12,
+            820,
+            820
+          ],
+          "workingI32": [
+            192,
+            12,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 12
+      },
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            222,
+            0,
+            802,
+            802
+          ],
+          "observedWorkingI32": [
+            222,
+            -18,
+            820,
+            820
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            223.0,
+            -16.094985961914062,
+            817.0949859619141,
+            817.0949859619141
+          ],
+          "backdropScaleF32": 0.6252968311309814,
+          "filterDODF64": [
+            224.09498596191406,
+            -16.094985961914062,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            224.09498596191406,
+            113.08865356445312,
+            686.8163604736328,
+            686.8163604736328
+          ],
+          "nestedI32": [
+            223,
+            112,
+            689,
+            689
+          ],
+          "primaryPositionF32Bits": [
+            1124728832,
+            0,
+            1142964224,
+            0,
+            1142964224,
+            1140523008,
+            1124728832,
+            1140523008
+          ],
+          "primarySourceF32Bits": [
+            1130148344,
+            0,
+            1149248415,
+            0,
+            1149248415,
+            1145615462,
+            1130148344,
+            1145615462
+          ],
+          "remainingF32": 0.4996042251586914,
+          "roiF64": [
+            113.08865356445312,
+            113.08865356445312,
+            797.8226928710938,
+            797.8226928710938
+          ],
+          "visibleI32": [
+            222,
+            0,
+            802,
+            802
+          ],
+          "workingI32": [
+            222,
+            -18,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 16
+      },
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            252,
+            0,
+            772,
+            772
+          ],
+          "observedWorkingI32": [
+            252,
+            -48,
+            820,
+            820
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            253.0,
+            -46.19523620605469,
+            817.1952362060547,
+            817.1952362060547
+          ],
+          "backdropScaleF32": 0.7193601131439209,
+          "filterDODF64": [
+            254.1952362060547,
+            -46.19523620605469,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            254.1952362060547,
+            140.18222045898438,
+            629.6225433349609,
+            629.6225433349609
+          ],
+          "nestedI32": [
+            253,
+            139,
+            632,
+            632
+          ],
+          "primaryPositionF32Bits": [
+            1127546880,
+            0,
+            1144537088,
+            0,
+            1144537088,
+            1141571584,
+            1127546880,
+            1141571584
+          ],
+          "primarySourceF32Bits": [
+            1132174541,
+            0,
+            1149243569,
+            0,
+            1149243569,
+            1145125423,
+            1132174541,
+            1145125423
+          ],
+          "remainingF32": 0.37418651580810547,
+          "roiF64": [
+            140.18222045898438,
+            140.18222045898438,
+            743.6355590820312,
+            743.6355590820312
+          ],
+          "visibleI32": [
+            252,
+            0,
+            772,
+            772
+          ],
+          "workingI32": [
+            252,
+            -48,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 20
+      },
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            282,
+            0,
+            742,
+            742
+          ],
+          "observedWorkingI32": [
+            282,
+            -78,
+            820,
+            820
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            283.0,
+            -76.15769958496094,
+            817.1576995849609,
+            817.1576995849609
+          ],
+          "backdropScaleF32": 0.8129928112030029,
+          "filterDODF64": [
+            284.15769958496094,
+            -76.15769958496094,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            284.15769958496094,
+            167.14718627929688,
+            572.6951141357422,
+            572.6951141357422
+          ],
+          "nestedI32": [
+            283,
+            166,
+            575,
+            575
+          ],
+          "primaryPositionF32Bits": [
+            1130692608,
+            0,
+            1146109952,
+            0,
+            1146109952,
+            1142358016,
+            1130692608,
+            1142358016
+          ],
+          "primarySourceF32Bits": [
+            1133303408,
+            0,
+            1149244287,
+            0,
+            1149244287,
+            1144634311,
+            1133303408,
+            1144634311
+          ],
+          "remainingF32": 0.2493429183959961,
+          "roiF64": [
+            167.14718627929688,
+            167.14718627929688,
+            689.7056274414062,
+            689.7056274414062
+          ],
+          "visibleI32": [
+            282,
+            0,
+            742,
+            742
+          ],
+          "workingI32": [
+            282,
+            -78,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 24
+      },
+      {
+        "cropOracle": {
+          "observedVisibleI32": [
+            312,
+            0,
+            712,
+            712
+          ],
+          "observedWorkingI32": [
+            312,
+            -108,
+            820,
+            820
+          ],
+          "visibleI32Mismatches": 0,
+          "workingI32Mismatches": 0
+        },
+        "fragmentFunction": "TimgA2Xhfc_Isrc",
+        "prediction": {
+          "aggregateF64": [
+            313.0,
+            -106.12428283691406,
+            817.1242828369141,
+            817.1242828369141
+          ],
+          "backdropScaleF32": 0.9066383838653564,
+          "filterDODF64": [
+            314.12428283691406,
+            -106.12428283691406,
+            816.0,
+            816.0
+          ],
+          "nestedF64": [
+            314.12428283691406,
+            194.11599731445312,
+            515.7597198486328,
+            515.7597198486328
+          ],
+          "nestedI32": [
+            313,
+            193,
+            518,
+            518
+          ],
+          "primaryPositionF32Bits": [
+            1133314048,
+            0,
+            1147682816,
+            0,
+            1147682816,
+            1143046144,
+            1133314048,
+            1143046144
+          ],
+          "primarySourceF32Bits": [
+            1134265602,
+            0,
+            1149244738,
+            0,
+            1149244738,
+            1144136044,
+            1134265602,
+            1144136044
+          ],
+          "remainingF32": 0.1244821548461914,
+          "roiF64": [
+            194.11599731445312,
+            194.11599731445312,
+            635.7680053710938,
+            635.7680053710938
+          ],
+          "visibleI32": [
+            312,
+            0,
+            712,
+            712
+          ],
+          "workingI32": [
+            312,
+            -108,
+            820,
+            820
+          ]
+        },
+        "primaryPositionF32Mismatches": 0,
+        "primarySourceF32Mismatches": 0,
+        "sampleIndex": 28
+      }
+    ]
+  },
+  "classification": "retrospective exact public-state producer-crop and primary-mesh calibration across two distinct Retina timing streams",
+  "exact": true,
+  "inputs": {
+    "controlledTimeline": "artifacts/local-walle-regular-controlled-backdrop-1cd9af4-run1-v1/transition-timeline.json",
+    "controlledTimelineSHA256": "aacd810f3b57da6e6c39f82f5b773fb0150665c21ba004d8f109976bf4558cdb",
+    "naturalCropTrace": "artifacts/local-natural-crop-join-20260808-05/prepare-layer-crop-trace.json",
+    "naturalCropTraceSHA256": "e7b410d86a6a2f8e1b527a1f1c2a26408d3878959a2ee7da6d09fb48514301db",
+    "naturalTimeline": "artifacts/local-natural-crop-join-20260808-05/transition-timeline.json",
+    "naturalTimelineSHA256": "21651b863339588ac6f14f29af915f3b52bee1c87c5f6a262aa6d90bf97b88ab"
+  },
+  "metrics": {
+    "controlledPrimaryPositionF32": {
+      "componentCount": 64,
+      "exact": true,
+      "mismatchCount": 0
+    },
+    "controlledPrimarySourceF32": {
+      "componentCount": 64,
+      "exact": true,
+      "mismatchCount": 0
+    },
+    "naturalPrimaryPositionF32": {
+      "componentCount": 64,
+      "exact": true,
+      "mismatchCount": 0
+    },
+    "naturalPrimarySourceF32": {
+      "componentCount": 64,
+      "exact": true,
+      "mismatchCount": 0
+    },
+    "naturalVisibleCropI32": {
+      "componentCount": 32,
+      "exact": true,
+      "mismatchCount": 0
+    },
+    "naturalWorkingCropI32": {
+      "componentCount": 32,
+      "exact": true,
+      "mismatchCount": 0
+    }
+  },
+  "model": {
+    "aggregate": "union(public Glass DOD, nested integer crop)",
+    "nestedCrop": "opened finite enclosure plus fractional one-pixel border",
+    "nestedRectangle": "intersection(public Glass DOD, public ROI)",
+    "primaryPosition": "floor(scale*lower), ceil(scale*far)",
+    "primarySource": "binary32(primary position / binary32 scale)",
+    "tolerance": 0,
+    "visibleCrop": "working crop intersected with the public viewport",
+    "workingCrop": "opened finite enclosure plus fractional one-pixel border"
+  },
+  "producerFragmentInventory": {
+    "controlled": {
+      "TimgA2Xhfc_Isrc": 5,
+      "downsample_4_frag_lph": 3
+    },
+    "natural": {
+      "TimgA2Xhfc_Isrc": 5,
+      "downsample_4_frag_lph": 3
+    }
+  },
+  "productionParityEstablished": false,
+  "remainingBoundary": "port the now-closed crop/mesh and already-measured producer, copy-base, and mip arithmetic into Walle, then pass nonzero full-frame and physical Retina presentation gates",
+  "walleDynamicBackdropProducerGeometrySchemaVersion": 1
+}

@@ -15262,3 +15262,57 @@ and
 Passing it promotes only the calibration corpus.  Exact producer arithmetic
 must still be frozen and pass an output-blind holdout before production
 parity can be claimed.
+
+The corrected validator accepts all eight states.  Its retained result is
+`Analysis/walle_regular_controlled_backdrop_1cd9af4_result.json`, SHA-256
+`ab23fb3cb471026eeeda2465358a9e36eece45c329447e3d55d72f34210fe275`.
+This is the schema-only promotion described above; it does not retroactively
+turn the opened capture into a prospective arithmetic holdout.
+
+### Public-state producer crop and primary-mesh closure
+
+The direct Retina crop trace closes the discrete producer-geometry gap over
+the admitted regular/dark `circle-480-center` dematerialization domain.  The
+private rectangle is not an independent fitted table.  Starting from public
+transition state, the exact construction is:
+
+1. intersect the public Glass DOD with the already-validated public-state ROI;
+2. apply the opened finite enclosure plus its conditional one-pixel
+   fractional border to that nested rectangle;
+3. union the resulting integer rectangle back into the continuous Glass DOD;
+4. apply the same enclosure/border operation to the aggregate; and
+5. intersect the result with the public viewport.
+
+This reproduces all eight authenticated `workingCropI32` values and all eight
+post-viewport `visibleCropI32` values exactly.  In particular, the late states
+are `[222,-18,820,820]`, `[252,-48,820,820]`, `[282,-78,820,820]`, and
+`[312,-108,820,820]` before clipping, then `[222,0,802,802]`,
+`[252,0,772,772]`, `[282,0,742,742]`, and `[312,0,712,712]` after clipping.
+Those states reject the tempting DOD-only rule by one source pixel.
+
+Feeding each visible rectangle to the opened `capture_backdrop` rounding path
+also closes the primary producer mesh.  Positions are the binary32 results of
+`floor(scale * lower)` and `ceil(scale * far)`.  Source coordinates use
+binary32 division by the binary32 scale; pre-rounding the reciprocal and
+multiplying is observably wrong.  The same constructor was checked against
+two distinct Retina timing streams.  Each contains three
+`downsample_4_frag_lph` states and five `TimgA2Xhfc_Isrc` states.  Across both
+streams, all 128 primary position components and all 128 primary source
+components match their captured binary32 words.  The natural trace adds 32/32
+exact working-crop and 32/32 exact visible-crop integer components.  Every
+tolerance is zero.
+
+The executable analysis is
+`Analysis/analyze_walle_dynamic_backdrop_producer_geometry.py`, SHA-256
+`f2527065b60f57a4c57df184e5ffe7eb1ee0ff2c0d2edb0d51ddeb85d04e2edc`.
+Its retained result is
+`Analysis/walle_dynamic_backdrop_producer_geometry_result.json`, SHA-256
+`b3b48d6abaf09804d22e6e267dcf636701ddafd22f35dc6f3c46490f514cfe62`.
+The result is explicitly retrospective and does not claim production parity.
+The remaining product boundary is implementation: port this now-closed
+crop/mesh constructor and the already-measured direct/downsample, copy-base,
+and mip arithmetic into ordinary Walle, then pass a nonzero full-frame byte
+gate and the physical Retina presentation gate.  Core OpenGL remains the
+admitted exact backend; Vulkan/SPIR-V remains available only if one of those
+measured gates proves a core-GL boundary insufficient.  The protected shader
+is unchanged.
