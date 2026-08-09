@@ -15374,3 +15374,48 @@ accepted zero-tolerance result.  The normalized-P25 reciprocal selector is no
 longer an unknown and is authorized for production use.  Product parity is
 still not claimed until ordinary Walle consumes it and passes the remaining
 resizing/clipping, reveal/crop, and physical-Retina gates.
+
+### Frozen physical-Retina two-wallpaper reveal-composition gate
+
+The next product boundary is now isolated before changing Walle's live
+renderer. Apple's reference composition places the outgoing wallpaper first,
+selects the incoming wallpaper through the expanding SwiftUI `Circle`, and
+then renders Liquid Glass over that result. The existing glass gates do not
+prove the first two layers because their destination is an independently
+controlled render target. Guessing the circle's sample location or edge rule
+would therefore turn a product integration detail into an unmeasured visual
+approximation.
+
+`DynamicMode.wallpaperReveal` is a diagnostic-only capture mode. It uses the
+same `wallpaperReveal` view, source images, center, diameter construction, and
+exact-state sweep as `wallpaper-transition`, but emits no glass shape. It is
+excluded from `--dynamic-modes all` and must be requested explicitly, so it
+does not expand or change the established capture matrix. When it is the only
+requested mode, the rig also avoids redundant appearance/material duplicates
+and records one regular/dark sequence.
+
+The prospective candidate is frozen in
+`Analysis/walle_reveal_composition_preregistration.json`. For each physical
+pixel, it samples the circle at `(x+0.5,y+0.5)` in top-left coordinates and
+selects the incoming texel exactly when the binary64 squared distance is less
+than or equal to the binary64 squared radius. No interpolation, antialias
+blend, tolerance, or color fitting is permitted. The forward-cold,
+reverse-warm, and forward-cold-repeat traversals contain 17 exact states each,
+for 51 complete 2048-by-2048 comparisons. Every actual pixel must equal one
+of the two source pixels, and every candidate byte must agree.
+
+The direct-Mac runner is
+`Analysis/run_walle_reveal_composition_local_macos_26_6_1.sh`; the independent
+validator and tests are
+`Analysis/validate_walle_reveal_composition.py` and
+`Analysis/test_validate_walle_reveal_composition.py`. Native compilation and
+capture require the active physical 2x Retina M1 Max session, Apple Command
+Line Tools, macOS 26.6.1 build 25G76, and SDK 26.5. GitHub Actions, a debugger,
+and Nix-store paths in native build or capture are rejected. Nix is used only
+after capture for validation.
+
+A passing result promotes only the two-wallpaper reveal composition over the
+frozen size, position, and radius sweep. The exact glass passes must then be
+composed over those bytes inside ordinary Walle, followed by a fresh
+production-process frame gate and physical-Retina presentation gate. The
+protected production shader remains unchanged.

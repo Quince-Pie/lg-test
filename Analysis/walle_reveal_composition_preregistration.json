@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "title": "Prospective physical-Retina Walle two-wallpaper reveal composition gate",
+  "status": "frozen-before-first-capture",
+  "frozenAtUTC": "2026-08-09T11:06:49Z",
+  "capture": {
+    "architecture": "arm64",
+    "device": "Apple M1 Max with built-in Liquid Retina XDR display",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuild": "25G76",
+    "nativeSDKVersion": "26.5",
+    "backingScaleFactor": 2,
+    "windowPoints": [1024, 1024],
+    "transitionOriginNormalized": [0.25, 0.3],
+    "sweepFrameCount": 17,
+    "githubActionsPermitted": false,
+    "nativeCaptureDebuggerPermitted": false,
+    "nixStorePathInNativeBuildOrCapturePermitted": false
+  },
+  "candidate": {
+    "coordinateSystem": "top-left physical pixels",
+    "sampleLocation": "(x + 0.5, y + 0.5)",
+    "diameter": "binary64(progress * (2.06 * farthestCornerRadiusPoints))",
+    "insidePredicate": "binary64(dx*dx + dy*dy) <= binary64(radius*radius)",
+    "composition": "select the incoming RGBA8 texel inside and outgoing RGBA8 texel outside with no interpolation or edge blend"
+  },
+  "frozenSources": {
+    "Sources/GlassCapture/main.swift": "8b810c88d65b54daf6fce8b3cd07fa7932073c8c7f643493cecd06569d7a6514",
+    "Analysis/validate_walle_reveal_composition.py": "1de5b3a80396d62962ee88412bcb251c94f6def45b7f5e1236f302797a8701d4",
+    "Analysis/test_validate_walle_reveal_composition.py": "c9b4ed9aed8781dd8ba0094cdfcf33f43df8c7d024631ee09083901b2aaf38ba"
+  },
+  "procedure": [
+    "Commit and publish this preregistration, diagnostic capture mode, validator, tests, and native runner before the first answer-bearing capture.",
+    "Build GlassCapture with Apple Command Line Tools only in the clean committed checkout.",
+    "Run directly in the active, awake, unlocked, on-console 2x Retina session without GitHub Actions, a debugger, or a Nix-store path in the native build or capture environment.",
+    "Capture the cold forward, warm reverse, and cold-repeat 17-state exact sweeps using the pure wallpaper-reveal mode.",
+    "Only after native capture exits, use the repository Nix environment for validation."
+  ],
+  "acceptance": {
+    "requiredTraversalCount": 3,
+    "requiredFrameCount": 51,
+    "requiredMismatchedBytes": 0,
+    "requiredMismatchedPixels": 0,
+    "requiredNeitherSourcePixels": 0,
+    "tolerance": 0,
+    "postCaptureCaseExclusionPermitted": false,
+    "postCaptureCandidateChangePermitted": false,
+    "sourceInterpolationPermitted": false,
+    "qualityRegressionPermitted": false
+  },
+  "claimBoundary": {
+    "successfulGatePromotes": "the exact two-wallpaper reveal-mask and source-selection composition used beneath Walle's Apple-native circle transition over this physical-Retina size, position, and 17-state radius sweep",
+    "successfulGateDoesNotPromote": [
+      "Liquid Glass optical passes",
+      "ordinary Walle process integration",
+      "physical Retina presentation of Walle-produced pixels",
+      "circle-mask arithmetic outside the admitted physical-pixel domain"
+    ]
+  },
+  "result": null
+}

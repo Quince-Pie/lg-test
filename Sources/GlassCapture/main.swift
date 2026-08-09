@@ -33,7 +33,7 @@ struct Config {
     var dynamicFrames = 61
     var dynamicDuration: Double = 1.0
     var exactSweeps = true
-    var dynamicModes = DynamicMode.allCases
+    var dynamicModes = DynamicMode.defaultCaptureModes
     var transitionOriginX = 0.25
     var transitionOriginY = 0.30
 
@@ -84,7 +84,7 @@ struct Config {
                     fatalError("--dynamic-modes requires all or a comma-separated list")
                 }
                 if value == "all" {
-                    c.dynamicModes = DynamicMode.allCases
+                    c.dynamicModes = DynamicMode.defaultCaptureModes
                 } else {
                     let names = value.split(separator: ",").map(String.init)
                     let modes = names.compactMap(DynamicMode.init(rawValue:))
@@ -1407,8 +1407,17 @@ enum DynamicMode: String, Codable, CaseIterable {
     case wallpaperWipe = "wallpaper-wipe"
     case wallpaperTransition = "wallpaper-transition"
     case wallpaperTransitionReverse = "wallpaper-transition-reverse"
+    case wallpaperReveal = "wallpaper-reveal"
+
+    static var defaultCaptureModes: [DynamicMode] {
+        allCases.filter { $0 != .wallpaperReveal }
+    }
 
     var isWallpaperTransition: Bool {
+        isGlassWallpaperTransition || self == .wallpaperReveal
+    }
+
+    var isGlassWallpaperTransition: Bool {
         self == .wallpaperTransition || self == .wallpaperTransitionReverse
     }
 
@@ -1596,6 +1605,8 @@ struct DynamicOverlay: View {
                     .glassEffectTransition(.materialize)
                     .position(x: wipeCenter.x, y: wipeCenter.y)
             }
+        case .wallpaperReveal:
+            EmptyView()
         case nil:
             EmptyView()
         }
@@ -2932,7 +2943,8 @@ func dynamicCrop(
             imageHeight: imageHeight,
             desiredWidth: Int((2800 * scaleX).rounded()),
             desiredHeight: Int((1300 * scaleY).rounded()))
-    case .wallpaperWipe, .wallpaperTransition, .wallpaperTransitionReverse:
+    case .wallpaperWipe, .wallpaperTransition, .wallpaperTransitionReverse,
+         .wallpaperReveal:
         return CropRecord(
             x: 0, y: 0, width: imageWidth, height: imageHeight)
     }
@@ -4281,9 +4293,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     + error.localizedDescription)
             }
 
-            for appearance in Appearance.allCases {
+            let dynamicAppearances: [Appearance] =
+                config.dynamicModes == [.wallpaperReveal] ? [.dark] : Appearance.allCases
+            let dynamicOverlays: [Overlay] =
+                config.dynamicModes == [.wallpaperReveal] ? [.regular] : [.regular, .clear]
+            for appearance in dynamicAppearances {
                 window.appearance = appearance.ns
-                for overlay in [Overlay.regular, .clear] {
+                for overlay in dynamicOverlays {
                     for mode in config.dynamicModes {
                         let sequenceID =
                             "\(mode.rawValue)__\(overlay.rawValue)__\(appearance.rawValue)"
@@ -4311,7 +4327,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             model.dynamicMode = mode
                             model.dynamicVisible =
                                 mode == .dematerialize
-                                || mode.isWallpaperTransition
+                                || mode.isGlassWallpaperTransition
                             model.dynamicEndState = false
                             model.dynamicExplicitProgress = false
                             model.dynamicProgress = 0
@@ -4405,6 +4421,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                         model.dynamicVisible = false
                                     }
                                 }
+                            case .wallpaperReveal:
+                                withAnimation(.linear(
+                                    duration: config.dynamicDuration * 0.62
+                                )) {
+                                    model.dynamicEndState = true
+                                }
                             case .resize, .translate, .morph, .wallpaperWipe:
                                 withAnimation(.linear(
                                     duration: config.dynamicDuration
@@ -4481,6 +4503,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     case .wallpaperTransition,
                                          .wallpaperTransitionReverse:
                                         return "walle-two-wallpaper-reference"
+                                    case .wallpaperReveal:
+                                        return "walle-two-wallpaper-reveal-oracle"
                                     case .resize, .translate, .morph:
                                         return "geometry-system-identification"
                                     }
@@ -4490,12 +4514,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 durationSeconds: config.dynamicDuration,
                                 animationCurve: "linear",
                                 phaseSchedule:
-                                    mode.isWallpaperTransition
+                                    mode.isGlassWallpaperTransition
                                     ? [
                                         "expansionEnd": 0.62,
                                         "dematerializeStart": 0.66,
                                         "dematerializeEnd": 1.0,
                                     ]
+                                    : mode == .wallpaperReveal
+                                    ? ["expansionEnd": 0.62]
                                     : ["end": 1.0],
                                 presentationClock: mode.usesRasterClock
                                     ? "appkit-raster-monotonic"
@@ -4674,9 +4700,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     confirmationSeconds * 1_000_000_000)
                 let sweepModes = config.dynamicModes.filter(
                     \.hasExactGeometrySweep)
-                for appearance in Appearance.allCases {
+                for appearance in dynamicAppearances {
                     window.appearance = appearance.ns
-                    for overlay in [Overlay.regular, .clear] {
+                    for overlay in dynamicOverlays {
                         for mode in sweepModes {
                         let sequenceID =
                             "sweep__\(mode.rawValue)__\(overlay.rawValue)"
@@ -4710,7 +4736,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 mode.isWallpaperTransition
                                 ? incomingSpec.name : nil,
                             probeRole:
-                                mode.isWallpaperTransition
+                                mode == .wallpaperReveal
+                                ? "walle-two-wallpaper-reveal-oracle"
+                                : mode.isWallpaperTransition
                                 ? "walle-two-wallpaper-expansion"
                                 : "settled-geometry-control",
                             stateIsolation:
