@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Contracts for the exact sample-28 arithmetic calibration."""
 
+import base64
 import hashlib
 import json
 from pathlib import Path
+import re
+import struct
 import unittest
 
 
@@ -14,6 +17,7 @@ RESULT_PATH = ANALYSIS / (
 PREREGISTRATION_PATH = ANALYSIS / (
     "natural_sample28_border_highlight_arithmetic_preregistration.json"
 )
+MAIN_SWIFT_PATH = ANALYSIS.parent / "Sources/GlassIntrospect/main.swift"
 
 
 class Sample28BorderHighlightArithmeticCalibrationTests(unittest.TestCase):
@@ -80,6 +84,59 @@ class Sample28BorderHighlightArithmeticCalibrationTests(unittest.TestCase):
         self.assertFalse(gate["productionWalleParityEstablished"])
         self.assertFalse(gate["productionShaderModified"])
         self.assertFalse(gate["shaderQualityReductionAllowed"])
+
+    def test_prospective_sdf_inputs_are_frozen_and_source_authenticated(self) -> None:
+        source = MAIN_SWIFT_PATH.read_text(encoding="utf-8")
+        preregistration_sha256 = hashlib.sha256(
+            PREREGISTRATION_PATH.read_bytes()
+        ).hexdigest()
+        self.assertIn(preregistration_sha256, source)
+        match = re.search(
+            r'naturalSample28BorderUniformPrefixBase64 = """\n(.*?)\n"""',
+            source,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(match)
+        base = base64.b64decode(match.group(1))
+        self.assertEqual(len(base), 248)
+        holdout = self.preregistration["prospectiveHoldout"]
+        self.assertEqual(
+            hashlib.sha256(base).hexdigest(),
+            holdout["baseUniformPrefixSha256"],
+        )
+        cases = holdout["sdfInputInterventions"]
+        self.assertEqual(len(cases), 4)
+        self.assertEqual(
+            {case["name"] for case in cases},
+            {"wide-coarse", "tall-coarse", "wide-ulp", "tall-ulp"},
+        )
+        alpha_oracle_words = [0] * 15 + [0x3C00] * 4 + [0] * 5
+        for case in cases:
+            natural = bytearray(base)
+            for edit in case["edits"]:
+                payload = bytes.fromhex(edit["hex"])
+                self.assertEqual(
+                    struct.unpack("<I", payload)[0],
+                    int(edit["float32Bits"], 16),
+                )
+                offset = edit["recordOffset"]
+                natural[offset : offset + len(payload)] = payload
+            self.assertEqual(
+                hashlib.sha256(natural).hexdigest(),
+                case["naturalUniformPrefixSha256"],
+            )
+            alpha_oracle = bytearray(natural)
+            alpha_oracle[0x60:0x90] = struct.pack(
+                "<24H", *alpha_oracle_words
+            )
+            self.assertEqual(
+                hashlib.sha256(alpha_oracle).hexdigest(),
+                case["alphaOracleUniformPrefixSha256"],
+            )
+            self.assertEqual(
+                hashlib.sha256(alpha_oracle[:48]).hexdigest(),
+                case["sdfRecordSha256"],
+            )
 
 
 if __name__ == "__main__":

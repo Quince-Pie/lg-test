@@ -14941,15 +14941,20 @@ distance zero.  The controls are nonvacuous: the prior radial evaluation has
 uniform has the historical 148 alpha mismatches.
 
 This is exact calibration evidence, not yet prospective promotion.  The radial
-rule was selected after this capture was opened.  Schema 3 of
+rule was selected after this capture was opened.  Schema 4 of
 `Analysis/natural_sample28_border_highlight_arithmetic_preregistration.json`,
 SHA-256
-`56812b3b7c2d2ef6cff8f1b2365bac6a81cbdf19ca1561bb39a89d22e1e90abd`,
+`475e4997a20da7eb7de5b3eeee0e068ab0562aecba5be749a20f573f0810b862`,
 therefore freezes the rule and requires one fresh native Retina holdout with
-different timeline and final-pass inputs.  It must repeat all forty stage
-comparisons, the final SDF, natural alpha, and ten tomography cases with zero
-unequal words.  The subsequent eight-state AMD frame gate also remains
-mandatory.
+a different timeline.  Four output-blind SDF inputs are fixed before capture:
+wide and tall 248-by-240 coarse cases, plus wide and tall cases separated by
+six binary32 ULP around the natural half-size.  Every case has preregistered
+natural-uniform, alpha-oracle-uniform, and 48-byte SDF-record hashes.  The rig
+must replay Apple's unmodified private function, the current-system
+specialization, its binary16 alpha output, and all nine raw diagnostic stages
+for each case.  It must also repeat the original forty stage comparisons, the
+final SDF, natural alpha, and ten tomography cases with zero unequal words.
+The subsequent eight-state AMD frame gate remains mandatory.
 
 The corrected ledger is:
 

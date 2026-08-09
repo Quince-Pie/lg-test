@@ -15,7 +15,7 @@ private let naturalSample28BorderFragmentTransportPreregistrationSHA256 =
 private let naturalSample28BorderHighlightArithmeticPreregistration =
     "Analysis/natural_sample28_border_highlight_arithmetic_preregistration.json"
 private let naturalSample28BorderHighlightArithmeticPreregistrationSHA256 =
-    "a9c81c5b58e74cae27fff3cd36b9e942f07581c016b53227d851173d849a1466"
+    "475e4997a20da7eb7de5b3eeee0e068ab0562aecba5be749a20f573f0810b862"
 private let naturalSample28BorderVertexStreamBase64 = """
 VhSAQ9X1P0QAAAAAAACAP7QAgMO0AIDD2BD0vOXsgj8AAAAAAAAAAAAAAAAAAPA/hQoARNX1P0QA
 AAAAAACAPwAAAAC0AIDDixq1vOXsgj84AQAAAAAAAMgCAADIAgAAhAoARNX1P0QAAAAAAACAPwAA
@@ -13863,6 +13863,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 recordOffset: offset,
                 bytes: halfVectorBytes(words))
         }
+        func floatEdit(
+            _ field: String,
+            _ offset: Int,
+            _ bits: UInt32
+        ) -> GlassUniformEdit {
+            var littleEndian = bits.littleEndian
+            let bytes = Swift.withUnsafeBytes(of: &littleEndian) {
+                Data($0)
+            }
+            return GlassUniformEdit(
+                field: field,
+                recordOffset: offset,
+                bytes: bytes)
+        }
         func makeUniform(
             _ intervention: GlassUniformIntervention,
             base: MTLBuffer
@@ -14058,6 +14072,128 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
             tomographyUniforms.append((intervention, buffer))
+        }
+
+        let sdfArithmeticHoldoutDefinitions: [(
+            intervention: GlassUniformIntervention,
+            naturalUniformSHA256: String,
+            alphaOracleUniformSHA256: String,
+            sdfRecordSHA256: String
+        )] = [
+            (
+                GlassUniformIntervention(
+                    name: "wide-coarse",
+                    edits: [
+                        floatEdit("sdf_arg_x", 0x00, 0x43780000),
+                        floatEdit("sdf_arg_y", 0x04, 0x43700000),
+                    ]),
+                "4eff59ebd270fd9debcc75506c849fb183f9bc2b7c3a9fbb9ec499db7b8d3b37",
+                "3e10cabd5a49f9ab62995a330de0adc89c2130dd311fe4fb595010b9c8576552",
+                "f536a6f3de517fcba233d51d3ab59a7f68eedeaf863083f3b52ad89f161e0f8d"
+            ),
+            (
+                GlassUniformIntervention(
+                    name: "tall-coarse",
+                    edits: [
+                        floatEdit("sdf_arg_x", 0x00, 0x43700000),
+                        floatEdit("sdf_arg_y", 0x04, 0x43780000),
+                    ]),
+                "e54d8eb77933efd876fc700f10f7919a4589588b2f28e42d16026b7247eb8492",
+                "5a4a25c9a9be3a1e5229c9a628a2e4b7b09ec788db5c703db1fad63bd96f7991",
+                "0bd188158e8b3eae75e4f8b1b0a32bdd3aae03dcf824372b225655510ecda44f"
+            ),
+            (
+                GlassUniformIntervention(
+                    name: "wide-ulp",
+                    edits: [
+                        floatEdit("sdf_arg_x", 0x00, 0x4377016b),
+                        floatEdit("sdf_arg_y", 0x04, 0x43770165),
+                    ]),
+                "b065738ff271cf29d8add775497abf8ef0f1a6791de988f0a5ff6a4a1eef68f1",
+                "0ea70455fa11a2d1acd537015850a56d29333286d55d4fb40348365519088391",
+                "d58facd65fa6c65c38fe7a360e31a77af1b6690160ce32b12b58bd886f01b027"
+            ),
+            (
+                GlassUniformIntervention(
+                    name: "tall-ulp",
+                    edits: [
+                        floatEdit("sdf_arg_x", 0x00, 0x43770165),
+                        floatEdit("sdf_arg_y", 0x04, 0x4377016b),
+                    ]),
+                "00ab2f7da2c7dda12f460702f9c7e8e49d78ff1086aa58c97c99a166a9a4814e",
+                "fe225c2373f1a4ec4a115d891480bfe52952af66a8f75a12e84b2fef624c3331",
+                "1979d4bd73d154231cc892e24f6c07c6c5c91c327de72bc65b63c9fbc24243fa"
+            ),
+        ]
+        var sdfArithmeticHoldoutUniforms: [(
+            intervention: GlassUniformIntervention,
+            alphaOracleBuffer: MTLBuffer,
+            naturalUniformSHA256: String,
+            alphaOracleUniformSHA256: String,
+            sdfRecordSHA256: String
+        )] = []
+        if transportSample28Border {
+            guard let transportedNaturalUniform else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "sample-28 SDF holdout natural uniform is unavailable",
+                ]
+            }
+            for definition in sdfArithmeticHoldoutDefinitions {
+                guard let naturalBuffer = makeUniform(
+                        definition.intervention,
+                        base: transportedNaturalUniform),
+                      let alphaOracleBuffer = makeUniform(
+                        definition.intervention,
+                        base: uniformClone)
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "sample-28 SDF holdout uniform clone failed",
+                        "intervention":
+                            interventionRecord(definition.intervention),
+                    ]
+                }
+                let naturalPrefix = Data(
+                    bytes: naturalBuffer.contents().advanced(
+                        by: selection.uniformOffset),
+                    count: 248)
+                let alphaOraclePrefix = Data(
+                    bytes: alphaOracleBuffer.contents().advanced(
+                        by: selection.uniformOffset),
+                    count: 248)
+                let sdfRecord = alphaOraclePrefix.prefix(48)
+                guard transitionSHA256(naturalPrefix)
+                        == definition.naturalUniformSHA256,
+                      transitionSHA256(alphaOraclePrefix)
+                        == definition.alphaOracleUniformSHA256,
+                      transitionSHA256(Data(sdfRecord))
+                        == definition.sdfRecordSHA256
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "sample-28 SDF holdout uniform identity differs",
+                        "intervention":
+                            interventionRecord(definition.intervention),
+                        "naturalUniformSHA256":
+                            transitionSHA256(naturalPrefix),
+                        "alphaOracleUniformSHA256":
+                            transitionSHA256(alphaOraclePrefix),
+                        "sdfRecordSHA256":
+                            transitionSHA256(Data(sdfRecord)),
+                    ]
+                }
+                sdfArithmeticHoldoutUniforms.append((
+                    definition.intervention,
+                    alphaOracleBuffer,
+                    definition.naturalUniformSHA256,
+                    definition.alphaOracleUniformSHA256,
+                    definition.sdfRecordSHA256
+                ))
+            }
         }
 
         let zero = UInt16(0x0000)
@@ -16054,6 +16190,93 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 $0["executed"] as? Bool == true
             }
         )
+        let sdfArithmeticHoldoutCases: [[String: Any]] =
+            includeDiagnostics && transportSample28Border
+            ? sdfArithmeticHoldoutUniforms.map { item in
+                let stageReplays =
+                    highlightSDFDiagnosticPipelines.map { stage in
+                        let replay = render(
+                            name:
+                                "sdf-holdout-"
+                                + item.intervention.name
+                                + "-custom-" + stage.name,
+                            pipeline: stage.pipeline,
+                            pixelFormat: stage.pixelFormat,
+                            uniformBuffer: item.alphaOracleBuffer,
+                            captureAuxiliary: false)
+                        return [
+                            "name": stage.name,
+                            "pixelFormat": stage.pixelFormat.rawValue,
+                            "executed":
+                                replay["executed"] as? Bool == true,
+                            "replay": replay,
+                        ] as [String: Any]
+                    }
+                let capturedPrivate = render(
+                    name:
+                        "sdf-holdout-" + item.intervention.name
+                        + "-captured-private-bgra8",
+                    pipeline: selection.pipeline,
+                    pixelFormat: .bgra8Unorm,
+                    uniformBuffer: item.alphaOracleBuffer,
+                    captureAuxiliary: false)
+                let currentSystem = render(
+                    name:
+                        "sdf-holdout-" + item.intervention.name
+                        + "-current-system-bgra8",
+                    pipeline: rebuiltPipeline,
+                    pixelFormat: .bgra8Unorm,
+                    uniformBuffer: item.alphaOracleBuffer,
+                    captureAuxiliary: false)
+                let currentSystemHalf = render(
+                    name:
+                        "sdf-holdout-" + item.intervention.name
+                        + "-current-system-rgba16float",
+                    pipeline: floatPipeline,
+                    pixelFormat: .rgba16Float,
+                    uniformBuffer: item.alphaOracleBuffer,
+                    captureAuxiliary: false)
+                let comparison = compareReplaySnapshots(
+                    reference: capturedPrivate,
+                    candidate: currentSystem,
+                    outputDirectory: outputDirectory)
+                let stagesExecuted = stageReplays.count == 9
+                    && stageReplays.allSatisfy {
+                        $0["executed"] as? Bool == true
+                    }
+                let privateCurrentExact =
+                    comparison["compared"] as? Bool == true
+                    && comparison["exactByteMatch"] as? Bool == true
+                    && comparison["mismatchedByteCount"] as? Int == 0
+                    && comparison["mismatchedPixelCount"] as? Int == 0
+                    && comparison["maximumChannelDelta"] as? Int == 0
+                var record = interventionRecord(item.intervention)
+                record["executed"] = stagesExecuted
+                    && capturedPrivate["executed"] as? Bool == true
+                    && currentSystem["executed"] as? Bool == true
+                    && currentSystemHalf["executed"] as? Bool == true
+                    && privateCurrentExact
+                record["naturalUniformPrefixSHA256"] =
+                    item.naturalUniformSHA256
+                record["alphaOracleUniformPrefixSHA256"] =
+                    item.alphaOracleUniformSHA256
+                record["sdfRecordSHA256"] = item.sdfRecordSHA256
+                record["capturedPrivateBGRA8"] = capturedPrivate
+                record["currentSystemBGRA8"] = currentSystem
+                record["currentSystemRGBA16Float"] = currentSystemHalf
+                record["capturedPrivateVsCurrentSystem"] = comparison
+                record["stageReplayCount"] = stageReplays.count
+                record["stageReplays"] = stageReplays
+                return record
+            }
+            : []
+        let sdfArithmeticHoldoutExecuted =
+            !transportSample28Border || !includeDiagnostics || (
+                sdfArithmeticHoldoutCases.count == 4
+                && sdfArithmeticHoldoutCases.allSatisfy {
+                    $0["executed"] as? Bool == true
+                }
+            )
         if interpolantOnly {
             guard includeInterpolant,
                   let exactInterpolant,
@@ -16309,6 +16532,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 && exactFillHalf?["executed"] as? Bool == true
                 && tomographyExecuted
                 && highlightSDFDiagnosticsExecuted
+                && sdfArithmeticHoldoutExecuted
             )
         ) && (
             !includeInterpolant
@@ -16418,6 +16642,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "replayCount": highlightSDFDiagnosticReplays.count,
                 "replays": highlightSDFDiagnosticReplays,
             ]
+            if transportSample28Border {
+                result["sdfArithmeticHoldout"] = [
+                    "schemaVersion": 1,
+                    "executed": sdfArithmeticHoldoutExecuted,
+                    "classification":
+                        "prospectively frozen non-square SDF arithmetic holdout",
+                    "capturedAppleFunctionUnmodified": true,
+                    "currentSystemSpecializationUnmodified": true,
+                    "customDiagnosticStageCount": 9,
+                    "caseCount": sdfArithmeticHoldoutCases.count,
+                    "cases": sdfArithmeticHoldoutCases,
+                ]
+            }
         }
         if let exactKeyHalf,
            let exactFillHalf

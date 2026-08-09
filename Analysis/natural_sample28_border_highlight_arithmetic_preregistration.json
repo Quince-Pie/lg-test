@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "question": "At which final-highlight arithmetic stage does Apple's unmodified Iscd fragment specialization first diverge from Walle after eight-primitive AGX/AMD raster transport is exact?",
   "frozenPriorEvidence": {
     "captureCommit": "47aa8fb27cad780c16869358ec52e61e631cf86d",
@@ -90,14 +90,66 @@
   },
   "prospectiveHoldout": {
     "candidateFrozenBeforeAppleOutput": true,
-    "requiredCapture": "a fresh native physical-Retina sample-28 capture whose timeline and final-highlight uniform/interpolant values differ from calibration",
-    "requiredComparisons": [
-      "all forty independently decoded interpolant/SDF/normal checkpoints",
-      "the three-component final SDF surface",
-      "natural binary16 alpha",
-      "all ten frozen tomography interventions"
+    "requiredCapture": "a fresh native physical-Retina sample-28 capture whose timeline differs from calibration and which executes every frozen non-square SDF input below",
+    "baseUniformPrefixSha256": "d9d07c4c5e6030f86b8a9e070b01691074152c5b7b8c4a5d775932b33a5a8936",
+    "sdfInputInterventions": [
+      {
+        "name": "wide-coarse",
+        "edits": [
+          {"field": "sdf_arg_x", "recordOffset": 0, "float32Bits": "0x43780000", "hex": "00007843"},
+          {"field": "sdf_arg_y", "recordOffset": 4, "float32Bits": "0x43700000", "hex": "00007043"}
+        ],
+        "naturalUniformPrefixSha256": "4eff59ebd270fd9debcc75506c849fb183f9bc2b7c3a9fbb9ec499db7b8d3b37",
+        "alphaOracleUniformPrefixSha256": "3e10cabd5a49f9ab62995a330de0adc89c2130dd311fe4fb595010b9c8576552",
+        "sdfRecordSha256": "f536a6f3de517fcba233d51d3ab59a7f68eedeaf863083f3b52ad89f161e0f8d"
+      },
+      {
+        "name": "tall-coarse",
+        "edits": [
+          {"field": "sdf_arg_x", "recordOffset": 0, "float32Bits": "0x43700000", "hex": "00007043"},
+          {"field": "sdf_arg_y", "recordOffset": 4, "float32Bits": "0x43780000", "hex": "00007843"}
+        ],
+        "naturalUniformPrefixSha256": "e54d8eb77933efd876fc700f10f7919a4589588b2f28e42d16026b7247eb8492",
+        "alphaOracleUniformPrefixSha256": "5a4a25c9a9be3a1e5229c9a628a2e4b7b09ec788db5c703db1fad63bd96f7991",
+        "sdfRecordSha256": "0bd188158e8b3eae75e4f8b1b0a32bdd3aae03dcf824372b225655510ecda44f"
+      },
+      {
+        "name": "wide-ulp",
+        "edits": [
+          {"field": "sdf_arg_x", "recordOffset": 0, "float32Bits": "0x4377016b", "hex": "6b017743"},
+          {"field": "sdf_arg_y", "recordOffset": 4, "float32Bits": "0x43770165", "hex": "65017743"}
+        ],
+        "naturalUniformPrefixSha256": "b065738ff271cf29d8add775497abf8ef0f1a6791de988f0a5ff6a4a1eef68f1",
+        "alphaOracleUniformPrefixSha256": "0ea70455fa11a2d1acd537015850a56d29333286d55d4fb40348365519088391",
+        "sdfRecordSha256": "d58facd65fa6c65c38fe7a360e31a77af1b6690160ce32b12b58bd886f01b027"
+      },
+      {
+        "name": "tall-ulp",
+        "edits": [
+          {"field": "sdf_arg_x", "recordOffset": 0, "float32Bits": "0x43770165", "hex": "65017743"},
+          {"field": "sdf_arg_y", "recordOffset": 4, "float32Bits": "0x4377016b", "hex": "6b017743"}
+        ],
+        "naturalUniformPrefixSha256": "00ab2f7da2c7dda12f460702f9c7e8e49d78ff1086aa58c97c99a166a9a4814e",
+        "alphaOracleUniformPrefixSha256": "fe225c2373f1a4ec4a115d891480bfe52952af66a8f75a12e84b2fef624c3331",
+        "sdfRecordSha256": "1979d4bd73d154231cc892e24f6c07c6c5c91c327de72bc65b63c9fbc24243fa"
+      }
     ],
-    "acceptance": "Every compared word must be identical; the old radial rule and wrong-pass-uniform controls must remain nonexact.",
+    "requiredComparisons": [
+      "Apple's captured private pipeline versus the reconstructed current-system specialization for every SDF intervention",
+      "all nine independent SDF diagnostic surfaces for every SDF intervention",
+      "the current-system binary16 alpha surface for every SDF intervention",
+      "the original forty independently decoded interpolant/SDF/normal checkpoints",
+      "the original three-component final SDF surface",
+      "the original natural binary16 alpha",
+      "all ten original frozen tomography interventions"
+    ],
+    "positiveControls": [
+      "Every intervention changes the base uniform-prefix SHA-256 to its preregistered value.",
+      "Every intervention produces nonzero diagnostic coverage.",
+      "The old radial rule differs for every intervention.",
+      "The wrong-pass-uniform control remains nonexact on the original input."
+    ],
+    "acceptance": "Every candidate word and every captured-private/current-system byte must be identical. Every positive control must pass.",
     "tolerance": 0
   },
   "capture": {
