@@ -14997,3 +14997,60 @@ The corrected ledger is:
    `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
    and was not modified by this analysis.  No quality reduction, captured
    surface input, or lookup correction is authorized.
+
+### Prospective eight-state Walle full-frame gate
+
+The standalone three-pass Walle verifier exposed one implementation defect,
+not another Apple arithmetic unknown.  Its final-highlight draw uploaded the
+highlight matrices and material fields but accidentally retained the first 48
+SDF bytes from the background pass.  At sample 28 this meant using half-size
+word `0x43770167` instead of the final pass's `0x43770168`, exactly reproducing
+the historical 148 binary16 alpha differences.  Uploading the final pass's
+own `SdfArg`, `SdfTransform`, and `SdfArg2` closes the defect without a bias,
+tolerance, shader simplification, or captured-pixel input.
+
+The corrected RX 9070 XT run is byte-identical for samples 1, 4, 8, 12, 16,
+20, 24, and 28: 33,554,432 of 33,554,432 RGBA8 bytes agree, with zero unequal
+pixels and maximum channel delta zero.  That opened corpus contains both the
+ordinary 4-vertex/6-index highlight and the retained 16-vertex/24-index border
+highlight.  The background scissor is now generated from public state by the
+already promoted SDF-enclosure, ROI, DOD, and intersection constructor; the
+captured Metal scissor is only a zero-tolerance structural oracle.  Captured
+final pixels are used only by the terminal comparison.  This result is strong
+retrospective implementation evidence, but it is deliberately not relabeled
+as a prospective promotion.
+
+`Analysis/walle_dynamic_full_frame_holdout_preregistration.json`, SHA-256
+`28592672c0ce68859ec9388218cfdcc22853257cd4d5fba67eaa87f08cd4aa4a`,
+freezes the next gate before its first capture.  The native runner
+`Analysis/run_walle_dynamic_full_frame_holdout_local_macos_26_6_1.sh`,
+SHA-256
+`89440901036f5f6cb02ff54685cf1eb9e5562d0de4b6613e133085a4b107bb82`,
+builds only with Apple's system clang and swiftc and runs directly in the
+active, awake, unlocked, on-console 2x Retina session.  It rejects a native
+build or capture environment containing a Nix-store path and does not use
+GitHub Actions or a debugger.  The immutable timeline SHA-256 is admitted
+explicitly after transfer; it is never added to an opened-corpus allowlist.
+
+The preregistered acceptance rule is exact: all eight independently generated
+three-pass AMD frames must match all 33,554,432 captured bytes, with zero
+unequal pixels and maximum channel delta zero.  Post-capture fitting, case
+exclusion, captured renderer inputs, image substitution, and production shader
+mutation are forbidden.
+
+The current boundary is therefore:
+
+1. **Unknowns blocking guarded Walle implementation: zero.**  The frozen
+   constructor can be integrated behind the exact gate now.
+2. **Prospective verification obligations before production confidence: one.**
+   The newly frozen direct-Retina eight-state capture must pass the full-frame
+   RX 9070 XT gate without changing the candidate.
+3. **Universal algorithm-family unknowns: one.**  The selector choosing the
+   6-index versus 24-index final-highlight topology for arbitrary unseen
+   natural states is still not expressed.  Both emitted topologies themselves
+   are already reconstructed and rendered exactly.
+4. **Product gates after integration remain distinct.**  A production Walle
+   process frame and a physical Retina presentation of Walle-produced pixels
+   must still pass before claiming end-to-end product parity.
+5. **Quality remains immutable.**  The protected shader SHA-256 above is
+   unchanged, and every acceptance threshold remains zero.
