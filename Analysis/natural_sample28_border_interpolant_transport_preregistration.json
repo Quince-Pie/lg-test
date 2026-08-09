@@ -1,5 +1,11 @@
 {
   "schemaVersion": 1,
+  "preAnalysisCorrection": {
+    "rejectedCommit": "421dce8",
+    "reason": "The first committed metadata named an eight-row axis but accidentally froze the SHA-256 and byte count of the older two-row axis fixture.",
+    "outputComparedAgainstCandidate": false,
+    "resolution": "Freeze the actual eight-row independent axis and repeat the native capture from a new commit before opening any interpolant values."
+  },
   "question": "Does the independently constructed eight-primitive sample-28 border axis reproduce native AGX fixed-function interpolation exactly when topology selection is removed from the experiment?",
   "frozenEvidence": {
     "captureTimelineSha256": "c028e232c0eb06ade31f826578c7209ea2e19f69b65a65cdc723187bc34adc44",
@@ -22,9 +28,16 @@
       "sha256": "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572"
     },
     "independentAxis": {
-      "encoding": "8 by 1024 RGBA32Uint; one row per primitive",
-      "byteCount": 32768,
-      "sha256": "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+      "encoding": "8 by 1024 RGBA32Uint; one row per primitive; SDF-x and SDF-y are populated and the pixel-irrelevant source lanes are zero",
+      "comparedComponents": ["sdf-x", "sdf-y"],
+      "byteCount": 131072,
+      "sha256": "e73c03674f15f0301581d48c67419bb1324e2b417735817a7ed489024d03faf1",
+      "archive": {
+        "file": "Analysis/natural_sample28_border_axis_u32le.zlib.b64",
+        "encoding": "base64-wrapped zlib",
+        "compressedByteCount": 6769,
+        "compressedSha256": "72311e605a756b12a14b45adcd4f4a9a1bbce4800161254478c9b575ad732cd6"
+      },
       "capturedCoordinateTableUsed": false,
       "selector": "authenticated base fractional-selector table with offset zero"
     }
@@ -39,7 +52,7 @@
     "classification": "AGX fixed-function raster diagnostic; not an Apple shader or final-image oracle"
   },
   "decision": {
-    "centerExact": "If every rasterized center-interpolant word equals the independent axis reconstruction for the native primitive owner, classify the seven-byte frame residual as downstream derivative, coverage, or attachment arithmetic.",
+    "centerExact": "If every rasterized pixel-influential SDF center word equals the independent axis reconstruction for the native primitive owner, classify the seven-byte frame residual as downstream derivative, coverage, or attachment arithmetic. The serialized source coordinates are a nonvacuous control and are not compared to the intentionally zero source lanes in the product axis.",
     "centerResidual": "If any center word differs, isolate the first primitive, component, coordinate, tile, and selector term before changing the constructor.",
     "coverageResidual": "If primitive ownership or covered sample centers differ, isolate raster coverage separately from interpolant arithmetic.",
     "derivativeUse": "Derivative words may discriminate the downstream branch but may not be used as captured product inputs."

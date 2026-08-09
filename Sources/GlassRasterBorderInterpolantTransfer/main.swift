@@ -12,13 +12,17 @@ private let rigVersion = "metal-raster-border-interpolant-transfer-1.0.0"
 private let preregistrationPath =
     "Analysis/natural_sample28_border_interpolant_transport_preregistration.json"
 private let preregistrationSha256 =
-    "7a5276a31366f35771f2779badd7d68ae70fdce24c8ebf09c429ba5089e67c66"
+    "b90598ad886cf2b2ad6034e6008b23928c6d46252012466597ceb01ec1768d96"
+private let independentAxisArchivePath =
+    "Analysis/natural_sample28_border_axis_u32le.zlib.b64"
+private let independentAxisArchiveFileSha256 =
+    "bca0ca6db1c8570bfc54956527f1f67e2ff553bf959e30e04271ed45051b1035"
 private let vertexPayloadSha256 =
     "fce89df436fd7a0ec9b00d171c40be676023facfaf49e76366b1ec9f0cac3c62"
 private let indexPayloadSha256 =
     "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572"
 private let independentAxisSha256 =
-    "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479"
+    "e73c03674f15f0301581d48c67419bb1324e2b417735817a7ed489024d03faf1"
 private let targetSize = 1_024
 private let vertexCount = 16
 private let vertexStride = 32
@@ -209,8 +213,16 @@ private func run(outputDirectory: URL) throws {
     let preregistration = try Data(
         contentsOf: URL(fileURLWithPath: preregistrationPath)
     )
-    guard sha256(preregistration) == preregistrationSha256 else {
-        throw CaptureError.resource("frozen preregistration differs")
+    let independentAxisArchive = try Data(
+        contentsOf: URL(fileURLWithPath: independentAxisArchivePath)
+    )
+    guard sha256(preregistration) == preregistrationSha256,
+          sha256(independentAxisArchive)
+            == independentAxisArchiveFileSha256
+    else {
+        throw CaptureError.resource(
+            "frozen preregistration or independent axis archive differs"
+        )
     }
     let vertices = try decodeHex(vertexPayloadHex)
     let indices = try decodeHex(indexPayloadHex)
@@ -233,7 +245,7 @@ private func run(outputDirectory: URL) throws {
         throw CaptureError.resource("Metal device or command queue")
     }
     let options = MTLCompileOptions()
-    options.fastMathEnabled = true
+    options.mathMode = .fast
     let library = try device.makeLibrary(source: metalSource, options: options)
     guard let vertex = library.makeFunction(
             name: "border_interpolant_vertex"),
@@ -406,6 +418,9 @@ private func run(outputDirectory: URL) throws {
             "indexPayloadSha256": indexPayloadSha256,
             "indexCount": indexCount,
             "independentAxisSha256": independentAxisSha256,
+            "independentAxisArchiveFile": independentAxisArchivePath,
+            "independentAxisArchiveFileSha256":
+                independentAxisArchiveFileSha256,
             "targetSize": [targetSize, targetSize],
             "activePixels": activePixels,
             "primitivePixelCounts": primitiveCounts,
