@@ -14575,3 +14575,52 @@ The current implementation boundary is now:
    subunknowns close, fresh AMD and physical-Retina end-to-end frame gates must
    still report zero unequal bytes.  The protected Walle shader and `flake.nix`
    remain unchanged, and quality degradation remains forbidden.
+
+### Natural Walle background scissor closure
+
+The background crop is no longer an unknown.  A dedicated calibration trace on
+the physical Retina M1 Max opened all eight natural regular/dark/dematerialize
+states at indices 1, 4, 8, 12, 16, 20, 24, and 28.  The public layer state
+reconstructs the SDF integer bounds by finite-enclosing the world-space element
+rectangle after expansion by the exact binary32 radius `42.46388244628906`
+(`04db2942` little-endian).  The background filter then expands those bounds by
+
+`binary64(1.4) * max(binary64(2) * inputBlurRadius, inputBleedBlurRadius)`.
+
+Integral enclosure gives the ROI.  The filter DOD is the translated fixed
+rectangle whose terminal bleed is `binary32(0.35 * D)`, and the final Metal
+scissor is the viewport intersection of the integral ROI and that filter DOD.
+The calibration analyzer matched all 32 SDF-bound integers, 128 transform
+binary64 components, 32 input-rectangle components, 32 output-rectangle
+components, 96 public layer components, 16 profile components, and 32 final
+scissor integers exactly.  The compact calibration result is
+`Analysis/walle_dynamic_background_scissor_calibration_result.json`, SHA-256
+`4221a5c046c6417d6a4d1764c958eb8b7d4b1e87a430c2ea092156c461ec2876`.
+
+Commit `4fb1899` froze that constructor, its validator, and a zero-tolerance
+prospective preregistration before a fresh capture.  The holdout was produced
+directly by the native Apple toolchain on the Retina Mac without a debugger or
+a Nix-store path.  Its timeline SHA-256 is
+`efbe36f26dd9b0a4e4c886aa23a9d71dcf2b25ae91e474ae74589002f3939f42`.
+It differs from the calibration timeline, and all eight held-out `remaining`
+binary32 words differ from their calibration values.  Nevertheless, the
+frozen public-state constructor matched 96/96 layer binary64 components,
+16/16 profile binary64 components, and 32/32 Metal scissor integers, with zero
+mismatches.  The accepted result is
+`Analysis/walle_dynamic_background_scissor_holdout_4fb1899_result.json`,
+SHA-256
+`1eaf1c84fbe08261a3aa84f157c8b5c5835891eae85ae6249a24657866c3cbb7`.
+
+The corrected implementation boundary is therefore:
+
+1. **Natural final-highlight unknowns: zero.** The prospective eight-state
+   half-bit gate remains exact and is ready for guarded Walle integration.
+2. **Natural background crop/scissor unknowns: zero.** The constructor now has
+   both calibration evidence and an exact prospective transfer.
+3. **Natural background pixel arithmetic unknowns: one.** The only remaining
+   construction residual is 72 unequal bytes in 66 pixels out of 33,554,432
+   compared bytes, maximum channel delta one, at zero tolerance.
+4. **Work may begin in Walle now, but full parity is not yet claimed.** Land the
+   exact paths behind their measured-domain gates while the sparse background
+   residual is isolated; then require fresh AMD and physical-Retina end-to-end
+   frames to be byte-identical.  No quality reduction or tolerance is allowed.
