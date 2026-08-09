@@ -22,7 +22,7 @@
   "selectionRule": "Within transition-background-uniform-28, select exactly the current Iscd draw by full pipeline label. Do not select the later Irsd draw used by the existing last-final-draw helper.",
   "capture": {
     "vertexFunction": "captured Apple function, unmodified",
-    "fragmentFunction": "diagnostic RGBA32Uint interpolant serializer",
+    "fragmentFunction": "diagnostic RGBA32Uint interpolant serializer built beside the exact reconstructed current-system Iscd specialization because Apple's private Iscd bitcode cannot be copied",
     "components": ["sdf-x", "sdf-y", "source-x", "source-y"],
     "comparisonScope": "every rasterized pixel and every serialized component"
   },

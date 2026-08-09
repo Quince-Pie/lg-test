@@ -17956,8 +17956,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         outputDirectory: outputDirectory,
                         includeDiagnostics: false,
                         includeInterpolant: true,
-                        interpolantOnly: true,
-                        selectionOverride: currentIscdSelection)
+                        selectionOverride: currentIscdSelection,
+                        currentSystemTrace: true)
             } else {
                 result["currentIscdInterpolantTrace"] = [
                     "schemaVersion": 1,
