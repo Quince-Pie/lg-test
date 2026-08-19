@@ -43,6 +43,7 @@ struct Config {
     var expectReduceTransparency = false
     var expectIncreaseContrast = false
     var expectReduceMotion = false
+    var displayID: UInt32? = nil
 
     static func parse() -> Config {
         var c = Config()
@@ -129,6 +130,11 @@ struct Config {
                 c.expectIncreaseContrast = true
             case "--expect-reduce-motion":
                 c.expectReduceMotion = true
+            case "--display-id":
+                guard let value = args.popFirst(), let id = UInt32(value) else {
+                    fatalError("--display-id requires a CGDirectDisplayID")
+                }
+                c.displayID = id
             case "--reveal-coverage-probe":
                 c.revealCoverageProbe = true
             default:
@@ -3485,7 +3491,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         root.addSubview(
             materializeClock, positioned: .above, relativeTo: hosting)
         window.contentView = root
-        window.setFrameOrigin(NSPoint(x: 0, y: 0))
+        let targetOrigin: NSPoint = {
+            guard let want = config.displayID else { return NSPoint(x: 0, y: 0) }
+            for screen in NSScreen.screens {
+                if let number = screen.deviceDescription[
+                    NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber,
+                    number.uint32Value == want
+                {
+                    return screen.frame.origin
+                }
+            }
+            fatalError("--display-id \(want) matches no attached screen")
+        }()
+        window.setFrameOrigin(targetOrigin)
 
         // The main capture window intentionally exceeds the hosted display,
         // so its precise full-width clock cannot be sampled through a small
@@ -3505,7 +3523,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         clockProbe = MaterializeClockView(
             frame: NSRect(origin: .zero, size: probeSize))
         clockProbeWindow.contentView = clockProbe
-        clockProbeWindow.setFrameOrigin(NSPoint(x: 0, y: 0))
+        clockProbeWindow.setFrameOrigin(targetOrigin)
         clockProbeWindow.orderFrontRegardless()
 
         NSApplication.shared.activate(ignoringOtherApps: true)
