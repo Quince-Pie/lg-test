@@ -39,6 +39,7 @@ struct Config {
     var revealCoverageProbe = false
     var naturalBackgrounds = false
     var expectReduceTransparency = false
+    var expectIncreaseContrast = false
 
     static func parse() -> Config {
         var c = Config()
@@ -117,6 +118,8 @@ struct Config {
                 c.naturalBackgrounds = true
             case "--expect-reduce-transparency":
                 c.expectReduceTransparency = true
+            case "--expect-increase-contrast":
+                c.expectIncreaseContrast = true
             case "--reveal-coverage-probe":
                 c.revealCoverageProbe = true
             default:
@@ -3581,8 +3584,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     ? "Reduce Transparency is not enabled but this capture expects it"
                     : "Reduce Transparency is enabled")
         }
-        if manifest.increaseContrast {
-            manifest.preflightErrors.append("Increase Contrast is enabled")
+        if manifest.increaseContrast != config.expectIncreaseContrast {
+            manifest.preflightErrors.append(
+                config.expectIncreaseContrast
+                    ? "Increase Contrast is not enabled but this capture expects it"
+                    : "Increase Contrast is enabled")
         }
         if manifest.reduceMotion {
             manifest.preflightErrors.append("Reduce Motion is enabled")
