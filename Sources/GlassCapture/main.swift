@@ -38,6 +38,7 @@ struct Config {
     var transitionOriginY = 0.30
     var revealCoverageProbe = false
     var naturalBackgrounds = false
+    var expectReduceTransparency = false
 
     static func parse() -> Config {
         var c = Config()
@@ -114,6 +115,8 @@ struct Config {
                 c.transitionOriginY = y
             case "--natural-backgrounds":
                 c.naturalBackgrounds = true
+            case "--expect-reduce-transparency":
+                c.expectReduceTransparency = true
             case "--reveal-coverage-probe":
                 c.revealCoverageProbe = true
             default:
@@ -3572,8 +3575,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if !manifest.windowKey {
             manifest.preflightErrors.append("capture window is not key")
         }
-        if manifest.reduceTransparency {
-            manifest.preflightErrors.append("Reduce Transparency is enabled")
+        if manifest.reduceTransparency != config.expectReduceTransparency {
+            manifest.preflightErrors.append(
+                config.expectReduceTransparency
+                    ? "Reduce Transparency is not enabled but this capture expects it"
+                    : "Reduce Transparency is enabled")
         }
         if manifest.increaseContrast {
             manifest.preflightErrors.append("Increase Contrast is enabled")
