@@ -38,6 +38,8 @@ struct Config {
     var transitionOriginY = 0.30
     var revealCoverageProbe = false
     var naturalBackgrounds = false
+    var saturatedBackgrounds = false
+    var swapDynamicBackgrounds = false
     var expectReduceTransparency = false
     var expectIncreaseContrast = false
     var expectReduceMotion = false
@@ -117,6 +119,10 @@ struct Config {
                 c.transitionOriginY = y
             case "--natural-backgrounds":
                 c.naturalBackgrounds = true
+            case "--saturated-backgrounds":
+                c.saturatedBackgrounds = true
+            case "--swap-dynamic-backgrounds":
+                c.swapDynamicBackgrounds = true
             case "--expect-reduce-transparency":
                 c.expectReduceTransparency = true
             case "--expect-increase-contrast":
@@ -1186,6 +1192,36 @@ func incomingNaturalDynamicBackground() -> Background {
             UInt8(max(0, min(255, Int(value.rounded()))))
         }
         return (channel(r), channel(g), channel(b))
+    }
+}
+
+// Saturated fields: strongly chromatic with mild low-frequency structure, in
+// two very different global colours - deep red vs deep blue - so any
+// background-derived term in an accessibility plate, scrim, or material law
+// must move between them, while a constant term cannot.
+func saturatedDynamicBackground() -> Background {
+    Background(name: "dynamic-saturated-red", family: .dynamic) { x, y, _, _ in
+        let xd = Double(x)
+        let yd = Double(y)
+        let m = 14 * sin(2 * .pi * (0.71 * xd + 0.70 * yd) / 1409 + 1.1)
+            + 8 * sin(2 * .pi * (-0.32 * xd + 0.95 * yd) / 523 + 3.9)
+        func channel(_ value: Double) -> UInt8 {
+            UInt8(max(0, min(255, Int(value.rounded()))))
+        }
+        return (channel(188 + m), channel(52 + 0.4 * m), channel(44 + 0.3 * m))
+    }
+}
+
+func incomingSaturatedDynamicBackground() -> Background {
+    Background(name: "dynamic-saturated-blue", family: .dynamic) { x, y, _, _ in
+        let xd = Double(x)
+        let yd = Double(y)
+        let m = 13 * cos(2 * .pi * (0.44 * xd + 0.90 * yd) / 1291 + 0.6)
+            + 7 * cos(2 * .pi * (0.97 * xd - 0.24 * yd) / 461 + 2.7)
+        func channel(_ value: Double) -> UInt8 {
+            UInt8(max(0, min(255, Int(value.rounded()))))
+        }
+        return (channel(40 + 0.3 * m), channel(88 + 0.4 * m), channel(196 + m))
     }
 }
 
@@ -4463,17 +4499,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if config.suite.includesDynamic {
-            let sourcePair = config.revealCoverageProbe
+            var sourcePair = config.revealCoverageProbe
                 ? revealCoverageBackgrounds()
-                : config.naturalBackgrounds
+                : config.saturatedBackgrounds
                     ? (
-                        outgoing: naturalDynamicBackground(),
-                        incoming: incomingNaturalDynamicBackground()
+                        outgoing: saturatedDynamicBackground(),
+                        incoming: incomingSaturatedDynamicBackground()
                     )
-                    : (
-                        outgoing: dynamicBackground(),
-                        incoming: incomingDynamicBackground()
-                    )
+                    : config.naturalBackgrounds
+                        ? (
+                            outgoing: naturalDynamicBackground(),
+                            incoming: incomingNaturalDynamicBackground()
+                        )
+                        : (
+                            outgoing: dynamicBackground(),
+                            incoming: incomingDynamicBackground()
+                        )
+            if config.swapDynamicBackgrounds {
+                sourcePair = (
+                    outgoing: sourcePair.incoming, incoming: sourcePair.outgoing)
+            }
             let bg = sourcePair.outgoing
             let incomingBG = sourcePair.incoming
             let image = renderBackground(bg, width: pw, height: ph)
