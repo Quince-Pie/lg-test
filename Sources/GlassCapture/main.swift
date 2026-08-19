@@ -37,6 +37,7 @@ struct Config {
     var transitionOriginX = 0.25
     var transitionOriginY = 0.30
     var revealCoverageProbe = false
+    var naturalBackgrounds = false
 
     static func parse() -> Config {
         var c = Config()
@@ -111,6 +112,8 @@ struct Config {
                 }
                 c.transitionOriginX = x
                 c.transitionOriginY = y
+            case "--natural-backgrounds":
+                c.naturalBackgrounds = true
             case "--reveal-coverage-probe":
                 c.revealCoverageProbe = true
             default:
@@ -1099,6 +1102,77 @@ func incomingDynamicBackground() -> Background {
             + 35 * wave(xd, 683) + 17 * wave(xd + yd, 997)
         let b = 124 + 44 * wave(yd, 337)
             + 32 * wave(2 * xd - yd, 821) + 22 * wave(xd, 1237)
+        func channel(_ value: Double) -> UInt8 {
+            UInt8(max(0, min(255, Int(value.rounded()))))
+        }
+        return (channel(r), channel(g), channel(b))
+    }
+}
+
+
+// Natural-image statistics, as a deterministic field: channel-correlated
+// (the coded fields are deliberately channel-independent - real wallpapers
+// are not), a red 1/f-weighted spectrum with most energy at low frequency,
+// a slowly varying colour cast, and a few hard oblique edges. This is the
+// decorrelation content for laws fitted on the coded fields.
+func naturalDynamicBackground() -> Background {
+    Background(name: "dynamic-natural-field", family: .dynamic) { x, y, _, _ in
+        let xd = Double(x)
+        let yd = Double(y)
+        func wave(_ cx: Double, _ cy: Double, _ period: Double, _ phase: Double)
+            -> Double
+        {
+            sin(2 * .pi * (cx * xd + cy * yd) / period + phase)
+        }
+        var luma = 128.0
+        luma += 34 * wave(0.94, 0.34, 1531, 0.7)
+        luma += 27 * wave(-0.28, 0.96, 977, 2.1)
+        luma += 19 * wave(0.71, -0.70, 613, 4.0)
+        luma += 13 * wave(0.10, 0.99, 359, 1.3)
+        luma += 9 * wave(-0.87, 0.49, 211, 5.2)
+        luma += 6 * wave(0.60, 0.80, 127, 0.4)
+        luma += 4 * wave(-0.45, -0.89, 73, 3.5)
+        luma += 3 * wave(0.98, -0.17, 41, 2.8)
+        let edge = wave(0.31, 0.95, 1901, 0.0)
+        luma += edge > 0 ? 16.0 : -16.0
+        let castA = wave(0.62, 0.78, 2203, 1.9)
+        let castB = wave(-0.80, 0.60, 1657, 4.4)
+        let r = luma + 11 * castA + 4 * castB
+        let g = luma - 2 * castA + 3 * castB
+        let b = luma - 12 * castA - 6 * castB
+        func channel(_ value: Double) -> UInt8 {
+            UInt8(max(0, min(255, Int(value.rounded()))))
+        }
+        return (channel(r), channel(g), channel(b))
+    }
+}
+
+func incomingNaturalDynamicBackground() -> Background {
+    Background(name: "dynamic-natural-field-incoming", family: .dynamic) {
+        x, y, _, _ in
+        let xd = Double(x)
+        let yd = Double(y)
+        func wave(_ cx: Double, _ cy: Double, _ period: Double, _ phase: Double)
+            -> Double
+        {
+            cos(2 * .pi * (cx * xd + cy * yd) / period + phase)
+        }
+        var luma = 122.0
+        luma += 36 * wave(0.37, 0.93, 1367, 2.4)
+        luma += 25 * wave(0.99, -0.14, 883, 0.9)
+        luma += 18 * wave(-0.64, 0.77, 547, 3.7)
+        luma += 12 * wave(0.83, 0.56, 317, 5.5)
+        luma += 8 * wave(-0.20, -0.98, 191, 1.1)
+        luma += 6 * wave(0.75, -0.66, 113, 4.6)
+        luma += 4 * wave(-0.95, 0.31, 67, 2.2)
+        luma += 3 * wave(0.15, 0.99, 37, 0.6)
+        let edge = wave(0.88, 0.47, 1733, 0.0)
+        luma += edge > 0 ? 14.0 : -14.0
+        let castA = wave(-0.55, 0.84, 2411, 3.0)
+        let castB = wave(0.92, 0.39, 1409, 0.2)
+        let r = luma + 9 * castA - 5 * castB
+        let g = luma + 1 * castA + 4 * castB
+        let b = luma - 10 * castA + 7 * castB
         func channel(_ value: Double) -> UInt8 {
             UInt8(max(0, min(255, Int(value.rounded()))))
         }
@@ -4373,10 +4447,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if config.suite.includesDynamic {
             let sourcePair = config.revealCoverageProbe
                 ? revealCoverageBackgrounds()
-                : (
-                    outgoing: dynamicBackground(),
-                    incoming: incomingDynamicBackground()
-                )
+                : config.naturalBackgrounds
+                    ? (
+                        outgoing: naturalDynamicBackground(),
+                        incoming: incomingNaturalDynamicBackground()
+                    )
+                    : (
+                        outgoing: dynamicBackground(),
+                        incoming: incomingDynamicBackground()
+                    )
             let bg = sourcePair.outgoing
             let incomingBG = sourcePair.incoming
             let image = renderBackground(bg, width: pw, height: ph)
