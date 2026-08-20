@@ -1111,6 +1111,24 @@ func staticBackgrounds() -> [Background] {
         ) { x, _, w, _ in
             chromaMix(x < w / 2 ? 0 : 255, a, b)
         })
+        // Jacobian probes: the blurred backdrop leaves the color line under
+        // any per-channel mechanism, so inverting the material there needs
+        // the local 3x3 response.  Probe +-24 codes per channel around three
+        // anchors; the finite difference IS the Jacobian column.
+        for t in [64, 128, 192] {
+            let base = chromaMix(t, a, b)
+            let channels: [(String, Int)] = [("R", 0), ("G", 1), ("B", 2)]
+            for (cname, ci) in channels {
+                for (sname, delta) in [("p", 24), ("m", -24)] {
+                    var rgb = [Int(base.0), Int(base.1), Int(base.2)]
+                    rgb[ci] = max(0, min(255, rgb[ci] + delta))
+                    list.append(flatBackground(
+                        String(format: "chroma-%@-j%03d-%@%@", tag, t, cname, sname),
+                        .color,
+                        (UInt8(rgb[0]), UInt8(rgb[1]), UInt8(rgb[2]))))
+                }
+            }
+        }
     }
 
     // Qualitative continuity with the HIG example.
