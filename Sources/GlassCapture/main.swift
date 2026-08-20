@@ -38,6 +38,7 @@ struct Config {
     var transitionOriginY = 0.30
     var revealCoverageProbe = false
     var naturalBackgrounds = false
+    var staticOnlyPrefixes: [String] = []
     var saturatedBackgrounds = false
     var swapDynamicBackgrounds = false
     var expectReduceTransparency = false
@@ -120,6 +121,11 @@ struct Config {
                 c.transitionOriginY = y
             case "--natural-backgrounds":
                 c.naturalBackgrounds = true
+            case "--static-only":
+                guard let value = args.popFirst(), !value.isEmpty else {
+                    fatalError("--static-only requires a comma-separated prefix list")
+                }
+                c.staticOnlyPrefixes = value.split(separator: ",").map(String.init)
             case "--saturated-backgrounds":
                 c.saturatedBackgrounds = true
             case "--swap-dynamic-backgrounds":
@@ -1072,6 +1078,40 @@ func staticBackgrounds() -> [Background] {
         let v: UInt8 = (radius / 64) % 2 == 0 ? 255 : 0
         return (v, v, v)
     })
+
+    // Chroma-warp instrument (walle session 195): the far-field tonal warp
+    // is measured exactly on gray edges, but gray content is blind to its
+    // channel space - per-channel and luma-only application are identical
+    // there.  Two color-line ladders with their step edges decide it:
+    // red<->cyan walks every channel in anti-correlated directions in one
+    // shot, and red<->green at equal luma (0.2126*255 ~ 0.7152*76) isolates
+    // the chroma path - a luma-only warp predicts NO far-field asymmetry on
+    // the isoluminant edge at all.  The seventeen-point trajectory flats
+    // are the exact inversion anchors along each blurred edge's path.
+    func chromaMix(
+        _ t: Int, _ a: (Int, Int, Int), _ b: (Int, Int, Int)
+    ) -> (UInt8, UInt8, UInt8) {
+        func lerp(_ x: Int, _ y: Int) -> UInt8 {
+            UInt8((x * (255 - t) + y * t + 127) / 255)
+        }
+        return (lerp(a.0, b.0), lerp(a.1, b.1), lerp(a.2, b.2))
+    }
+    let chromaLines: [(String, (Int, Int, Int), (Int, Int, Int))] = [
+        ("rc", (255, 0, 0), (0, 255, 255)),
+        ("il", (255, 0, 0), (0, 76, 0)),
+    ]
+    for (tag, a, b) in chromaLines {
+        for t in Array(stride(from: 0, through: 240, by: 16)) + [255] {
+            list.append(flatBackground(
+                String(format: "chroma-%@-t%03d", tag, t), .color,
+                chromaMix(t, a, b)))
+        }
+        list.append(Background(
+            name: "chroma-\(tag)-edge-x", family: .edge
+        ) { x, _, w, _ in
+            chromaMix(x < w / 2 ? 0 : 255, a, b)
+        })
+    }
 
     // Qualitative continuity with the HIG example.
     list.append(Background(name: "brick", family: .qualitative) {
@@ -3785,7 +3825,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if config.suite.includesStatic {
-            let backgrounds = staticBackgrounds()
+            var backgrounds = staticBackgrounds()
+            if !config.staticOnlyPrefixes.isEmpty {
+                backgrounds = backgrounds.filter { bg in
+                    config.staticOnlyPrefixes.contains { bg.name.hasPrefix($0) }
+                }
+            }
             let baseScene = scenes.first { $0.name == "circle-0500-center" }!
             let tintBackgrounds: Set<String> = [
                 "gray-000", "gray-128", "gray-255",
