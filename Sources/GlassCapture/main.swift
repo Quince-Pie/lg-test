@@ -1099,6 +1099,11 @@ func staticBackgrounds() -> [Background] {
     let chromaLines: [(String, (Int, Int, Int), (Int, Int, Int))] = [
         ("rc", (255, 0, 0), (0, 255, 255)),
         ("il", (255, 0, 0), (0, 76, 0)),
+        // Two more isoluminant lines at other luma levels, to map the
+        // warp's Y-dependence: mid (Y ~ 128: 0.2126*255 + 0.7152*103 ~
+        // 0.7152*179) and high (Y ~ 237: yellow vs the equal-luma gray).
+        ("i5", (255, 103, 0), (0, 179, 0)),
+        ("i9", (255, 255, 0), (237, 237, 237)),
     ]
     for (tag, a, b) in chromaLines {
         for t in Array(stride(from: 0, through: 240, by: 16)) + [255] {
